@@ -67,6 +67,8 @@ import static com.qihoo360.replugin.packages.PluginInfoUpdater.ACTION_UNINSTALL_
 
 /**
  * @author RePlugin Team
+ *
+ * 具有很多重要的功能,例如：分配坑位、初始化插件信息、Clent端连接Server端、加载插件、更新插件、删除插件、等等
  */
 class PmBase {
 
@@ -306,6 +308,7 @@ class PmBase {
             LogDebug.d(PLUGIN_TAG, "search plugins from file system");
         }
 
+        //继承于IPluginHost.Stub,是一个Binder对象 可以理解为Server端，非常的像AMS的结构和原理
         mHostSvc = new PmHostSvc(mContext, this);
         PluginProcessMain.installHost(mHostSvc);
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);

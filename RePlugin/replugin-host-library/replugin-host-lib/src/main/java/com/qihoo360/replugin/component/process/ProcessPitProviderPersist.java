@@ -26,6 +26,8 @@ import com.qihoo360.replugin.base.IPC;
 
 /**
  * @author RePlugin Team
+ *
+ * 用于对外共享binder的的provider
  */
 public class ProcessPitProviderPersist extends ContentProvider {
 
