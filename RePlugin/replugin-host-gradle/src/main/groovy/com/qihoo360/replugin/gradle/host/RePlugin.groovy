@@ -64,13 +64,14 @@ public class Replugin implements Plugin<Project> {
                 def generateBuildConfigTask = VariantCompat.getGenerateBuildConfigTask(variant)
                 //获取host包名（为啥要这样获取包名）
                 def appID = generateBuildConfigTask.appPackageName
+                //构建占坑的内容
                 def newManifest = ComponentsGenerator.generateComponent(appID, config)
                 println "${TAG} countTask=${config.countTask}"
 
                 def variantData = variant.variantData
                 def scope = variantData.scope
 
-                //host generate task
+                //添加rpGenerateHostConfig Task
                 def generateHostConfigTaskName = scope.getTaskName(AppConstant.TASK_GENERATE, "HostConfig")
                 def generateHostConfigTask = project.task(generateHostConfigTaskName)
 
