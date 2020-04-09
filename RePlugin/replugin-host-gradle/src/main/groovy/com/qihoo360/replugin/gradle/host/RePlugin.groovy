@@ -153,6 +153,7 @@ public class Replugin implements Plugin<Project> {
         showPluginsTask.doLast {
             //创建 json 文件构建器
             IFileCreator creator = new PluginBuiltinJsonCreator(project, variant, config)
+            //assets 合并后的输出 文件夹
             def dir = creator.getFileDir()
 
             if (!dir.exists()) {
@@ -161,6 +162,7 @@ public class Replugin implements Plugin<Project> {
                 return
             }
 
+            //创建文件内容
             String fileContent = creator.getFileContent()
             if (null == fileContent) {
                 return

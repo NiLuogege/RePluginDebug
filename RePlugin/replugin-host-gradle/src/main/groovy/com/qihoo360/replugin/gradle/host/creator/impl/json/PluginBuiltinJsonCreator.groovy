@@ -41,7 +41,7 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
         // make sure processResources Task execute after mergeAssets Task, get real gradle task
         // 在 com.android.tools.build:gradle:3.3.2 及之前 outputDir 为 File 类型。
         // 但从 com.android.tools.build:gradle:3.4.1 开始 Google 将此类型改为 `Provider<Directory>`。
-        // 从不同gradle版本中 获取outputdir
+        // 从不同gradle版本中 获取 assets合并后的 文件夹
         final def out = VariantCompat.getMergeAssetsTask(variant)?.outputDir
         fileDir = File.class.isInstance(out) ? out : out?.get()?.getAsFile()
         //json 文件名（plugins-builtin.json）
@@ -58,9 +58,10 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
         fileDir
     }
 
+    //查找插件文件并抽取信息,如果没有就直接返回null
     @Override
     String getFileContent() {
-        //查找插件文件并抽取信息,如果没有就直接返回null
+        //创建 存储插件文件的 plugins 文件夹（build/intermediates/assets/plugins）
         File pluginDirFile = new File(fileDir?.getAbsolutePath() + File.separator + config.pluginDir)
         if (!pluginDirFile.exists()) {
             println "${AppConstant.TAG} The ${pluginDirFile.absolutePath} does not exist "
@@ -68,23 +69,24 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
             return null
         }
 
+        //这种形式是不是类似kotlin的扩展函数？
         new File(fileDir.getAbsolutePath() + File.separator + config.pluginDir)
                 .traverse(type: FileType.FILES, nameFilter: ~/.*\${config.pluginFilePostfix}/) {
 
-            PluginInfoParser parser = null
-            try {
-                parser = new PluginInfoParser(it.absoluteFile, config)
-            } catch (Exception e) {
-                if (config.enablePluginFileIllegalStopBuild) {
-                    System.err.println "${AppConstant.TAG} the plugin(${it.absoluteFile.absolutePath}) is illegal !!!"
-                    throw new Exception(e)
-                }
-            }
+                    PluginInfoParser parser = null
+                    try {
+                        parser = new PluginInfoParser(it.absoluteFile, config)
+                    } catch (Exception e) {
+                        if (config.enablePluginFileIllegalStopBuild) {
+                            System.err.println "${AppConstant.TAG} the plugin(${it.absoluteFile.absolutePath}) is illegal !!!"
+                            throw new Exception(e)
+                        }
+                    }
 
-            if (null != parser) {
-                pluginInfos << parser.pluginInfo
-            }
-        }
+                    if (null != parser) {
+                        pluginInfos << parser.pluginInfo
+                    }
+                }
 
         //插件为0个
         if (pluginInfos.isEmpty()) {
