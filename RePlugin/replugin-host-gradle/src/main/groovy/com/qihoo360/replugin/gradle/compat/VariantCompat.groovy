@@ -4,6 +4,7 @@ import org.gradle.api.Task
 
 /**
  * @author hyongbai
+ * 对 Variant 做兼容的类
  */
 class VariantCompat {
     static def getAssembleTask(def variant) {

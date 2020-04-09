@@ -24,6 +24,8 @@ import groovy.json.JsonOutput
 
 /**
  * @author RePlugin Team
+ *
+ * json 文件构建器
  */
 public class PluginBuiltinJsonCreator implements IFileCreator {
 
@@ -39,8 +41,10 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
         // make sure processResources Task execute after mergeAssets Task, get real gradle task
         // 在 com.android.tools.build:gradle:3.3.2 及之前 outputDir 为 File 类型。
         // 但从 com.android.tools.build:gradle:3.4.1 开始 Google 将此类型改为 `Provider<Directory>`。
+        // 从不同gradle版本中 获取outputdir
         final def out = VariantCompat.getMergeAssetsTask(variant)?.outputDir
         fileDir = File.class.isInstance(out) ? out : out?.get()?.getAsFile()
+        //json 文件名（plugins-builtin.json）
         fileName = config.builtInJsonFileName
     }
 

@@ -42,14 +42,16 @@ public class Replugin implements Plugin<Project> {
 
         this.project = project
 
-        /* Extensions */
+        //创建配置信息extension，名称为 repluginHostConfig 可配置的信息在 RepluginConfig 中，都有默认值
         project.extensions.create(AppConstant.USER_CONFIG, RepluginConfig)
 
+        //如果是application工程
         if (project.plugins.hasPlugin(AppPlugin)) {
 
             def android = project.extensions.getByType(AppExtension)
             android.applicationVariants.all { variant ->
 
+                //添加 rpShowPlugin... Task
                 addShowPluginTask(variant)
 
                 if (config == null) {
@@ -142,10 +144,14 @@ public class Replugin implements Plugin<Project> {
     def addShowPluginTask(def variant) {
         def variantData = variant.variantData
         def scope = variantData.scope
+        // 获取 rpShowPlugin... 在当前variant 下的总名称
         def showPluginsTaskName = scope.getTaskName(AppConstant.TASK_SHOW_PLUGIN, "")
+        //创建一个task
         def showPluginsTask = project.task(showPluginsTaskName)
 
+        //设置action
         showPluginsTask.doLast {
+            //创建 json 文件构建器
             IFileCreator creator = new PluginBuiltinJsonCreator(project, variant, config)
             def dir = creator.getFileDir()
 

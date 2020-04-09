@@ -4,6 +4,8 @@ import com.android.sdklib.IAndroidTarget
 
 /**
  * @author hyongbai
+ *
+ * 对 Scope 做兼容的类
  */
 class ScopeCompat {
     static def getAdbExecutable(def scope) {
