@@ -20,6 +20,8 @@ import groovy.xml.MarkupBuilder
 
 /**
  * @author RePlugin Team
+ *
+ * 用于埋坑的类
  */
 class ComponentsGenerator {
 
@@ -69,11 +71,10 @@ class ComponentsGenerator {
         /* UI 进程 */
         xml.application {
 
-            /* 需要编译期动态修改进程名的组件*/
-
+            //确认组件进程名 如果使用常驻进程的话默认为:GuardService 不使用的话就是包名
             String pluginMgrProcessName = config.persistentEnable ? config.persistentName : applicationID
 
-            // 常驻进程Provider
+            // 用于对外共享binder的的provider
             provider(
                     "${name}":"com.qihoo360.replugin.component.process.ProcessPitProviderPersist",
                     "${authorities}":"${applicationID}.loader.p.main",
@@ -86,7 +87,7 @@ class ComponentsGenerator {
                     "${exp}":"false",
                     "${process}":"${pluginMgrProcessName}")
 
-            // ServiceManager 服务框架
+            // 用于从其他进程获取ServiceChannel
             provider(
                     "${name}":"com.qihoo360.mobilesafe.svcmanager.ServiceProvider",
                     "${authorities}":"${applicationID}.svcmanager",
@@ -236,7 +237,7 @@ class ComponentsGenerator {
                 }
             }
         }
-        // 删除 application 标签
+        // 删除 application 标签 （这里 normalStr是什么为什么 会有 application 标签）
         def normalStr = writer.toString().replace("<application>", "").replace("</application>", "")
 
         // 将单进程和多进程的组件相加

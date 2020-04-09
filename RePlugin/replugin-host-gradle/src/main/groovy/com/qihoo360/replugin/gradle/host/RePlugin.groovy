@@ -247,7 +247,7 @@ public class Replugin implements Plugin<Project> {
 
 class RepluginConfig {
 
-    /** 自定义进程的数量(除 UI 和 Persistent 进程) */
+    /** 自定义进程的数量(除 UI 和 Persistent 进程) 每个进程都会埋一波坑*/
     def countProcess = 3
 
     /** 是否使用常驻进程？ */
@@ -268,7 +268,7 @@ class RepluginConfig {
     def countTranslucentSingleTask = 2
     def countTranslucentSingleInstance = 3
 
-    /** 宿主中声明的 TaskAffinity 的组数 */
+    /** 宿主中声明的 TaskAffinity 的组数(每组都有 配置的透明的不透明的坑的数量) */
     def countTask = 2
 
     /**
