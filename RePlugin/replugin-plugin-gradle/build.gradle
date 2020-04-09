@@ -41,6 +41,7 @@ buildscript {
 
 group = 'com.qihoo360.replugin'  // 组名
 
+//这段代码是 访问AppConstant类 获取版本号并打印的操作，我在想这是不是在炫技。。。
 String classPath = ".src.main.groovy.com.qihoo360.replugin.gradle.plugin.AppConstant".replace(".", java.io.File.separator)
 String verPath = "${project.projectDir}" + classPath + ".groovy"
 String verLine = new File(verPath).filterLine { it =~ /def static final VER =/ }
