@@ -56,10 +56,13 @@ public class Replugin implements Plugin<Project> {
 
                 if (config == null) {
                     config = project.extensions.getByName(AppConstant.USER_CONFIG)
+                    //创建配置 并对配置项进行检查
                     checkUserConfig(config)
                 }
 
+                //获取生成BuildConfig.class 的Task
                 def generateBuildConfigTask = VariantCompat.getGenerateBuildConfigTask(variant)
+                //获取host包名（为啥要这样获取包名）
                 def appID = generateBuildConfigTask.appPackageName
                 def newManifest = ComponentsGenerator.generateComponent(appID, config)
                 println "${TAG} countTask=${config.countTask}"
@@ -162,21 +165,21 @@ public class Replugin implements Plugin<Project> {
                 return
             }
 
-            //创建文件内容
+            //创建json文件内容
             String fileContent = creator.getFileContent()
             if (null == fileContent) {
                 return
             }
 
+            //将文件内容写入到 plugins-builtin.json 中
             new File(dir, creator.getFileName()).write(fileContent, 'UTF-8')
         }
+        //确定 task 分组
         showPluginsTask.group = AppConstant.TASKS_GROUP
 
-        //get mergeAssetsTask name, get real gradle task
         def mergeAssetsTask = VariantCompat.getMergeAssetsTask(variant)
-
-        //depend on mergeAssetsTask so that assets have been merged
         if (mergeAssetsTask) {
+            // 将rpShowPlugin... task 添加到 mergeAssetsTask 之后
             showPluginsTask.dependsOn mergeAssetsTask
         }
 

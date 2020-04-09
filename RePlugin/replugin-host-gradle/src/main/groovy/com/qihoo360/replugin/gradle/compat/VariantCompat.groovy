@@ -11,10 +11,12 @@ class VariantCompat {
         return compatGetTask(variant, "getAssembleProvider", "getAssemble")
     }
 
+    //获取不同版本 合并assets 的Task
     static def getMergeAssetsTask(def variant) {
         return compatGetTask(variant, "getMergeAssetsProvider", "getMergeAssets")
     }
 
+    //获取不同版本 生成BuildConfig.class 的Task
     static def getGenerateBuildConfigTask(def variant) {
         return compatGetTask(variant, "getGenerateBuildConfigProvider", "getGenerateBuildConfig")
     }
