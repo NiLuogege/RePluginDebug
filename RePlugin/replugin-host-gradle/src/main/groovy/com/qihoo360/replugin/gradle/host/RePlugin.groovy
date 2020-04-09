@@ -71,22 +71,25 @@ public class Replugin implements Plugin<Project> {
                 def variantData = variant.variantData
                 def scope = variantData.scope
 
-                //添加rpGenerateHostConfig Task
+                //添加rpGenerateHostConfig Task 用于创建 RePluginHostConfig.java
                 def generateHostConfigTaskName = scope.getTaskName(AppConstant.TASK_GENERATE, "HostConfig")
                 def generateHostConfigTask = project.task(generateHostConfigTaskName)
 
                 generateHostConfigTask.doLast {
+                    //创建 RePluginHostConfig.java
                     FileCreators.createHostConfig(project, variant, config)
                 }
+                //设置分组
                 generateHostConfigTask.group = AppConstant.TASKS_GROUP
 
-                //depends on build config task
+                //设置依赖关系 依赖系统的buildconfig生成task（为啥要搞个双层依赖 既有 dependsOn 又有 finalizedBy）
                 if (generateBuildConfigTask) {
                     generateHostConfigTask.dependsOn generateBuildConfigTask
                     generateBuildConfigTask.finalizedBy generateHostConfigTask
                 }
 
-                //json generate task
+                //添加rpGenerateBuiltinJson Task 用于生成 plugins-builtin.json 文件（不过这个文件不是在addShowPluginTask（）已经生成过了吗？，不过task名字不一样）
+                // addShowPluginTask 只有在 第一次运行的时候才会生效 而  rpGenerateBuiltinJson 每次都会生效
                 def generateBuiltinJsonTaskName = scope.getTaskName(AppConstant.TASK_GENERATE, "BuiltinJson")
                 def generateBuiltinJsonTask = project.task(generateBuiltinJsonTaskName)
 
@@ -102,9 +105,11 @@ public class Replugin implements Plugin<Project> {
                     mergeAssetsTask.finalizedBy generateBuiltinJsonTask
                 }
 
+                //在处理 manifest 任务之后将 上面生产的占坑信息，插入到manifast中
                 variant.outputs.each { output ->
                     VariantCompat.getProcessManifestTask(output).doLast {
                         println "${AppConstant.TAG} processManifest: ${it.outputs.files}"
+                        //遍历所有文件
                         it.outputs.files.each { File file ->
                             updateManifest(file, newManifest)
                         }
@@ -140,6 +145,7 @@ public class Replugin implements Plugin<Project> {
     def appendManifest(def file, def content) {
         if (file == null || !file.exists()) return
         println "${AppConstant.TAG} appendManifest: ${file}"
+        //将上面生成的信息，插入到Manifest 中
         def updatedContent = file.getText("UTF-8").replaceAll("</application>", content + "</application>")
         file.write(updatedContent, 'UTF-8')
     }

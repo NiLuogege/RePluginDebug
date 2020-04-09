@@ -36,13 +36,15 @@ public class FileCreators {
             println "${AppConstant.TAG} mkdirs ${dir.getAbsolutePath()} : ${dir.mkdirs()}"
         }
 
+        //创建文件
         def targetFile = new File(dir, creator.getFileName())
-      
+
+        //获取文件内容
         String fileContent = creator.getFileContent()
         if (null == fileContent){
             return
         }
-      
+        //写入内容到文件
         targetFile.write(fileContent, 'UTF-8')
         println "${AppConstant.TAG} rewrite ${targetFile.getAbsoluteFile()}"
     }
