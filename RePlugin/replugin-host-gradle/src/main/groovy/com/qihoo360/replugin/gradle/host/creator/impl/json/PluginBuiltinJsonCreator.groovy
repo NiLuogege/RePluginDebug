@@ -71,10 +71,12 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
 
         //这种形式是不是类似kotlin的扩展函数？
         new File(fileDir.getAbsolutePath() + File.separator + config.pluginDir)
+                //过滤出 以 jar 结尾 的文件
                 .traverse(type: FileType.FILES, nameFilter: ~/.*\${config.pluginFilePostfix}/) {
 
                     PluginInfoParser parser = null
                     try {
+                        //解析plugin
                         parser = new PluginInfoParser(it.absoluteFile, config)
                     } catch (Exception e) {
                         if (config.enablePluginFileIllegalStopBuild) {
@@ -84,6 +86,7 @@ public class PluginBuiltinJsonCreator implements IFileCreator {
                     }
 
                     if (null != parser) {
+                        //解析出来的plugininfo 装入 pluginInfos
                         pluginInfos << parser.pluginInfo
                     }
                 }

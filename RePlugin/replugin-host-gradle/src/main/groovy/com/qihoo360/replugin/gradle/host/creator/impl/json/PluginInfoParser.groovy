@@ -46,19 +46,24 @@ public class PluginInfoParser extends DefaultHandler {
 
         pluginInfo = new PluginInfo()
 
+        //通过apk-parser解析apk
         ApkFile apkFile = new ApkFile(pluginFile)
-
+        //获取到Manifest
         String manifestXmlStr = apkFile.getManifestXml()
         ByteArrayInputStream inputStream = new ByteArrayInputStream(manifestXmlStr.getBytes("UTF-8"))
 
+        //解析Manifest 获取 其中配置的插件信息
         SAXParserFactory factory = SAXParserFactory.newInstance()
         SAXParser parser = factory.newSAXParser()
         parser.parse(inputStream, this)
 
+        //plugin 名称
         String fullName = pluginFile.name
+        //记录plugin的路径
         pluginInfo.path = config.pluginDir + "/" + fullName
-
+        //插件后缀（jar）
         String postfix = config.pluginFilePostfix
+        //记录插件 名称
         pluginInfo.name = fullName.substring(0, fullName.length() - postfix.length())
     }
 
@@ -72,31 +77,37 @@ public class PluginInfoParser extends DefaultHandler {
     public void startDocument() throws SAXException {
     }
 
+    /**
+     * 解析 manifast中 配置的 插件信息并记录
+     */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if ("meta-data" == qName) {
+            //是 android:name 节点
             switch (attributes.getValue(ANDROID_NAME)) {
-                case TAG_NAME:
+                case TAG_NAME://插件名称
                     pluginInfo.name = attributes.getValue(ANDROID_VALUE)
                     break;
-                case TAG_VERSION_LOW:
+                case TAG_VERSION_LOW://插件最低兼容版本
                     pluginInfo.low = new Long(attributes.getValue(ANDROID_VALUE))
                     break;
-                case TAG_VERSION_HIGH:
+                case TAG_VERSION_HIGH:// 插件最高兼容版本
                     pluginInfo.high = new Long(attributes.getValue(ANDROID_VALUE))
                     break;
-                case TAG_VERSION_VER:
+                case TAG_VERSION_VER://插件版本号
                     pluginInfo.ver = new Long(attributes.getValue(ANDROID_VALUE))
                     break
-                case TAG_FRAMEWORK_VER:
+                case TAG_FRAMEWORK_VER://框架版本号
                     pluginInfo.frm = new Long(attributes.getValue(ANDROID_VALUE))
                     break
                 default:
                     break
             }
-        } else if ("manifest" == qName) {
+        } else if ("manifest" == qName) {// 是 manifast 节点
+            //记录包名
             pluginInfo.pkg = attributes.getValue("package")
+            //记录 版本号
             pluginInfo.ver = new Long(attributes.getValue("android:versionCode"))
         }
     }
