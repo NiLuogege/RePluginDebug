@@ -69,7 +69,7 @@ public class ReClassTransform extends Transform {
         /* 读取用户配置 */
         def config = project.extensions.getByName('repluginPluginConfig')
 
-
+        //transform类型task 的编译产物生成目录 例如  E:\111work\code\code_me\myGitHub\RePluginDebug\RePlugin\replugin-sample\plugin\plugin-webview\app\build\intermediates\transforms\___ReClass___\debug
         File rootLocation = null
         try {
             rootLocation = outputProvider.rootLocation
@@ -81,13 +81,14 @@ public class ReClassTransform extends Transform {
             throw new GradleException("can't get transform root location")
         }
         println ">>> rootLocation: ${rootLocation}"
-        // Compatible with path separators for window and Linux, and fit split param based on 'Pattern.quote'
+        // 获取 variant 类型 例如：debug
         def variantDir = rootLocation.absolutePath.split(getName() + Pattern.quote(File.separator))[1]
         println ">>> variantDir: ${variantDir}"
 
         CommonData.appModule = config.appModule
         CommonData.ignoredActivities = config.ignoredActivities
 
+        //用户未忽略的注入器的集合
         def injectors = includedInjectors(config, variantDir)
         if (injectors.isEmpty()) {
             copyResult(inputs, outputProvider) // 跳过 reclass
@@ -106,6 +107,7 @@ public class ReClassTransform extends Transform {
             it.injector.setProject(project)
             //设置variant关键dir
             it.injector.setVariantDir(variantDir)
+            //如果 用户没有忽略当前 injector 则进行记录并返回
             if (!(it.nickName in cfg.ignoredInjectors)) {
                 injectors << it.nickName
             }
