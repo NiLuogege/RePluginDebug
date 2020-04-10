@@ -36,14 +36,17 @@ public class ReClassPlugin implements Plugin<Project> {
 
         println "${AppConstant.TAG} Welcome to replugin world ! "
 
-        /* Extensions */
+        //创建 repluginPluginConfig extension 类型为 ReClassConfig
         project.extensions.create(AppConstant.USER_CONFIG, ReClassConfig)
 
+        //是否是 application 项目
         def isApp = project.plugins.hasPlugin(AppPlugin)
         if (isApp) {
 
+            //获取用户配置的 repluginPluginConfig
             def config = project.extensions.getByName(AppConstant.USER_CONFIG)
 
+            //获取 android的配置
             def android = project.extensions.getByType(AppExtension)
 
             def forceStopHostAppTask = null
