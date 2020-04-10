@@ -71,6 +71,9 @@ public class HostConfigHelper {
     // HOST 插件版本
     public static int ADAPTER_CURRENT_VERSION = 12;
 
+    /**
+     * 静态代码块，读取replugin-host-gradle中生成的 RePluginHostConfig.java 类中的配置
+     */
     static {
 
         try {

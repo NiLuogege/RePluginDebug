@@ -953,6 +953,7 @@ public class RePlugin {
          * @since 1.2.0
          */
         public static void attachBaseContext(Application app, RePluginConfig config) {
+            //保证只初始化一次
             if (sAttached) {
                 if (LogDebug.LOG) {
                     LogDebug.d(TAG, "attachBaseContext: Already called");
@@ -960,10 +961,13 @@ public class RePlugin {
                 return;
             }
 
+            //缓存APP对象
             RePluginInternal.init(app);
             sConfig = config;
+            //初始化默认值
             sConfig.initDefaults(app);
 
+            //确认 常驻进程名
             IPC.init(app);
 
             // 打印当前内存占用情况

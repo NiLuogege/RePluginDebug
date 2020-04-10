@@ -43,21 +43,25 @@ public class IPC {
     private static String sCurrentProcess;
     private static int sCurrentPid;
     private static String sPackageName;
-    private static String sPersistentProcessName;
+    private static String sPersistentProcessName;//常驻进程名
 
-    private static boolean sIsPersistentProcess;
-    private static boolean sIsUIProcess;
+    private static boolean sIsPersistentProcess;//是否是常驻进程
+    private static boolean sIsUIProcess;//是否是 主进程（UI进程）
 
     /**
      * [HIDE] 外界请不要调用此方法
      */
     public static void init(Context context) {
+        //获取当前进程名
         sCurrentProcess = SysUtils.getCurrentProcessName();
+        //获取进程id
         sCurrentPid = Process.myPid();
+        //获取包名
         sPackageName = context.getApplicationInfo().packageName;
 
         // 设置最终的常驻进程名
-        if (HostConfigHelper.PERSISTENT_ENABLE) {
+        if (HostConfigHelper.PERSISTENT_ENABLE) {//使用常驻进程
+            //获取常驻进程名
             String cppn = HostConfigHelper.PERSISTENT_NAME;
             if (!TextUtils.isEmpty(cppn)) {
                 if (cppn.startsWith(":")) {
@@ -66,11 +70,13 @@ public class IPC {
                     sPersistentProcessName = cppn;
                 }
             }
-        } else {
+        } else {//不使用常驻进程
             sPersistentProcessName = sPackageName;
         }
 
+        //如果当前进程名==包名 说明当前进程就是主进程（UI进程）
         sIsUIProcess = sCurrentProcess.equals(sPackageName);
+        //如果当前进程名==常驻进程名 说明当前进程就是常驻进程
         sIsPersistentProcess = sCurrentProcess.equals(sPersistentProcessName);
     }
 
