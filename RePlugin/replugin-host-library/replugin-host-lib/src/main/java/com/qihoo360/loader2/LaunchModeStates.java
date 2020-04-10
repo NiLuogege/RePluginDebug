@@ -57,6 +57,7 @@ class LaunchModeStates {
     /**
      * 初始化 LaunchMode 和 Theme 对应的坑位
      *
+     * @param allStates  所有坑的状态集合
      * @param containers  保存所有 activity 坑位的引用
      * @param prefix      坑位前缀
      * @param launchMode  launchMode

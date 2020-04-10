@@ -121,6 +121,7 @@ public class PluginServiceServer {
 
     public PluginServiceServer(Context context) {
         mContext = context;
+        //初始化 Stub
         mStub = new Stub();
     }
 

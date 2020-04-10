@@ -75,6 +75,7 @@ class PluginProcessPer extends IPluginClient.Stub {
     PluginProcessPer(Context context, PmBase pm, int process, HashSet<String> containers) {
         mContext = context;
         mPluginMgr = pm;
+        //初始化 PluginServiceServer
         mServiceMgr = new PluginServiceServer(context);
 
         //

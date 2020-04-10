@@ -338,13 +338,19 @@ a 流程完成
         }
     }
 
+    /**
+     * @param process 进程标识
+     * @param containers 装载activity的集合
+     */
     final void init(int process, HashSet<String> containers) {
+        //不是需要管理的进程就返回
         if (process != IPluginManager.PROCESS_UI
                 && !PluginProcessHost.isCustomPluginProcess(process)
                 && !PluginManager.isPluginProcess()) {
             return;
         }
 
+        //预埋坑的 Activity的前缀 例： 包名.loader.a.Activity
         String prefix = IPC.getPackageName() + CONTAINER_ACTIVITY_PART;
 
         // 因为自定义进程可能也会唤起使用 UI 进程的坑，所以这里使用'或'条件
