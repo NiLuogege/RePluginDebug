@@ -230,7 +230,6 @@ class PmBase {
     }
 
     PmBase(Context context) {
-        //
         mContext = context;
 
         // TODO init
@@ -238,18 +237,21 @@ class PmBase {
 
         if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI || PluginManager.isPluginProcess()) {
             String suffix;
-            if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI) {
+            if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI) {//UI进程
+                //当前lib Androidmanifest中 配置了后缀为 N1 的 Provider 和 Service 但是现在不知道是干啥的，也没找到具体的类在哪里
                 suffix = "N1";
-            } else {
+            } else {//suffix 0 或者 1
                 suffix = "" + PluginManager.sPluginProcessIndex;
             }
-            //
+            //确认Provider的名字并缓存到 mContainerProviders中
+            //例如：com.qihoo360.replugin.sample.host.loader.p.Provider1
             mContainerProviders.add(IPC.getPackageName() + CONTAINER_PROVIDER_PART + suffix);
-            //
+            //确认Service的名字并缓存到 mContainerServices 中
+            //例如：com.qihoo360.replugin.sample.host.loader.s.ServiceN1
             mContainerServices.add(IPC.getPackageName() + CONTAINER_SERVICE_PART + suffix);
         }
 
-        //
+        //初始化客户端binder对象
         mClient = new PluginProcessPer(context, this, PluginManager.sPluginProcessIndex, mContainerActivities);
 
         //

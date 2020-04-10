@@ -90,11 +90,14 @@ public class PluginManager {
         //获取进程 uid
         sUid = android.os.Process.myUid();
 
-        //
+        // 通过当前进程的名字判断应该将插件分配到哪个进程中
         sPluginProcessIndex = evalPluginProcess(IPC.getCurrentProcessName());
     }
 
     /**
+     *
+     * 通过当前进程的名字判断应该将插件分配到哪个进程中
+     *
      * @param name 当前进程名
      * @return 进程标识(int 值)
      */
@@ -113,7 +116,7 @@ public class PluginManager {
             if (!TextUtils.isEmpty(name)) {
                 if (name.contains(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2)) {
                     String tail = PluginProcessHost.processTail(name);
-                    //获取坑位的 进程int值 并返回
+                    //获取坑位的 进程int值(小于0) 并返回
                     return PluginProcessHost.PROCESS_INT_MAP.get(tail);
                 }
             }

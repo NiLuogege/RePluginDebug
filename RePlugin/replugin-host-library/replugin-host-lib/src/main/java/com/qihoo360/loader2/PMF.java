@@ -67,6 +67,8 @@ public class PMF {
         //记录Application
         setApplicationContext(application);
 
+        //1. 初始化主线程handler
+        //2. 通过当前进程的名字判断应该将插件分配到哪个进程中
         PluginManager.init(application);
 
         sPluginMgr = new PmBase(application);

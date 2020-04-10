@@ -65,6 +65,13 @@ class PluginProcessPer extends IPluginClient.Stub {
      */
     private HashMap<String, BroadcastReceiver> mReceivers = new HashMap<>();
 
+    /**
+     *
+     * @param context
+     * @param pm
+     * @param process 进程标识
+     * @param containers 装载activity的集合
+     */
     PluginProcessPer(Context context, PmBase pm, int process, HashSet<String> containers) {
         mContext = context;
         mPluginMgr = pm;
