@@ -36,22 +36,22 @@ import java.io.File;
 
 public final class RePluginConfig {
 
-    private RePluginCallbacks callbacks;
-    private RePluginEventCallbacks eventCallbacks;
+    private RePluginCallbacks callbacks;//插件框架对外回调接口
+    private RePluginEventCallbacks eventCallbacks;// 插件化框架对外事件回调接口
 
-    private File pnInstallDir;
-    private boolean verifySign = false;
+    private File pnInstallDir;//"p-n型插件安装的路径
+    private boolean verifySign = false;//是否开启插件签名校验
     private boolean persistentEnable = true;
 
-    private boolean useHostClassIfNotFound = false;
-    private boolean moveFileWhenInstalling = true;
-    private boolean printDetailLog = false;
-    private int defaultFrameworkVersion = 4;
+    private boolean useHostClassIfNotFound = false;//允许插件试用宿主类
+    private boolean moveFileWhenInstalling = true;//是否移动插件到 app_p_a目录下 ，而非复制
+    private boolean printDetailLog = false;//是否打印更详细的日志
+    private int defaultFrameworkVersion = 4;//框架默认版本号
 
-    private String hostVersionName = "";
-    private String hostBuildID = "";
+    private String hostVersionName = "";//宿主的 VersionName
+    private String hostBuildID = "";//宿主的 BuildID , BuildID 是一个比 VersionName 和 VersionCode 更细的维度（例如：服务器每 build 一次，版本号加 1)
 
-    private boolean optimizeArtLoadDex = false;
+    private boolean optimizeArtLoadDex = false;//是否在Art上对首次加载插件速度做优化
 
     /**
      * 获取插件回调方法。通常无需调用此方法。
