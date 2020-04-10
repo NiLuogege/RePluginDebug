@@ -359,6 +359,7 @@ a 流程完成
             /* UI 进程标识为 N1 */
             String suffix = "N1";
 
+            //将所有默认 taskAffinity 的 坑位都装入  mStates ，containers 中
             // Standard
             mLaunchModeStates.addStates(mStates, containers, prefix + suffix, LAUNCH_MULTIPLE, true, HostConfigHelper.ACTIVITY_PIT_COUNT_TS_STANDARD);
             mLaunchModeStates.addStates(mStates, containers, prefix + suffix, LAUNCH_MULTIPLE, false, HostConfigHelper.ACTIVITY_PIT_COUNT_NTS_STANDARD);
@@ -375,12 +376,14 @@ a 流程完成
             mLaunchModeStates.addStates(mStates, containers, prefix + suffix, LAUNCH_SINGLE_INSTANCE, true, HostConfigHelper.ACTIVITY_PIT_COUNT_TS_SINGLE_INSTANCE);
             mLaunchModeStates.addStates(mStates, containers, prefix + suffix, LAUNCH_SINGLE_INSTANCE, false, HostConfigHelper.ACTIVITY_PIT_COUNT_NTS_SINGLE_INSTANCE);
 
+            //将所有非默认 taskAffinity 的 坑位都装入  mStates ，containers 中
             // taskAffinity
             mTaskAffinityStates.init(prefix, suffix, mStates, containers);
 
             // 因为有可能会在 UI 进程启动自定义进程的 Activity，所以此处也要初始化自定义进程的坑位数据
             for (int i = 0; i < PluginProcessHost.PROCESS_COUNT; i++) {
                 ProcessStates processStates = new ProcessStates();
+                // 保存进程和进程中坑位状态的 Map
                 // [":p1": state("P1"), ":p2": state("P2")]
                 mProcessStatesMap.put(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2 + i, processStates);
                 init2(prefix, containers, processStates, PluginProcessHost.PROCESS_PLUGIN_SUFFIX + i);

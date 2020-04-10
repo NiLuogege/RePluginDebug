@@ -65,6 +65,7 @@ class LaunchModeStates {
      * @param count       坑位数
      */
     void addStates(Map<String, ActivityState> allStates, HashSet<String> containers, String prefix, int launchMode, boolean translucent, int count) {
+        //获取中缀 例 "NRTS"
         String infix = getInfix(launchMode, translucent);
         HashMap<String, ActivityState> states = mStates.get(infix);
         if (states == null) {
@@ -73,13 +74,14 @@ class LaunchModeStates {
         }
 
         for (int i = 0; i < count; i++) {
+            //拼接成完整 类名 例如 com.qihoo360.replugin.sample.host.loader.a.ActivityN1NRNTS1
             String key = prefix + infix + i;
 
             // 只有开启“详细日志”时才输出每一个坑位的信息，防止刷屏
             if (RePlugin.getConfig().isPrintDetailLog()) {
                 LogDebug.d(TAG, "LaunchModeStates.add(" + key + ")");
             }
-
+            //创建 ActivityState 对象
             ActivityState state = new ActivityState(key);
             states.put(key, state);
             allStates.put(key, state);

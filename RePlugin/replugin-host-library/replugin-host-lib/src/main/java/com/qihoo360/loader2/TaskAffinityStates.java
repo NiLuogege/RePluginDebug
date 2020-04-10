@@ -60,6 +60,7 @@ class TaskAffinityStates {
         // 外层循环为组数，内层循环为每组的坑的数量
         for (int i = 0; i < GROUP_COUNT; i++) {
             if (mLaunchModeStates[i] == null) {
+                //创建LaunchModeStates 并添加到 mLaunchModeStates中
                 mLaunchModeStates[i] = new LaunchModeStates();
             }
 
