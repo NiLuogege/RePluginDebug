@@ -7,6 +7,7 @@ import org.gradle.api.Task
  * 对 Variant 做兼容的类
  */
 class VariantCompat {
+    //获取不同版本 assemble.. 的TASK 例如 assmebleDebug
     static def getAssembleTask(def variant) {
         return compatGetTask(variant, "getAssembleProvider", "getAssemble")
     }

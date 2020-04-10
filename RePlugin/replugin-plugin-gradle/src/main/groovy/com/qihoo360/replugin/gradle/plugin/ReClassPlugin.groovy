@@ -54,36 +54,48 @@ public class ReClassPlugin implements Plugin<Project> {
             def restartHostAppTask = null
 
             android.applicationVariants.all { variant ->
+                //初始化插件调试工具类
                 PluginDebugger pluginDebugger = new PluginDebugger(project, config, variant)
 
                 def variantData = variant.variantData
                 def scope = variantData.scope
 
+                //获取 assemble...(例：assembleDebug)task
                 def assembleTask = VariantCompat.getAssembleTask(variant)
 
+                //创建 rpInstallPlugin task 用于安装插件 依赖 assembleTask
                 def installPluginTaskName = scope.getTaskName(AppConstant.TASK_INSTALL_PLUGIN, "")
                 def installPluginTask = project.task(installPluginTaskName)
 
                 installPluginTask.doLast {
+                    //下面操作都是1通过adb命令
+                    // 打开宿主app
                     pluginDebugger.startHostApp()
+                    // 发送广播 卸载之前的插件
                     pluginDebugger.uninstall()
+                    // 关闭宿主app
                     pluginDebugger.forceStopHostApp()
+                    // 打开宿主app
                     pluginDebugger.startHostApp()
+                    // 安装当前插件
                     pluginDebugger.install()
                 }
+                //设置分组
                 installPluginTask.group = AppConstant.TASKS_GROUP
 
-
+                //创建 rpUninstallPlugin task 用于卸载插件
                 def uninstallPluginTaskName = scope.getTaskName(AppConstant.TASK_UNINSTALL_PLUGIN, "")
                 def uninstallPluginTask = project.task(uninstallPluginTaskName)
 
                 uninstallPluginTask.doLast {
-                    //generate json
+                    //卸载插件
                     pluginDebugger.uninstall()
                 }
+                //分组
                 uninstallPluginTask.group = AppConstant.TASKS_GROUP
 
 
+                //创建 rpForceStopHostApp 用于关闭宿主app
                 if (null == forceStopHostAppTask) {
                     forceStopHostAppTask = project.task(AppConstant.TASK_FORCE_STOP_HOST_APP)
                     forceStopHostAppTask.doLast {
@@ -93,6 +105,7 @@ public class ReClassPlugin implements Plugin<Project> {
                     forceStopHostAppTask.group = AppConstant.TASKS_GROUP
                 }
 
+                //创建 rpStartHostApp 用于启动宿主app
                 if (null == startHostAppTask) {
                     startHostAppTask = project.task(AppConstant.TASK_START_HOST_APP)
                     startHostAppTask.doLast {
@@ -102,6 +115,7 @@ public class ReClassPlugin implements Plugin<Project> {
                     startHostAppTask.group = AppConstant.TASKS_GROUP
                 }
 
+                //创建 rpRestartHostApp 用于重启宿主app
                 if (null == restartHostAppTask) {
                     restartHostAppTask = project.task(AppConstant.TASK_RESTART_HOST_APP)
                     restartHostAppTask.doLast {
@@ -117,6 +131,7 @@ public class ReClassPlugin implements Plugin<Project> {
                     installPluginTask.dependsOn assembleTask
                 }
 
+                //创建 rpRunPlugin 用于运行插件
                 def runPluginTaskName = scope.getTaskName(AppConstant.TASK_RUN_PLUGIN, "")
                 def runPluginTask = project.task(runPluginTaskName)
                 runPluginTask.doLast {
@@ -124,6 +139,7 @@ public class ReClassPlugin implements Plugin<Project> {
                 }
                 runPluginTask.group = AppConstant.TASKS_GROUP
 
+                //创建 rpInstallAndRunPlugin 用于安装到宿主后直接运行插件
                 def installAndRunPluginTaskName = scope.getTaskName(AppConstant.TASK_INSTALL_AND_RUN_PLUGIN, "")
                 def installAndRunPluginTask = project.task(installAndRunPluginTaskName)
                 installAndRunPluginTask.doLast {
@@ -137,6 +153,7 @@ public class ReClassPlugin implements Plugin<Project> {
 
             println ">>> APP_PACKAGE " + CommonData.appPackage
 
+            //创建 ReClassTransform
             def transform = new ReClassTransform(project)
             // 将 transform 注册到 android
             android.registerTransform(transform)

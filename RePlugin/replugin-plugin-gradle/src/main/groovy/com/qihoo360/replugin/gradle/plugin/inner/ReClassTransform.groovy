@@ -48,6 +48,7 @@ public class ReClassTransform extends Transform {
         // taskManager 在 2.1.3 中为 protected 访问类型的，在之后的版本为 private 访问类型的，
         // 使用反射访问
         def taskManager = BasePlugin.metaClass.getProperty(appPlugin, "taskManager")
+        //为啥又这样获取 globalScope
         this.globalScope = taskManager.globalScope;
     }
 
@@ -310,6 +311,7 @@ repluginPluginConfig {
         return TransformManager.SCOPE_FULL_PROJECT
     }
 
+    //不支持 增量编译
     @Override
     boolean isIncremental() {
         return false

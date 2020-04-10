@@ -63,6 +63,7 @@ class PluginDebugger {
             apkFile = new File(apkDir, variantConfiguration.getBaseName() + File.separator + apkName)
         }
 
+        //获取adb文件，可以用于执行adb命令
         adbFile = ScopeCompat.getAdbExecutable(globalScope)
 
     }
