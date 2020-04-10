@@ -14,38 +14,40 @@
  * the License.
  */
 
-apply plugin: 'com.android.application'
+/**
+ * @author RePlugin Team
+ */
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '25.0.2'
+
     defaultConfig {
-        applicationId "com.qihoo360.replugin.sample.host"
         minSdkVersion 9
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
+        targetSdkVersion 25
 
-apply plugin: 'replugin-host-gradle'
-repluginHostConfig {
-    useAppCompat = true
-    persistentEnable=true
+        versionCode 2
+        versionName version
+        consumerProguardFiles 'replugin-rules.pro'
 
-    // 可以在这里自定义常驻进程的名字
-    // persistentName = ":XXXXService"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    // 务必要加上此段话，这样默认会出Debug版AAR，会带上日志方便定位
+    defaultPublishConfig "debug"
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-//    compile "com.qihoo360.replugin:replugin-host-lib:${RP_VERSION}"
-    compile project(":replugin-host-lib")
+
+    // 以“占位符”（Provided）的方式来引用support-v4，不会编入AAR
+    // 但宿主需要支持Support-v4（至少应支持LocalBroadcastManager）
+    provided 'com.android.support:support-v4:25.2.0'
 }
+
+//project.ext.RP_ARTIFACT_ID = 'replugin-host-lib'
+//apply from: '../../rp-publish.gradle'
