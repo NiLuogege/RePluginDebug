@@ -41,18 +41,24 @@ class PluginDebugger {
         def scope = variantData.scope
         def globalScope = scope.globalScope
         def variantConfiguration = variantData.variantConfiguration
+        //module名称 app
         String archivesBaseName = globalScope.getArchivesBaseName();
+        //app- 变体名称
         String apkBaseName = archivesBaseName + "-" + variantConfiguration.getBaseName()
 
+        //apk存储目录
         File apkDir = new File(globalScope.getBuildDir(), "outputs" + File.separator + "apk")
 
+        //是否有没有 被签名
         String unsigned = (variantConfiguration.getSigningConfig() == null
                 ? "-unsigned.apk"
                 : ".apk");
+        //获取apk名称，不过这个应该可以通过 scope.getApkName()获取(不是所有版本都试用)
         String apkName = apkBaseName + unsigned
-
+        //找到apk文件
         apkFile = new File(apkDir, apkName)
 
+        //如果 例：outputs/apk/app-debug.apk 没有存在 就去 outputs/apk/debug/app-debug.apk 找（也是做一下版本兼容）
         if (!apkFile.exists() || apkFile.length() == 0) {
             apkFile = new File(apkDir, variantConfiguration.getBaseName() + File.separator + apkName)
         }
