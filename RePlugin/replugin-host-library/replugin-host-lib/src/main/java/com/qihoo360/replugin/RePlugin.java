@@ -978,6 +978,7 @@ public class RePlugin {
 
             // 初始化HostConfigHelper（通过反射HostConfig来实现）
             // NOTE 一定要在IPC类初始化之后才使用
+            // 如果在 IPC.init 使用那 IPC中确认的 常驻进程名肯定就是:GuardService了？，也就是说配置了也没用？
             HostConfigHelper.init();
 
             // FIXME 此处需要优化掉

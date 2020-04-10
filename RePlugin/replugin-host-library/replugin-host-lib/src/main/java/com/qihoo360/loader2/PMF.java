@@ -64,6 +64,7 @@ public class PMF {
      * @param application
      */
     public static final void init(Application application) {
+        //记录Application
         setApplicationContext(application);
 
         PluginManager.init(application);

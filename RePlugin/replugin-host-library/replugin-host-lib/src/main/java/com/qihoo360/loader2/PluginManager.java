@@ -85,15 +85,19 @@ public class PluginManager {
      */
     @Deprecated
     static final void init(Context context) {
-        // 初始化操作，方便后面执行任务，不必担心Handler为空的情况
+        // 初始化主线程handler，方便后面执行任务，不必担心Handler为空的情况
         Tasks.init();
-        //
+        //获取进程 uid
         sUid = android.os.Process.myUid();
 
         //
         sPluginProcessIndex = evalPluginProcess(IPC.getCurrentProcessName());
     }
 
+    /**
+     * @param name 当前进程名
+     * @return 进程标识(int 值)
+     */
     static final int evalPluginProcess(String name) {
         int index = IPluginManager.PROCESS_AUTO;
 
@@ -102,12 +106,14 @@ public class PluginManager {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "plugin process checker: default, index=" + 0);
                 }
+                //ui 进程标识
                 return IPluginManager.PROCESS_UI;
             }
 
             if (!TextUtils.isEmpty(name)) {
                 if (name.contains(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2)) {
                     String tail = PluginProcessHost.processTail(name);
+                    //获取坑位的 进程int值 并返回
                     return PluginProcessHost.PROCESS_INT_MAP.get(tail);
                 }
             }
@@ -117,6 +123,7 @@ public class PluginManager {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "plugin process checker: non plugin process in=" + name);
                 }
+                //不符合就 自动分配进程
                 return IPluginManager.PROCESS_AUTO;
             }
 

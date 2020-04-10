@@ -55,7 +55,7 @@ public class PluginProcessHost {
 
     /**
      * 保存进程后缀和其 Int 值
-     * 如：{":p1":-99, ":p2":-98}
+     * 如：{":p1":-99, ":p2":-98, ":p3":-97}
      */
     public static final Map<String, Integer> PROCESS_INT_MAP = new HashMap<>();
 
@@ -71,10 +71,16 @@ public class PluginProcessHost {
      */
     public static final SparseArray<String> PROCESS_AUTHORITY_MAP = new SparseArray<>();
 
+    /**
+     * 静态代码块中先会往 map中填充数据
+     */
     static {
         for (int i = 0; i < PROCESS_COUNT; i++) {
+            //保存进程后缀和其 Int 值
             PROCESS_INT_MAP.put(PROCESS_PLUGIN_SUFFIX2 + i, PROCESS_INIT + i);
+            //保存进程映射时，符号和实际进程名称的关系
             PROCESS_ADJUST_MAP.put("$" + PROCESS_PLUGIN_SUFFIX + i, IPC.getPackageName() + ":" + PROCESS_PLUGIN_SUFFIX + i);
+            //保存进程 Int 值与对应 Provider 的 Authority 的关系
             PROCESS_AUTHORITY_MAP.put(PROCESS_INIT + i, PluginPitProviderBase.AUTHORITY_PREFIX + i);
         }
     }

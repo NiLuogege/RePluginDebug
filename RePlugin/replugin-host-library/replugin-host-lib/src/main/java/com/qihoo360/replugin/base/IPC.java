@@ -40,7 +40,7 @@ public class IPC {
 
     private static final String TAG = "IPC";
 
-    private static String sCurrentProcess;
+    private static String sCurrentProcess;//当前进程名
     private static int sCurrentPid;
     private static String sPackageName;
     private static String sPersistentProcessName;//常驻进程名
