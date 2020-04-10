@@ -116,6 +116,7 @@ public class LoaderActivityInjector extends BaseInjector {
                 if (ctCls.isFrozen()) {
                     ctCls.defrost()
                 }
+                //设置父类
                 ctCls.setSuperclass(targetSuperCls)
 
                 // 修改声明的父类后，还需要方法中所有的 super 调用。

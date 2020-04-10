@@ -23,6 +23,8 @@ import javassist.expr.MethodCall
 
 /**
  * @author RePlugin Team
+ *
+ * 将插件apk中调用LocalBroadcastManager的地方修改为Replugin中的PluginLocalBroadcastManager调用，
  */
 public class LocalBroadcastExprEditor extends ExprEditor {
 
@@ -42,6 +44,7 @@ public class LocalBroadcastExprEditor extends ExprEditor {
     @Override
     void edit(MethodCall call) throws CannotCompileException {
         if (call.getClassName().equalsIgnoreCase(TARGET_CLASS)) {
+            //将插件apk中调用LocalBroadcastManager的地方修改为Replugin中的PluginLocalBroadcastManager调用，
             if (!(call.getMethodName() in includeMethodCall)) {
                 // println "Skip $methodName"
                 return
@@ -51,6 +54,11 @@ public class LocalBroadcastExprEditor extends ExprEditor {
         }
     }
 
+    /**
+     * 将 LocalBroadcastManager 类 改为 PluginLocalBroadcastManager
+     * @param call
+     * @return
+     */
     def private replaceStatement(MethodCall call) {
         String method = call.getMethodName()
         if (method == 'getInstance') {

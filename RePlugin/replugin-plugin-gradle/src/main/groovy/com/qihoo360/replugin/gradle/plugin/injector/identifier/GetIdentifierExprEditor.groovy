@@ -34,6 +34,7 @@ public class GetIdentifierExprEditor extends ExprEditor {
         String clsName = m.getClassName()
         String methodName = m.getMethodName()
 
+        //将第三个参数修改为 插件的包名（被修改的包含很多系统类）
         if (clsName.equalsIgnoreCase('android.content.res.Resources')) {
             if (methodName == 'getIdentifier') {
                 m.replace('{ $3 = \"' + CommonData.appPackage + '\"; ' +
