@@ -169,13 +169,19 @@ class Loader {
         return new PluginContext(newBase, android.R.style.Theme, mClassLoader, mPkgResources, mPluginName, this);
     }
 
+    /**
+     *
+     * @param parent
+     * @param load 例：Plugin.LOAD_APP
+     * @return
+     */
     final boolean loadDex(ClassLoader parent, int load) {
         try {
             PackageManager pm = mContext.getPackageManager();
-
+            //获取packageInfo
             mPackageInfo = Plugin.queryCachedPackageInfo(mPath);
             if (mPackageInfo == null) {
-                // PackageInfo
+                // 获取 PackageInfo
                 mPackageInfo = pm.getPackageArchiveInfo(mPath,
                         PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES | PackageManager.GET_PROVIDERS | PackageManager.GET_RECEIVERS | PackageManager.GET_META_DATA);
                 if (mPackageInfo == null || mPackageInfo.applicationInfo == null) {
@@ -188,9 +194,11 @@ class Loader {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "get package archive info, pi=" + mPackageInfo);
                 }
+                //设置sourceDir
                 mPackageInfo.applicationInfo.sourceDir = mPath;
                 mPackageInfo.applicationInfo.publicSourceDir = mPath;
 
+                //设置进程名称
                 if (TextUtils.isEmpty(mPackageInfo.applicationInfo.processName)) {
                     mPackageInfo.applicationInfo.processName = mPackageInfo.applicationInfo.packageName;
                 }
@@ -201,6 +209,7 @@ class Loader {
                 // Added by Jiongxuan Zhang
                 PluginInfo pi = mPluginObj.mInfo;
                 File ld = pi.getNativeLibsDir();
+                //设置 nativeLibraryDir 路径
                 mPackageInfo.applicationInfo.nativeLibraryDir = ld.getAbsolutePath();
 
 //                // 若PluginInfo.getFrameworkVersion为FRAMEWORK_VERSION_UNKNOWN（p-n才会有），则这里需要读取并修改

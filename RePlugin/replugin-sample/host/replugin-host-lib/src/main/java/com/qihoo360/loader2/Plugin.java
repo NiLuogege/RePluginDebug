@@ -98,7 +98,7 @@ class Plugin {
     static final HashMap<String, WeakReference<Resources>> FILENAME_2_RESOURCES = new HashMap<>();
 
     /**
-     *
+     * 插件路径和 PackageInfo 的对应关系
      */
     static final HashMap<String, WeakReference<PackageInfo>> FILENAME_2_PACKAGE_INFO = new HashMap<>();
 
@@ -626,7 +626,10 @@ class Plugin {
         }
         //
         long t1 = System.currentTimeMillis();
+
+        //加载
         boolean rc = doLoad(logTag, context, parent, manager, load);
+
         if (LOG) {
             LogDebug.i(PLUGIN_TAG, "load " + mInfo.getPath() + " " + hashCode() + " c=" + load + " rc=" + rc + " delta=" + (System.currentTimeMillis() - t1));
         }
@@ -771,14 +774,17 @@ class Plugin {
                     }
                     return false;
                 }
+                //已内置插件为例 file的路径为 data/data/packagename/plugins_v3/demo1-10-10-104.jar
                 File file = new File(dir, dstName);
                 info = (PluginInfo) mInfo.clone();
+                //更新 路径
                 info.setPath(file.getPath());
 
+                // 设置状态时已安装
                 // FIXME 不应该是P-N，即便目录相同，未来会优化这里
                 info.setType(PluginInfo.TYPE_PN_INSTALLED);
 
-            } else if (mInfo.getType() == PluginInfo.TYPE_PN_JAR) {
+            } else if (mInfo.getType() == PluginInfo.TYPE_PN_JAR) {//老的插件先不看
                 //
                 V5FileInfo v5i = V5FileInfo.build(new File(mInfo.getPath()), mInfo.getV5Type());
                 if (v5i == null) {
@@ -827,11 +833,11 @@ class Plugin {
 
             //
             if (info != null) {
-                // 替换
+                // 更新mInfo
                 mInfo = info;
             }
 
-            //
+            //这里的  mInfo.getPath() 已经是 data/data 下的目录了
             mLoader = new Loader(context, mInfo.getName(), mInfo.getPath(), this);
             if (!mLoader.loadDex(parent, load)) {
                 return false;

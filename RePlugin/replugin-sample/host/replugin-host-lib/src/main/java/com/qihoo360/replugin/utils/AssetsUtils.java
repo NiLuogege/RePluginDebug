@@ -40,9 +40,10 @@ public class AssetsUtils {
 
     /**
      * 提取文件到目标位置
+     *
      * @param context
-     * @param name 插件相对路径+名称 如：plugin/demo1.jar
-     * @param dir 目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
+     * @param name    插件相对路径+名称 如：plugin/demo1.jar
+     * @param dir     目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
      * @return
      */
     public static final boolean extractTo(Context context, final String name, final String dir, final String dstName) {
@@ -75,9 +76,10 @@ public class AssetsUtils {
 
     /**
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖，是否需要释放SO库
+     *
      * @param context
-     * @param info PluginInfo对象（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录） data/data/packagename/plugins_v3
+     * @param info         PluginInfo对象（asset的相对路径，可包含子路径）
+     * @param dir          目标文件夹（asset的输出目录） data/data/packagename/plugins_v3
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return
      */
@@ -95,8 +97,9 @@ public class AssetsUtils {
                 // Added by Jiongxuan Zhang
                 //已内置插件为例 file的路径为 data/data/packagename/plugins_v3/demo1-10-10-104.jar
                 File file = new File(dir + "/" + dstName);
-                //获取nativelibdir
+                //获取nativelibdir 例如 data/data/packagename/app_plugins_v3_libs/demo1-10-10-104
                 File libDir = info.getNativeLibsDir();
+                Log.d(TAG, "quickExtractTo: NativeLibsDir=" + libDir);
                 boolean rc = PluginNativeLibsHelper.install(file.getAbsolutePath(), libDir);
                 if (!rc) {
                     if (LOGR) {
@@ -110,9 +113,10 @@ public class AssetsUtils {
 
     /**
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖。不会释放SO库
+     *
      * @param context
-     * @param name 插件相对路径+名称 如：plugin/demo1.jar
-     * @param dir 目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
+     * @param name         插件相对路径+名称 如：plugin/demo1.jar
+     * @param dir          目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return 释放文件的结果
      */
@@ -155,14 +159,14 @@ public class AssetsUtils {
             return QuickExtractResult.FAIL;
         }
         return QuickExtractResult.SUCCESS;
-   }
+    }
 
     /**
      * 调用 QuickExtract 的结果值
      */
-   public enum QuickExtractResult {
-       SUCCESS, // 释放文件成功
-       FAIL,    // 释放文件失败
-       EXISTED  // 文件已存在（之前释放过了）
-   }
+    public enum QuickExtractResult {
+        SUCCESS, // 释放文件成功
+        FAIL,    // 释放文件失败
+        EXISTED  // 文件已存在（之前释放过了）
+    }
 }
