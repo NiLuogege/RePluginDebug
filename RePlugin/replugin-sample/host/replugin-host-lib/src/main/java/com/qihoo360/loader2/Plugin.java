@@ -762,6 +762,7 @@ class Plugin {
                 File dexdir = mInfo.getDexParentDir();
                 //apk 所要存放的 文件路径 是个jar包  已内置插件为例：data/data/packagename/plugins_v3/webview-10-10-100.jar
                 String dstName = mInfo.getApkFile().getName();
+                //将assets下的插件copy到 data/data/packagename/plugins_v3 目录下
                 boolean rc = AssetsUtils.quickExtractTo(context, mInfo, dir.getAbsolutePath(), dstName, dexdir.getAbsolutePath());
                 if (!rc) {
                     // extract built-in plugin failed: plugin=

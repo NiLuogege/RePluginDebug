@@ -41,12 +41,15 @@ public class AssetsUtils {
     /**
      * 提取文件到目标位置
      * @param context
-     * @param name asset中插件相对路径（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录）
+     * @param name 插件相对路径+名称 如：plugin/demo1.jar
+     * @param dir 目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
      * @return
      */
     public static final boolean extractTo(Context context, final String name, final String dir, final String dstName) {
+        //已内置插件为例 file的路径为 data/data/packagename/plugins_v3/demo1-10-10-104.jar
         File file = new File(dir + "/" + dstName);
+
+        //例子：assets 下 plugin/demo1.jar 的流对象
         InputStream is = FileUtils.openInputStreamFromAssetsQuietly(context, name);
         if (is == null) {
             if (LOG) {
@@ -56,6 +59,7 @@ public class AssetsUtils {
         }
 
         try {
+            //将插件从 assets 目录下 copy到 data/data/packagename/plugins_v3/demo1-10-10-104.jar
             FileUtils.copyInputStreamToFile(is, file);
             return true;
         } catch (IOException e) {
@@ -73,7 +77,7 @@ public class AssetsUtils {
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖，是否需要释放SO库
      * @param context
      * @param info PluginInfo对象（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录） 例子：data/data/packagename/app_p_a
+     * @param dir 目标文件夹（asset的输出目录） data/data/packagename/plugins_v3
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return
      */
@@ -89,7 +93,9 @@ public class AssetsUtils {
             default:
                 // 释放插件里的Native（SO）库文件
                 // Added by Jiongxuan Zhang
+                //已内置插件为例 file的路径为 data/data/packagename/plugins_v3/demo1-10-10-104.jar
                 File file = new File(dir + "/" + dstName);
+                //获取nativelibdir
                 File libDir = info.getNativeLibsDir();
                 boolean rc = PluginNativeLibsHelper.install(file.getAbsolutePath(), libDir);
                 if (!rc) {
@@ -105,13 +111,13 @@ public class AssetsUtils {
     /**
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖。不会释放SO库
      * @param context
-     * @param name asset名称（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录） 例子：data/data/packagename/app_p_a
+     * @param name 插件相对路径+名称 如：plugin/demo1.jar
+     * @param dir 目标文件夹（asset的输出目录）data/data/packagename/plugins_v3
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return 释放文件的结果
      */
     public static final QuickExtractResult quickExtractTo(Context context, final String name, final String dir, final String dstName, String dexOutputDir) {
-        //获取app_p_a/dstName 文件对象
+        //已内置插件为例 file的路径为 data/data/packagename/plugins_v3/demo1-10-10-104.jar
         File file = new File(dir + "/" + dstName);
 
         // 建立子目录
