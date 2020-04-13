@@ -279,7 +279,7 @@ class PmBase {
             }
         } else { // “UI进程”作为插件管理进程（唯一进程），则UI进程既可以作为Server也可以作为Client
 
-            if (IPC.isUIProcess()) {
+            if (IPC.isUIProcess()) {//当前为ui进程，进行初始化工作
                 // 1. 尝试初始化Server所做工作，
                 initForServer();
 
@@ -287,8 +287,7 @@ class PmBase {
                 // 注意：这里无需再做 initForClient，因为不需要再走一次Binder
                 PMF.sPluginMgr.attach();
 
-            } else {
-                // 其它进程？直接连接到Server即可
+            } else { // 其它进程？直接连接到Server即可
                 initForClient();
             }
         }
@@ -314,6 +313,7 @@ class PmBase {
 
         //继承于IPluginHost.Stub,是一个Binder对象 可以理解为Server端，非常的像AMS的结构和原理
         mHostSvc = new PmHostSvc(mContext, this);
+        //缓存自己的 IPluginHost
         PluginProcessMain.installHost(mHostSvc);
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 

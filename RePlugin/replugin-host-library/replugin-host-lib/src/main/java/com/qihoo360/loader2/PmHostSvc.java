@@ -61,6 +61,8 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
  * @author RePlugin Team
+ *
+ * 这个类可以理解成是我们的Server端，它直接或间接参与了Server端要做的所有事情
  */
 class PmHostSvc extends IPluginHost.Stub {
 
