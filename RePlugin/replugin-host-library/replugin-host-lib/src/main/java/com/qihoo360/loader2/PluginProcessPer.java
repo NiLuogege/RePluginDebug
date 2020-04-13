@@ -78,7 +78,7 @@ class PluginProcessPer extends IPluginClient.Stub {
         //初始化 PluginServiceServer
         mServiceMgr = new PluginServiceServer(context);
 
-        //
+        //初始化坑位
         mACM = new PluginContainers();
         mACM.init(process, containers);
     }

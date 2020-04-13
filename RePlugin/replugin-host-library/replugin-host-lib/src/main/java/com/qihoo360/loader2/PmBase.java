@@ -67,7 +67,7 @@ import static com.qihoo360.replugin.packages.PluginInfoUpdater.ACTION_UNINSTALL_
 
 /**
  * @author RePlugin Team
- *
+ * <p>
  * 具有很多重要的功能,例如：分配坑位、初始化插件信息、Clent端连接Server端、加载插件、更新插件、删除插件、等等
  */
 class PmBase {
@@ -210,7 +210,9 @@ class PmBase {
 
         String plugin;
 
-        /** @deprecated */
+        /**
+         * @deprecated
+         */
         String classType; // activity, service, provider
 
         Class defClass;
@@ -254,7 +256,7 @@ class PmBase {
         //初始化客户端binder对象
         mClient = new PluginProcessPer(context, this, PluginManager.sPluginProcessIndex, mContainerActivities);
 
-        //
+        //创建通信桥梁
         mLocal = new PluginCommImpl(context, this);
 
         //
@@ -263,19 +265,20 @@ class PmBase {
 
     void init() {
 
+        //回调接口方法给调用者
         RePlugin.getConfig().getCallbacks().initPnPluginOverride();
 
-        if (HostConfigHelper.PERSISTENT_ENABLE) {
-            // （默认）“常驻进程”作为插件管理进程，则常驻进程作为Server，其余进程作为Client
-            if (IPC.isPersistentProcess()) {
+        if (HostConfigHelper.PERSISTENT_ENABLE) { // （默认）“常驻进程”作为插件管理进程，则常驻进程作为Server，其余进程作为Client
+
+            if (IPC.isPersistentProcess()) {//当前为常驻进程，进行初始化工作
                 // 初始化“Server”所做工作
                 initForServer();
-            } else {
+            } else {//当前不是常驻进程，则需要连接到常驻进程
                 // 连接到Server
                 initForClient();
             }
-        } else {
-            // “UI进程”作为插件管理进程（唯一进程），则UI进程既可以作为Server也可以作为Client
+        } else { // “UI进程”作为插件管理进程（唯一进程），则UI进程既可以作为Server也可以作为Client
+
             if (IPC.isUIProcess()) {
                 // 1. 尝试初始化Server所做工作，
                 initForServer();
@@ -303,7 +306,6 @@ class PmBase {
 
     /**
      * Persistent(常驻)进程的初始化
-     *
      */
     private final void initForServer() {
         if (LOG) {
@@ -338,7 +340,6 @@ class PmBase {
 
     /**
      * Client(UI进程)的初始化
-     *
      */
     private final void initForClient() {
         if (LOG) {
@@ -966,7 +967,8 @@ class PmBase {
                     if (load) {
                         try {
                             PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.BINDER_REQUEST);
-                            /*IPluginClient client = */MP.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
+                            /*IPluginClient client = */
+                            MP.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }
