@@ -141,7 +141,9 @@ class PmHostSvc extends IPluginHost.Stub {
     PmHostSvc(Context context, PmBase packm) {
         mContext = context;
         mPluginMgr = packm;
+        //创建一个service管理者，还记得这个类吗，在PmBase的构造流程中(创建PluginProcessPer的时候)也创建了一个这个对象
         mServiceMgr = new PluginServiceServer(context);
+        //创建一个插件管理者，用来控制插件的安装、卸载、获取等
         mManager = new PluginManagerServer(context);
     }
 

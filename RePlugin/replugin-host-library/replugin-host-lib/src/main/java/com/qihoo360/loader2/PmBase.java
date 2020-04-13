@@ -292,7 +292,7 @@ class PmBase {
             }
         }
 
-        // 最新快照
+        // 创建一份 最新快照到 PluginTable.PLUGINS
         PluginTable.initPlugins(mPlugins);
 
         // 输出
@@ -315,6 +315,7 @@ class PmBase {
         mHostSvc = new PmHostSvc(mContext, this);
         //缓存自己的 IPluginHost
         PluginProcessMain.installHost(mHostSvc);
+        //清理之前的任务
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 
         // 兼容即将废弃的p-n方案 by Jiongxuan Zhang
@@ -325,6 +326,10 @@ class PmBase {
         // [Newest!] 使用全新的RePlugin APK方案
         // Added by Jiongxuan Zhang
         try {
+            //这里调用的load是远程调用的，最终调用了PluginManagerServer的loadLocked方法
+            //这里主要是判断之前安装的插件是否需要更新或删除等操作，然后进行响应的操作并返回处理后的集合，
+            //返回的集合是一个副本，这样可以保证信息的安全性
+            //加载插件
             List<PluginInfo> l = PluginManagerProxy.load();
             if (l != null) {
                 // 将"纯APK"插件信息并入总的插件信息表中，方便查询
@@ -426,7 +431,7 @@ class PmBase {
      * @param plugin 待add插件的Plugin对象
      */
     private void putPluginObject(PluginInfo info, Plugin plugin) {
-        if (mPlugins.containsKey(info.getAlias()) || mPlugins.containsKey(info.getPackageName())) {
+        if (mPlugins.containsKey(info.getAlias()) || mPlugins.containsKey(info.getPackageName())) {//内置插件列表中已经,需要看看谁的版本号大
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "当前内置插件列表中已经有" + info.getName() + "，需要看看谁的版本号大。");
             }
@@ -437,7 +442,7 @@ class PmBase {
                 existedPlugin = mPlugins.get(info.getAlias());
             }
 
-            if (existedPlugin.mInfo.getVersion() < info.getVersion()) {
+            if (existedPlugin.mInfo.getVersion() < info.getVersion()) {//新传入的插件版本号大，覆盖之前的
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "新传入的纯APK插件, name=" + info.getName() + ", 版本号比较大,ver=" + info.getVersion() + ",以TA为准。");
                 }
@@ -453,7 +458,7 @@ class PmBase {
                     LogDebug.d(PLUGIN_TAG, "新传入的纯APK插件" + info.getName() + "版本号还没有内置的大，什么都不做。");
                 }
             }
-        } else {
+        } else {//之前没插入过现在直接插入
             // 同时加入PackageName和Alias（如有）
             mPlugins.put(info.getPackageName(), plugin);
             if (!TextUtils.isEmpty(info.getAlias())) {

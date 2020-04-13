@@ -231,6 +231,7 @@ public class PluginProcessMain {
      */
     static final void connectToHostSvc() {
         Context context = PMF.getApplicationContext();
+        //通过内容提供者获取 常驻进程binder
         IBinder binder = PluginProviderStub.proxyFetchHostBinder(context);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "host binder = " + binder);
@@ -243,6 +244,7 @@ public class PluginProcessMain {
             System.exit(1);
         }
         try {
+            //注册binder死亡回调
             binder.linkToDeath(new IBinder.DeathRecipient() {
                 @Override
                 public void binderDied() {
@@ -250,7 +252,7 @@ public class PluginProcessMain {
                         LogRelease.i(PLUGIN_TAG, "p.p d, p.h s n");
                     }
                     // 检测到常驻进程退出，插件进程自杀
-                    if (PluginManager.isPluginProcess()) {
+                    if (PluginManager.isPluginProcess()) {//插件进程
                         if (LOGR) {
                             // persistent process exception, PLUGIN process quit now
                             LogRelease.i(MAIN_TAG, "p p e, pp q n");
@@ -271,7 +273,7 @@ public class PluginProcessMain {
             System.exit(1);
         }
 
-        //
+        //获取常驻进程Stub的代理对象（Client端）
         sPluginHostRemote = IPluginHost.Stub.asInterface(binder);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "host binder.i = " + PluginProcessMain.sPluginHostRemote);
@@ -293,7 +295,7 @@ public class PluginProcessMain {
             System.exit(1);
         }
 
-        // 注册该进程信息到“插件管理进程”中
+        // 注册该进程信息到“插件管理进程”中 这是在干嘛？
         PMF.sPluginMgr.attach();
     }
     /**

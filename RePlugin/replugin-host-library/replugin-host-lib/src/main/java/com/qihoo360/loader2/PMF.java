@@ -78,6 +78,7 @@ public class PMF {
         Factory.sPluginManager = PMF.getLocal();
         Factory2.sPLProxy = PMF.getInternal();
 
+        //hook classLoader
         PatchClassLoaderUtils.patch(application);
     }
 
