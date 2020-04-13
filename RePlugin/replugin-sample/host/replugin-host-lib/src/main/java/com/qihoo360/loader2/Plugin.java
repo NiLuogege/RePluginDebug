@@ -756,11 +756,11 @@ class Plugin {
             // 试图释放文件
             PluginInfo info = null;
             if (mInfo.getType() == PluginInfo.TYPE_BUILTIN) {//内置插件
-                //获取  data/data/packagename/app_p_a 文件夹对象
+                //获取  data/data/packagename/plugins_v3 文件夹对象
                 File dir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
-                //获取优化后的 dex 文件存储目录  app_p_a/oat/abi类型/
+                //获取优化后的 dex 文件存储目录  已内置插件为例：data/data/packagename/plugins_v3/oat/arm64/
                 File dexdir = mInfo.getDexParentDir();
-                //apk 所要存放的 文件路径 是个jar包
+                //apk 所要存放的 文件路径 是个jar包  已内置插件为例：data/data/packagename/plugins_v3/webview-10-10-100.jar
                 String dstName = mInfo.getApkFile().getName();
                 boolean rc = AssetsUtils.quickExtractTo(context, mInfo, dir.getAbsolutePath(), dstName, dexdir.getAbsolutePath());
                 if (!rc) {

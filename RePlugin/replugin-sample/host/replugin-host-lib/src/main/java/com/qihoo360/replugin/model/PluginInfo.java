@@ -460,7 +460,7 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         // 必须使用宿主的Context对象，防止出现“目录定位到插件内”的问题
         Context context = RePluginInternal.getAppContext();
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {//大于android7.1
             return new File(getApkDir() + File.separator + "oat" + File.separator + VMRuntimeCompat.getArtOatCpuType());
         } else {
             if (isPnPlugin()) {

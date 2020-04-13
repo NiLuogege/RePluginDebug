@@ -41,7 +41,7 @@ public class AssetsUtils {
     /**
      * 提取文件到目标位置
      * @param context
-     * @param name asset名称（asset的相对路径，可包含子路径）
+     * @param name asset中插件相对路径（asset的相对路径，可包含子路径）
      * @param dir 目标文件夹（asset的输出目录）
      * @return
      */
