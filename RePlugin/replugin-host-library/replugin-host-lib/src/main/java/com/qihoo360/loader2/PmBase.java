@@ -495,7 +495,7 @@ class PmBase {
         }
 
         // 加载默认插件
-        if (PluginManager.isPluginProcess()) {
+        if (PluginManager.isPluginProcess()) {//是插件进程
             if (!TextUtils.isEmpty(mDefaultPluginName)) {
                 //
                 Plugin p = mPlugins.get(mDefaultPluginName);

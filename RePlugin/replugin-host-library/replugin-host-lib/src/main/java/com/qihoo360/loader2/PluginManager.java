@@ -56,7 +56,7 @@ public class PluginManager {
     static int sPluginProcessIndex = -1;
 
     /**
-     * @return
+     * @return 是否是插件进程
      */
     public static final boolean isPluginProcess() {
         return sPluginProcessIndex >= 0 && sPluginProcessIndex < Constant.STUB_PROCESS_COUNT;

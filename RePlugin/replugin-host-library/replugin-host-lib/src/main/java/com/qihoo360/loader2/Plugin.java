@@ -383,6 +383,12 @@ class Plugin {
         return super.toString();
     }
 
+    /**
+     * 插件进行挂载
+     * @param context
+     * @param parent 已经被hook的 classLoader了吗？
+     * @param manager
+     */
     final void attach(Context context, ClassLoader parent, PluginCommImpl manager) {
         mContext = context;
         mParent = parent;
