@@ -531,13 +531,13 @@ class Plugin {
         // 若插件被“禁用”，则即便上次加载过（且进程一直活着），这次也不能再次使用了
         // Added by Jiongxuan Zhang
         int status = PluginStatusController.getStatus(mInfo.getName(), mInfo.getVersion());
-        if (status < PluginStatusController.STATUS_OK) {
+        if (status < PluginStatusController.STATUS_OK) {//插件被禁用
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "loadLocked(): Disable in=" + mInfo.getName() + ":" + mInfo.getVersion() + "; st=" + status);
             }
             return false;
         }
-        if (mInitialized) {
+        if (mInitialized) {//初始化过
             if (mLoader == null) {
                 if (LOG) {
                     LogDebug.i(MAIN_TAG, "loadLocked(): Initialized but mLoader is Null");
@@ -755,10 +755,12 @@ class Plugin {
         if (mLoader == null) {
             // 试图释放文件
             PluginInfo info = null;
-            if (mInfo.getType() == PluginInfo.TYPE_BUILTIN) {
-                //
+            if (mInfo.getType() == PluginInfo.TYPE_BUILTIN) {//内置插件
+                //获取  data/data/packagename/app_p_a 文件夹对象
                 File dir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
+                //获取优化后的 dex 文件存储目录  app_p_a/oat/abi类型/
                 File dexdir = mInfo.getDexParentDir();
+                //apk 所要存放的 文件路径 是个jar包
                 String dstName = mInfo.getApkFile().getName();
                 boolean rc = AssetsUtils.quickExtractTo(context, mInfo, dir.getAbsolutePath(), dstName, dexdir.getAbsolutePath());
                 if (!rc) {
