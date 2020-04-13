@@ -216,15 +216,10 @@ a 流程完成
                 }
                 return;
             }
-            //状态设置为恢复
             this.state = STATE_RESTORED;
-            //记录plugin包名
             this.plugin = plugin;
-            //记录activity
             this.activity = activity;
-            //清空 refs 但是不知道为啥
             cleanRefs();
-            //记录时间戳
             this.timestamp = timestamp;
         }
 
@@ -394,7 +389,7 @@ a 流程完成
                 init2(prefix, containers, processStates, PluginProcessHost.PROCESS_PLUGIN_SUFFIX + i);
             }
 
-            // 从sp中加载
+            // 从内存中加载
             loadFromPref();
         }
 
@@ -434,23 +429,18 @@ a 流程完成
 
     private final void loadFromPref() {
         try {
-            //获取 plugins_PACM sp 中所有存储所有数据
             Map<String, ?> a = Pref.ipcGetAll();
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PACM: restore table: size=" + a.size());
             }
             for (Entry<String, ?> i : a.entrySet()) {
-                //坑位 名称
                 String k = i.getKey();
                 Object v = i.getValue();
                 ActivityState state = mStates.get(k);
                 String item[] = v.toString().split(":");
                 if (state != null && item != null && item.length == 3) {
-                    //插件包名
                     String plugin = item[0];
-                    //Activity名称
                     String activity = item[1];
-                    //时间戳
                     long timestamp = Long.parseLong(item[2]);
                     if (LOG) {
                         LogDebug.d(PLUGIN_TAG, "PACM: restore table: " + " container=" + k + " plugin=" + plugin + " activity=" + activity);

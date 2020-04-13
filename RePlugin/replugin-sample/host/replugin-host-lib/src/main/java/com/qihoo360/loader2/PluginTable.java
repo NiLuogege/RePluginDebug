@@ -37,7 +37,7 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 class PluginTable {
 
     /**
-     *
+     *所有插件  PackageName或Alias 于 PluginInfo 的对应关系
      */
     static final HashMap<String, PluginInfo> PLUGINS = new HashMap<String, PluginInfo>();
 

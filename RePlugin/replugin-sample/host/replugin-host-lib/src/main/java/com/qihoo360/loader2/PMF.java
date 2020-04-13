@@ -71,12 +71,14 @@ public class PMF {
         //2. 通过当前进程的名字判断应该将插件分配到哪个进程中
         PluginManager.init(application);
 
+        //初始化PmBase
         sPluginMgr = new PmBase(application);
         sPluginMgr.init();
 
         Factory.sPluginManager = PMF.getLocal();
         Factory2.sPLProxy = PMF.getInternal();
 
+        //hook classLoader
         PatchClassLoaderUtils.patch(application);
     }
 

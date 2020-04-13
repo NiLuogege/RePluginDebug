@@ -67,7 +67,7 @@ import static com.qihoo360.replugin.packages.PluginInfoUpdater.ACTION_UNINSTALL_
 
 /**
  * @author RePlugin Team
- *
+ * <p>
  * 具有很多重要的功能,例如：分配坑位、初始化插件信息、Clent端连接Server端、加载插件、更新插件、删除插件、等等
  */
 class PmBase {
@@ -210,7 +210,9 @@ class PmBase {
 
         String plugin;
 
-        /** @deprecated */
+        /**
+         * @deprecated
+         */
         String classType; // activity, service, provider
 
         Class defClass;
@@ -254,7 +256,7 @@ class PmBase {
         //初始化客户端binder对象
         mClient = new PluginProcessPer(context, this, PluginManager.sPluginProcessIndex, mContainerActivities);
 
-        //
+        //创建通信桥梁
         mLocal = new PluginCommImpl(context, this);
 
         //
@@ -263,20 +265,21 @@ class PmBase {
 
     void init() {
 
+        //回调接口方法给调用者
         RePlugin.getConfig().getCallbacks().initPnPluginOverride();
 
-        if (HostConfigHelper.PERSISTENT_ENABLE) {
-            // （默认）“常驻进程”作为插件管理进程，则常驻进程作为Server，其余进程作为Client
-            if (IPC.isPersistentProcess()) {
+        if (HostConfigHelper.PERSISTENT_ENABLE) { // （默认）“常驻进程”作为插件管理进程，则常驻进程作为Server，其余进程作为Client
+
+            if (IPC.isPersistentProcess()) {//当前为常驻进程，进行初始化工作
                 // 初始化“Server”所做工作
                 initForServer();
-            } else {
+            } else {//当前不是常驻进程，则需要连接到常驻进程
                 // 连接到Server
                 initForClient();
             }
-        } else {
-            // “UI进程”作为插件管理进程（唯一进程），则UI进程既可以作为Server也可以作为Client
-            if (IPC.isUIProcess()) {
+        } else { // “UI进程”作为插件管理进程（唯一进程），则UI进程既可以作为Server也可以作为Client
+
+            if (IPC.isUIProcess()) {//当前为ui进程，进行初始化工作
                 // 1. 尝试初始化Server所做工作，
                 initForServer();
 
@@ -284,13 +287,12 @@ class PmBase {
                 // 注意：这里无需再做 initForClient，因为不需要再走一次Binder
                 PMF.sPluginMgr.attach();
 
-            } else {
-                // 其它进程？直接连接到Server即可
+            } else { // 其它进程？直接连接到Server即可
                 initForClient();
             }
         }
 
-        // 最新快照
+        // 创建一份 最新快照到 PluginTable.PLUGINS
         PluginTable.initPlugins(mPlugins);
 
         // 输出
@@ -303,7 +305,6 @@ class PmBase {
 
     /**
      * Persistent(常驻)进程的初始化
-     *
      */
     private final void initForServer() {
         if (LOG) {
@@ -312,7 +313,9 @@ class PmBase {
 
         //继承于IPluginHost.Stub,是一个Binder对象 可以理解为Server端，非常的像AMS的结构和原理
         mHostSvc = new PmHostSvc(mContext, this);
+        //缓存自己的 IPluginHost
         PluginProcessMain.installHost(mHostSvc);
+        //清理之前的任务
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 
         // 兼容即将废弃的p-n方案 by Jiongxuan Zhang
@@ -323,6 +326,10 @@ class PmBase {
         // [Newest!] 使用全新的RePlugin APK方案
         // Added by Jiongxuan Zhang
         try {
+            //这里调用的load是远程调用的，最终调用了PluginManagerServer的loadLocked方法
+            //这里主要是判断之前安装的插件是否需要更新或删除等操作，然后进行响应的操作并返回处理后的集合，
+            //返回的集合是一个副本，这样可以保证信息的安全性
+            //加载插件
             List<PluginInfo> l = PluginManagerProxy.load();
             if (l != null) {
                 // 将"纯APK"插件信息并入总的插件信息表中，方便查询
@@ -338,7 +345,6 @@ class PmBase {
 
     /**
      * Client(UI进程)的初始化
-     *
      */
     private final void initForClient() {
         if (LOG) {
@@ -425,7 +431,7 @@ class PmBase {
      * @param plugin 待add插件的Plugin对象
      */
     private void putPluginObject(PluginInfo info, Plugin plugin) {
-        if (mPlugins.containsKey(info.getAlias()) || mPlugins.containsKey(info.getPackageName())) {
+        if (mPlugins.containsKey(info.getAlias()) || mPlugins.containsKey(info.getPackageName())) {//内置插件列表中已经,需要看看谁的版本号大
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "当前内置插件列表中已经有" + info.getName() + "，需要看看谁的版本号大。");
             }
@@ -436,7 +442,7 @@ class PmBase {
                 existedPlugin = mPlugins.get(info.getAlias());
             }
 
-            if (existedPlugin.mInfo.getVersion() < info.getVersion()) {
+            if (existedPlugin.mInfo.getVersion() < info.getVersion()) {//新传入的插件版本号大，覆盖之前的
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "新传入的纯APK插件, name=" + info.getName() + ", 版本号比较大,ver=" + info.getVersion() + ",以TA为准。");
                 }
@@ -452,7 +458,7 @@ class PmBase {
                     LogDebug.d(PLUGIN_TAG, "新传入的纯APK插件" + info.getName() + "版本号还没有内置的大，什么都不做。");
                 }
             }
-        } else {
+        } else {//之前没插入过现在直接插入
             // 同时加入PackageName和Alias（如有）
             mPlugins.put(info.getPackageName(), plugin);
             if (!TextUtils.isEmpty(info.getAlias())) {
@@ -489,7 +495,7 @@ class PmBase {
         }
 
         // 加载默认插件
-        if (PluginManager.isPluginProcess()) {
+        if (PluginManager.isPluginProcess()) {//是插件进程
             if (!TextUtils.isEmpty(mDefaultPluginName)) {
                 //
                 Plugin p = mPlugins.get(mDefaultPluginName);
@@ -966,7 +972,8 @@ class PmBase {
                     if (load) {
                         try {
                             PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.BINDER_REQUEST);
-                            /*IPluginClient client = */MP.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
+                            /*IPluginClient client = */
+                            MP.startPluginProcess(a, IPluginManager.PROCESS_AUTO, info);
                         } catch (Throwable e) {
                             e.printStackTrace();
                         }

@@ -73,11 +73,12 @@ public class AssetsUtils {
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖，是否需要释放SO库
      * @param context
      * @param info PluginInfo对象（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录）
+     * @param dir 目标文件夹（asset的输出目录） 例子：data/data/packagename/app_p_a
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return
      */
     public static final boolean quickExtractTo(Context context, final PluginInfo info, final String dir, final String dstName, String dexOutputDir) {
+        //从asset文件夹下 copy到
         QuickExtractResult result = quickExtractTo(context, info.getPath(), dir, dstName, dexOutputDir);
         // 释放失败 || 被释放的文件已经存在
         switch (result) {
@@ -105,11 +106,12 @@ public class AssetsUtils {
      * 提取文件到目标位置，并处理文件夹是否存在，是否校验，是否强制覆盖。不会释放SO库
      * @param context
      * @param name asset名称（asset的相对路径，可包含子路径）
-     * @param dir 目标文件夹（asset的输出目录）
+     * @param dir 目标文件夹（asset的输出目录） 例子：data/data/packagename/app_p_a
      * @param dexOutputDir 成功提取该文件时，是否删除同名的DEX文件
      * @return 释放文件的结果
      */
     public static final QuickExtractResult quickExtractTo(Context context, final String name, final String dir, final String dstName, String dexOutputDir) {
+        //获取app_p_a/dstName 文件对象
         File file = new File(dir + "/" + dstName);
 
         // 建立子目录

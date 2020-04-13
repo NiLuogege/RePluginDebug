@@ -42,6 +42,7 @@ public class PluginManagerProxy {
 
     private static final String TAG = "PluginManagerClient";
 
+    //IPluginManagerServer binder对象
     private static IPluginManagerServer sRemote;
     private static boolean sRunningSynced;
 
@@ -63,7 +64,7 @@ public class PluginManagerProxy {
             }
             return;
         }
-
+        //通过 常驻进程binder对象 获取到 IPluginManagerServer binder对象
         sRemote = host.fetchManagerServer();
     }
 
