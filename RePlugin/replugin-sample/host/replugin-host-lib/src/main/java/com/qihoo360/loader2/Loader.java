@@ -74,9 +74,9 @@ class Loader {
 
     private final String mPluginName;
 
-    final String mPath;
+    final String mPath;//插件在data/data 下的路径
 
-    final Plugin mPluginObj;
+    final Plugin mPluginObj;//传过来的插件对象
 
     PackageInfo mPackageInfo;
 
@@ -217,16 +217,19 @@ class Loader {
 //                    pi.setFrameworkVersionByMeta(mPackageInfo.applicationInfo.metaData);
 //                }
 
+                // 缓存 包名 -> 插件名的映射
                 // 缓存表: pkgName -> pluginName
                 synchronized (Plugin.PKG_NAME_2_PLUGIN_NAME) {
                     Plugin.PKG_NAME_2_PLUGIN_NAME.put(mPackageInfo.packageName, mPluginName);
                 }
 
+                // 缓存 插件名 -> 插件路径（data/data 下） 的映射
                 // 缓存表: pluginName -> fileName
                 synchronized (Plugin.PLUGIN_NAME_2_FILENAME) {
                     Plugin.PLUGIN_NAME_2_FILENAME.put(mPluginName, mPath);
                 }
 
+                // 缓存 插件路径（data/data 下） -> PackageInfo 的映射
                 // 缓存表: fileName -> PackageInfo
                 synchronized (Plugin.FILENAME_2_PACKAGE_INFO) {
                     Plugin.FILENAME_2_PACKAGE_INFO.put(mPath, new WeakReference<PackageInfo>(mPackageInfo));
@@ -247,12 +250,13 @@ class Loader {
             // Added by Jiongxuan Zhang
             mComponents = Plugin.queryCachedComponentList(mPath);
             if (mComponents == null) {
-                // ComponentList
+                // 创建 ComponentList
                 mComponents = new ComponentList(mPackageInfo, mPath, mPluginObj.mInfo);
 
-                // 动态注册插件中声明的 receiver
+                // 动态注册插件中声明的 receiver 到常驻进程
                 regReceivers();
 
+                // 缓存 插件路径 -> mComponents 的关系
                 // 缓存表：ComponentList
                 synchronized (Plugin.FILENAME_2_COMPONENT_LIST) {
                     Plugin.FILENAME_2_COMPONENT_LIST.put(mPath, new WeakReference<>(mComponents));
@@ -392,12 +396,14 @@ class Loader {
     private void regReceivers() throws android.os.RemoteException {
         String plugin = mPluginObj.mInfo.getName();
 
+        //获取到插件中注册的 receiver 信息
         Map<String, List<IntentFilter>> map = ManifestParser.INS.getReceiverFilterMap(plugin);
 
         if (map == null || map.size() == 0) {
             return;
         }
 
+        //应该是获取 常驻进程的 代理对象
         if (mPluginHost == null) {
             mPluginHost = getPluginHost();
         }

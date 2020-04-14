@@ -154,6 +154,7 @@ public class PluginProviderStub {
     }
 
     /**
+     * 通过 contentProvider 获取binder
      * @param context
      * @param selection
      * @return

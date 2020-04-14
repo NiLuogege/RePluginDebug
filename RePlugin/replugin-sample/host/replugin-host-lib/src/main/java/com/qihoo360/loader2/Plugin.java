@@ -103,7 +103,7 @@ class Plugin {
     static final HashMap<String, WeakReference<PackageInfo>> FILENAME_2_PACKAGE_INFO = new HashMap<>();
 
     /**
-     *
+     * 插件路径和 ComponentList 的对应关系
      */
     static final HashMap<String, WeakReference<ComponentList>> FILENAME_2_COMPONENT_LIST = new HashMap<>();
 
