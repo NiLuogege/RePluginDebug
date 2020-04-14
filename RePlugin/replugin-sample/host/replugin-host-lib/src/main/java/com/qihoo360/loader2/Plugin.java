@@ -544,6 +544,9 @@ class Plugin {
     }
 
     /**
+     *
+     * 改方法最多会进行两次， 如果两次后还没有加载成功就放弃
+     *
      * @param load
      * @return
      */
@@ -651,6 +654,7 @@ class Plugin {
         boolean rc = doLoad(logTag, context, parent, manager, load);
 
         if (LOG) {
+            //例如：load /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar 11862898 c=3 rc=true delta=133
             LogDebug.i(PLUGIN_TAG, "load " + mInfo.getPath() + " " + hashCode() + " c=" + load + " rc=" + rc + " delta=" + (System.currentTimeMillis() - t1));
         }
         //
@@ -663,17 +667,24 @@ class Plugin {
                 LogRelease.e(PLUGIN_TAG, logTag + ": loading fail1");
             }
         }
-        if (rc) {
+
+        if (rc) {//dex 加载成功
             // 打印当前内存占用情况，只针对Dex和App加载做输出
             // 只有开启“详细日志”才会输出，防止“消耗性能”
             if (LOG && RePlugin.getConfig().isPrintDetailLog()) {
                 if (load == LOAD_DEX || load == LOAD_APP) {
+                    //例如：desc=, memory_v_0_0_1, process=, com.qihoo360.replugin.sample.host, totalPss=, 16365, dalvikPss=, 1004,
+                    // nativeSize=, 4113, otherPss=, 11148, act=, loadLocked, flag=, Start, pn=, demo1, type=, 3, apk=, 61812, odex=,
+                    // 21408, sys_api=, 28
                     LogDebug.printPluginInfo(mInfo, load);
+                    //例如：desc=, memory_v_0_0_1, process=, com.qihoo360.replugin.sample.host, totalPss=, 16365, dalvikPss=, 1004, nativeSize=,
+                    // 4113, otherPss=, 11148, act=, loadLocked, flag=, End-1, pn=, demo1, type=, 3
                     LogDebug.printMemoryStatus(LogDebug.TAG, "act=, loadLocked, flag=, End-1, pn=, " + mInfo.getName() + ", type=, " + load);
                 }
             }
             try {
                 // 至此，该插件已开始运行
+                // 添加插件到"当前进程的正在运行插件列表"，并同步到Server端
                 PluginManagerProxy.addToRunningPluginsNoThrows(mInfo.getName());
             } catch (Throwable e) {
                 if (LOGR) {
@@ -684,9 +695,12 @@ class Plugin {
             return true;
         }
 
-        //
+        // 下面是 dex 加载失败的处理 也就是 rc = false的情况下才会走到 下面的代码
+
         logTag = "try2";
         lock = new ProcessLocker(context, lockFileName);
+
+        //尝试阻塞5s
         if (!lock.tryLockTimeWait(5000, 10)) {
             // 此处仅仅打印错误
             if (LOGR) {
@@ -704,6 +718,7 @@ class Plugin {
         }
 
 
+        //小于5.0 删除 额外的 dex
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // support for multidex below LOLLIPOP:delete Extra odex,if need
             try {
@@ -723,7 +738,7 @@ class Plugin {
         }
         //
         lock.unlock();
-        if (!rc) {
+        if (!rc) {//第二次失败 就放弃
             if (LOGR) {
                 LogRelease.e(PLUGIN_TAG, logTag + ": loading fail2");
             }
@@ -774,6 +789,15 @@ class Plugin {
         return doLoad(tag, context, parent, manager, load);
     }
 
+    /**
+     *
+     * @param tag
+     * @param context
+     * @param parent
+     * @param manager
+     * @param load
+     * @return 是否加载成功
+     */
     private final boolean doLoad(String tag, Context context, ClassLoader parent, PluginCommImpl manager, int load) {
         if (mLoader == null) {
             // 试图释放文件

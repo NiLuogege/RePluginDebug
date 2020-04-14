@@ -47,6 +47,7 @@ public class PluginManagerProxy {
     private static IPluginManagerServer sRemote;
     private static boolean sRunningSynced;
 
+    //记录 所有正在运行的插件列表
     private static PluginRunningList sRunningList = new PluginRunningList();
 
     static {
@@ -216,7 +217,7 @@ public class PluginManagerProxy {
     /**
      * 添加插件到"当前进程的正在运行插件列表"，并同步到Server端
      *
-     * @param pluginName 插件名
+     * @param pluginName 插件名 例如：demo1
      */
     public static void addToRunningPluginsNoThrows(String pluginName) {
         // 本地先加一份

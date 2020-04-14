@@ -49,6 +49,8 @@ public class SampleApplication extends RePluginApplication {
     @Override
     protected RePluginConfig createConfig() {
         RePluginConfig c = new RePluginConfig();
+        //开启详细日志（会消耗性能，线上包 建议取消）
+        c.setPrintDetailLog(true);
 
         // 允许“插件使用宿主类”。默认为“关闭”
         c.setUseHostClassIfNotFound(true);
