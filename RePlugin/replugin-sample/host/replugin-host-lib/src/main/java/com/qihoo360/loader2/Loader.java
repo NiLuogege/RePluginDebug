@@ -30,6 +30,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.Factory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPlugin;
@@ -170,9 +171,8 @@ class Loader {
     }
 
     /**
-     *
      * @param parent
-     * @param load 例：Plugin.LOAD_APP
+     * @param load   例：Plugin.LOAD_APP
      * @return
      */
     final boolean loadDex(ClassLoader parent, int load) {
@@ -602,6 +602,8 @@ class Loader {
     /**
      * 获取插件AndroidMainfest中配置的静态进程映射表，meta-data："process_map"
      *
+     * 在这里会将 插件中的进程 映射到 宿主项目的 坑中
+     *
      * @param appInfo
      * @return
      */
@@ -615,12 +617,15 @@ class Loader {
             String processMapStr = bdl.getString("process_map");
             JSONArray ja = new JSONArray(processMapStr);
             for (int i = 0; i < ja.length(); i++) {
+                //jo 的格式为 {"from":"com.qihoo360.replugin.sample.demo1:bg","to":"$p0"}
+                // 这个是 插件项目中我们自己在 manifest 中配置的
                 JSONObject jo = (JSONObject) ja.get(i);
+                LogUtil.e("process_map item= " + jo.toString());
                 if (jo != null) {
                     String to = jo.getString("to").toLowerCase();
-                    if (to.equals("$ui")) {
+                    if (to.equals("$ui")) {//如果是UI进程 则修改对应进程名为 宿主包名
                         to = IPC.getPackageName();
-                    } else {
+                    } else {//如果是其他进程
                         // 非 UI 进程，且是用户自定义的进程
                         if (to.contains("$" + PluginProcessHost.PROCESS_PLUGIN_SUFFIX)) {
                             to = PluginProcessHost.PROCESS_ADJUST_MAP.get(to);
@@ -639,7 +644,7 @@ class Loader {
 
     /**
      * 调整插件中组件的进程名称，用宿主中的进程坑位来接收插件中的自定义进程
-     *
+     * <p>
      * 注：
      * 如果插件中没有配置静态的 “meta-data：process_map” 进行静态的进程映射，则自动为插件中组件分配进程
      *
