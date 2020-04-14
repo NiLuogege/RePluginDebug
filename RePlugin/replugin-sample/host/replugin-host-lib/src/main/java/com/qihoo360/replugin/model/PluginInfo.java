@@ -281,6 +281,8 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
     /**
      * 获取插件名，如果有别名，则返回别名，否则返回插件包名 <p>
      * （注意：旧插件"p-n"的"别名"就是插件名）
+     *
+     * 例如：demo1
      */
     public String getName() {
         return get(PI_NAME, "");

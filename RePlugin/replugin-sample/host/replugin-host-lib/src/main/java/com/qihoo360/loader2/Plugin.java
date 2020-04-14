@@ -98,7 +98,7 @@ class Plugin {
     static final HashMap<String, WeakReference<Resources>> FILENAME_2_RESOURCES = new HashMap<>();
 
     /**
-     * 插件路径和 PackageInfo 的对应关系
+     * 插件路径和 插件 PackageInfo 的对应关系
      */
     static final HashMap<String, WeakReference<PackageInfo>> FILENAME_2_PACKAGE_INFO = new HashMap<>();
 
@@ -253,6 +253,11 @@ class Plugin {
         return resources;
     }
 
+    /**
+     * 通过插件路径获取 插件的 PackageInfo
+     * @param filename
+     * @return
+     */
     static final PackageInfo queryCachedPackageInfo(String filename) {
         PackageInfo packageInfo = null;
         if (!TextUtils.isEmpty(filename)) {

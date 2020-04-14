@@ -73,7 +73,7 @@ class Loader {
 
     private final Context mContext;
 
-    private final String mPluginName;
+    private final String mPluginName;//插件名称 例如：demo1
 
     final String mPath;//插件在data/data 下的路径
 
@@ -263,7 +263,7 @@ class Loader {
                 }
 
                 /* 只调整一次 */
-                // 调整插件中组件的进程名称
+                // 调整插件中组件的进程名称(添加 组件 进程名)
                 adjustPluginProcess(mPackageInfo.applicationInfo);
 
                 // 调整插件中 Activity 的 TaskAffinity
@@ -602,7 +602,7 @@ class Loader {
     /**
      * 获取插件AndroidMainfest中配置的静态进程映射表，meta-data："process_map"
      *
-     * 在这里会将 插件中的进程 映射到 宿主项目的 坑中
+     * 在这里会将 插件中的进程 映射到 宿主项目的 坑中 并返回 插件中配置进程名和 实际使用坑名 对应关系
      *
      * @param appInfo
      * @return
@@ -625,12 +625,13 @@ class Loader {
                     String to = jo.getString("to").toLowerCase();
                     if (to.equals("$ui")) {//如果是UI进程 则修改对应进程名为 宿主包名
                         to = IPC.getPackageName();
-                    } else {//如果是其他进程
-                        // 非 UI 进程，且是用户自定义的进程
+                    } else {//非 UI 进程，且是用户自定义的进程
                         if (to.contains("$" + PluginProcessHost.PROCESS_PLUGIN_SUFFIX)) {
+                            //设置为 宿主中的预埋进程
                             to = PluginProcessHost.PROCESS_ADJUST_MAP.get(to);
                         }
                     }
+                    //替换信息
                     processMap.put(jo.getString("from"), to);
                 }
             }
@@ -651,10 +652,12 @@ class Loader {
      * @param appInfo
      */
     private void adjustPluginProcess(ApplicationInfo appInfo) {
+        //将 插件中的进程 映射到 宿主项目的 坑中 并返回 插件中配置进程名和 实际使用坑名 对应关系
         HashMap<String, String> processMap = getConfigProcessMap(appInfo);
         if (processMap == null || processMap.isEmpty()) {
 
             PluginInfo pi = MP.getPlugin(mPluginName, false);
+            //如果插件的版本大于等于四 就替换 processMap？ 应该是兼容 p_n插件的
             if (pi != null && pi.getFrameworkVersion() >= 4) {
                 processMap = genDynamicProcessMap();
             }
@@ -677,6 +680,11 @@ class Loader {
         }
     }
 
+    /**
+     *
+     * @param processMap 插件中配置进程名和 实际使用坑名 对应关系
+     * @param infos Class类名 -> 四大组件的映射表
+     */
     private void doAdjust(HashMap<String, String> processMap, HashMap<String, ? extends ComponentInfo> infos) {
 
         if (processMap == null || processMap.isEmpty()) {
@@ -686,13 +694,16 @@ class Loader {
         for (HashMap.Entry<String, ? extends ComponentInfo> entry : infos.entrySet()) {
             ComponentInfo info = entry.getValue();
             if (info != null) {
+                //获取 宿主中坑位进程名
                 String targetProcess = processMap.get(info.processName);
 
                 if (!TextUtils.isEmpty(targetProcess)) {
                     if (LOG) {
+                        //例如：com.qihoo360.replugin.sample.demo1.service.PluginDemoService1, com.qihoo360.replugin.sample.demo1:bg -> com.qihoo360.replugin.sample.host:p0
                         Log.d(TaskAffinityStates.TAG, String.format("--- 调整组件 %s, %s -> %s", info.name, info.processName, targetProcess));
                     }
 
+                    //重新设置进程
                     info.processName = targetProcess;
                 }
             }
@@ -702,7 +713,9 @@ class Loader {
     /**
      * 调整插件中 Activity 的默认 TaskAffinity
      *
-     * @param plugin 插件名称
+     * @param plugin 插件名称 例如：demo1
+     * @param appInfo 插件的 ApplicationInfo
+     *
      */
     private void adjustPluginTaskAffinity(String plugin, ApplicationInfo appInfo) {
         if (appInfo == null) {
@@ -711,16 +724,18 @@ class Loader {
 
         Bundle bdl = appInfo.metaData;
         if (bdl != null) {
+            // 如果没有配置 use_default_task_affinity 默认使用 默认的TaskAffinity 也就是 包名
             boolean useDefault = bdl.getBoolean("use_default_task_affinity", true);
             if (LOG) {
                 LogDebug.d(TaskAffinityStates.TAG, "useDefault = " + useDefault);
             }
 
-            if (!useDefault) {
+            if (!useDefault) {//如果不使用默认的
                 if (LOG) {
                     LogDebug.d(TaskAffinityStates.TAG, String.format("替换插件 %s 中默认的 TaskAffinity", plugin));
                 }
 
+                //获取包名 也就是 默认的 TaskAffinity 名称
                 String defaultPluginTaskAffinity = appInfo.packageName;
                 for (HashMap.Entry<String, ActivityInfo> entry : mComponents.getActivityMap().entrySet()) {
                     ActivityInfo info = entry.getValue();
@@ -732,6 +747,7 @@ class Loader {
 
                     // 如果是默认 TaskAffinity
                     if (info != null && info.taskAffinity.equals(defaultPluginTaskAffinity)) {
+                        // 修改 TaskAffinity 为 包名+plugin路径
                         info.taskAffinity = info.taskAffinity + "." + plugin;
                         if (LOG) {
                             LogDebug.d(TaskAffinityStates.TAG, String.format("修改 %s 的 TaskAffinity 为 %s", info.name, info.taskAffinity));
