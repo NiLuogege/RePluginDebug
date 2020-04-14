@@ -321,6 +321,10 @@ public class PluginProcessMain {
         return sPluginHostRemote;
     }
 
+    /**
+     * 获取常驻进程 cookie 就是一个时间戳
+     * @return 一个时间戳
+     */
     static final long getPersistentCookie() {
         synchronized (COOKIE_LOCK) {
             if (!sPersisistCookieInitialized) {

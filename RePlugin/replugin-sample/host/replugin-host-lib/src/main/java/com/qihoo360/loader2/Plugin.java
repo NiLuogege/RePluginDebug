@@ -140,7 +140,7 @@ class Plugin {
     PluginCommImpl mPluginManager;
 
     /**
-     *
+     *是否已经初始化过
      */
     boolean mInitialized;
 
@@ -454,10 +454,11 @@ class Plugin {
 
     /**
      *加载插件
+     * return: 插件是非加载成功
      */
     final boolean load(int load, boolean useCache) {
         PluginInfo info = mInfo;
-        //加载插件
+        //加载插件 rc标识插件是非加载成功
         boolean rc = loadLocked(load, useCache);
         // 尝试在此处调用Application.onCreate方法
         // Added by Jiongxuan Zhang

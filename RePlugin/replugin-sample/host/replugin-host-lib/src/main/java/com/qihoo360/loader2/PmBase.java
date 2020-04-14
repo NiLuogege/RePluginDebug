@@ -106,12 +106,13 @@ class PmBase {
     private final HashMap<String, HashMap<String, IModule>> mBuiltinModules = new HashMap<String, HashMap<String, IModule>>();
 
     /**
-     *
+     * 宿主的 classLoader
      */
     private ClassLoader mClassLoader;
 
     /**
      * 所有插件
+     * 插件名称（例如：demo1） 和 Plugin 的映射关系
      */
     private final Map<String, Plugin> mPlugins = new ConcurrentHashMap<>();
 
@@ -136,7 +137,7 @@ class PmBase {
     private Plugin mDefaultPlugin;
 
     /**
-     * TODO init
+     * 常驻进程cookie
      */
     long mLocalCookie;
 
@@ -161,7 +162,7 @@ class PmBase {
     PluginProcessPer mClient;
 
     /**
-     *
+     *负责宿主与插件、插件间的互通，可通过插件的Factory直接调用，也可通过RePlugin来跳转
      */
     PluginCommImpl mLocal;
 
@@ -582,7 +583,7 @@ class PmBase {
 
     final void callAppCreate() {
         // 计算/获取cookie
-        if (IPC.isPersistentProcess()) {
+        if (IPC.isPersistentProcess()) {//是常驻进程
             mLocalCookie = PluginProcessMain.getPersistentCookie();
         } else {
 //            try {
@@ -606,6 +607,7 @@ class PmBase {
 //            }
         }
         if (LOG) {
+            //例如：initial local cookie=0
             LogDebug.d(PLUGIN_TAG, "initial local cookie=" + mLocalCookie);
         }
 
@@ -656,6 +658,7 @@ class PmBase {
 //            }, filter);
 //        }
 
+        //不是常驻进程 就创建一个本地广播 用于接收 新插件和 卸载插件的广播
         if (!IPC.isPersistentProcess()) {
             // 由于常驻进程已经在内部做了相关的处理，此处仅需要在UI进程注册并更新即可
             IntentFilter intentFilter = new IntentFilter();
@@ -1143,6 +1146,7 @@ class PmBase {
                 return;
             }
 
+            //从缓存的插件中获取
             Plugin p = mPlugins.get(info.getName());
 
             // 如果是内置插件，新插件extract成功，则直接替换
@@ -1160,11 +1164,15 @@ class PmBase {
                 return;
             }
 
+            // 只有内置插件才会走到下面的代码
+
             // 此处直接使用该插件，没有考虑是否只采用最新版
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "insert new plugin: ok: plugin=" + info);
             }
+            //创建plugin对象
             Plugin plugin = Plugin.build(info);
+            //挂载
             plugin.attach(mContext, mClassLoader, mLocal);
 
             // 同时加入PackageName和Alias（如有）
@@ -1172,6 +1180,11 @@ class PmBase {
         }
     }
 
+    /**
+     *
+     * @param info 插件信息
+     * @param persistNeedRestart 常驻进程是否需要重启
+     */
     final void newPluginFound(PluginInfo info, boolean persistNeedRestart) {
         // 更新最新插件表
         PluginTable.updatePlugin(info);

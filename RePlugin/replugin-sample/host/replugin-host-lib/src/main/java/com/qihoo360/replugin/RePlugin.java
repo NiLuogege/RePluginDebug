@@ -1009,6 +1009,7 @@ public class RePlugin {
                 return;
             }
 
+            //这个之前已经初始化过了，这里在初始化 也没啥问题
             Tasks.init();
 
             PMF.callAppCreate();
