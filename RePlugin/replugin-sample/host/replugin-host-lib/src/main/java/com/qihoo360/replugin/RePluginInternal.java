@@ -33,6 +33,7 @@ public class RePluginInternal {
     public static final boolean FOR_DEV = BuildConfig.DEBUG;
 
     // FIXME 不建议缓存Application对象，容易导致InstantRun失效（警告中写着，具体原因待分析）
+    // 宿主Application 对象
     static Context sAppContext;
 
     static void init(Application app) {

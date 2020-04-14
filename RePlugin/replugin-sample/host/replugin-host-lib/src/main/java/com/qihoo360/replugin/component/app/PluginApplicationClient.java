@@ -48,15 +48,19 @@ public class PluginApplicationClient {
 
     private static volatile boolean sInited;
     private static final byte[] LOCKER = new byte[0];
-    private static Method sAttachBaseContextMethod;
+    private static Method sAttachBaseContextMethod; //Application.attach() 方法
 
+    //插件的ClassLoader
     private final ClassLoader mPlgClassLoader;
+    //插件的 ApplicationInfo 对象 ，应该就是 manifest中 对Application的描述
     private final ApplicationInfo mApplicationInfo;
-
+    //自定义的Application 构造方法
     private Constructor mApplicationConstructor;
 
+    //插件的 Application 对象
     private Application mApplication;
 
+    // 插件名称（例如：demo1） 和 PluginApplicationClient 的映射关系
     private static ArrayMap<String, WeakReference<PluginApplicationClient>> sRunningClients = new ArrayMap<>();
 
     /**
@@ -64,22 +68,23 @@ public class PluginApplicationClient {
      * 若已经存在，则返回之前创建的ApplicationClient对象（此时Application不一定被加载进来）
      * 若不符合条件（如插件加载失败、版本不正确等），则会返回null
      *
-     * @param pn 插件名
+     * @param pn 插件名 例如：demo1
      * @param plgCL 插件的ClassLoader
      * @param cl 插件的ComponentList
      * @param pi 插件的信息
      */
     public static PluginApplicationClient getOrCreate(String pn, ClassLoader plgCL, ComponentList cl, PluginInfo pi) {
-        if (pi.getFrameworkVersion() <= 1) {
+        if (pi.getFrameworkVersion() <= 1) {//低版本插件
             // 仅框架版本为2及以上的，才支持Application的加载
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PAC.create(): FrameworkVer less than 1. cl=" + plgCL);
             }
             return null;
         }
+        //从缓存中获取 PluginApplicationClient
         PluginApplicationClient pac = getRunning(pn);
         if (pac != null) {
-            // 已经初始化过Application？直接返回
+            // 已经初始化过Application，直接返回
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PAC.create(): Already Loaded." + plgCL);
             }
@@ -92,6 +97,7 @@ public class PluginApplicationClient {
 
         // 初始化所有需要反射的方法
         try {
+            //反射获取 插件 Application 的 attach() 方法
             initMethods();
         } catch (Throwable e) {
             if (BuildConfig.DEBUG) {
@@ -100,10 +106,12 @@ public class PluginApplicationClient {
             return null;
         }
 
+        //创建一个 PluginApplicationClient 对象
         final PluginApplicationClient pacNew = new PluginApplicationClient(plgCL, cl, pi);
         if (pacNew.isValid()) {
             sRunningClients.put(pn, new WeakReference<>(pacNew));
             if (Build.VERSION.SDK_INT >= 14) {
+                //宿主 注册 ComponentCallbacks2 监听，并将回调 分发给 PluginApplicationClient
                 RePluginInternal.getAppContext().registerComponentCallbacks(new ComponentCallbacks2() {
                     @Override
                     public void onTrimMemory(int level) {
@@ -158,6 +166,11 @@ public class PluginApplicationClient {
         }
     }
 
+    /**
+     * 从缓存中获取 PluginApplicationClient
+     * @param pn
+     * @return
+     */
     public static PluginApplicationClient getRunning(String pn) {
         WeakReference<PluginApplicationClient> w = sRunningClients.get(pn);
         if (w == null) {
@@ -166,6 +179,10 @@ public class PluginApplicationClient {
         return w.get();
     }
 
+    /**
+     *  反射获取 插件 Application 的 attach() 方法
+     * @throws NoSuchMethodException
+     */
     private static void initMethods() throws NoSuchMethodException {
         if (sInited) {
             return;
@@ -176,12 +193,18 @@ public class PluginApplicationClient {
             }
             // NOTE getDeclaredMethod只能获取当前类声明的方法，无法获取继承到的，而getMethod虽可以获取继承方法，但又不能获取非Public的方法
             // NOTE 权衡利弊，还是仅构造函数用反射类，其余用它明确声明的类来做
+            // 反射获取 插件 Application 的 attach() 方法
             sAttachBaseContextMethod = Application.class.getDeclaredMethod("attach", Context.class);
             sAttachBaseContextMethod.setAccessible(true);   // Protected 修饰
             sInited = true;
         }
     }
 
+    /**
+     * @param plgCL 插件的ClassLoader
+     * @param cl 插件的ComponentList
+     * @param pi 插件的信息
+     */
     private PluginApplicationClient(ClassLoader plgCL, ComponentList cl, PluginInfo pi) {
         mPlgClassLoader = plgCL;
         mApplicationInfo = cl.getApplication();
@@ -192,6 +215,7 @@ public class PluginApplicationClient {
             }
             // 若自定义有误（或没有)，且框架版本为3及以上的，则可以创建空Application对象，方便插件getApplicationContext到自己
             if (!isValid() && pi.getFrameworkVersion() >= 3) {
+                //直接new 一个 Application
                 mApplication = new Application();
             }
         } catch (Throwable e) {
@@ -224,6 +248,9 @@ public class PluginApplicationClient {
         mApplication.onCreate();
     }
 
+    /**
+     * 调用插件的 mApplication.onLowMemory
+     */
     public void callOnLowMemory() {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PAC.callOnLowMemory(): Call onLowMemory(), cl=" + mPlgClassLoader);
@@ -231,6 +258,10 @@ public class PluginApplicationClient {
         mApplication.onLowMemory();
     }
 
+    /**
+     * 调用插件的 mApplication.onTrimMemory
+     * @param level
+     */
     public void callOnTrimMemory(int level) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return;
@@ -242,6 +273,10 @@ public class PluginApplicationClient {
         mApplication.onTrimMemory(level);
     }
 
+    /**
+     * 调用插件的 mApplication.onConfigurationChanged
+     * @param newConfig
+     */
     public void callOnConfigurationChanged(Configuration newConfig) {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PAC.callOnLowMemory(): Call onConfigurationChanged(), cl=" + mPlgClassLoader + "; nc=" + newConfig);
@@ -255,7 +290,9 @@ public class PluginApplicationClient {
 
     private boolean initCustom() {
         try {
+            // 获取 自定义的Application 构造方法
             initCustomConstructor();
+            //通过反射 创建 插件自定义Application的 对象
             initCustomObject();
 
             // 看mApplication是否被初始化成功
@@ -269,12 +306,25 @@ public class PluginApplicationClient {
         return false;
     }
 
+    /**
+     * 获取 自定义的Application 构造方法
+     * @throws ClassNotFoundException
+     * @throws NoSuchMethodException
+     */
     private void initCustomConstructor() throws ClassNotFoundException, NoSuchMethodException {
         String aic = mApplicationInfo.className;
+        //通过插件的 classLoader 加载 插件自定义的Application 对象
         Class<?> psc = mPlgClassLoader.loadClass(aic);
+        //自定义的Application 构造方法
         mApplicationConstructor = psc.getConstructor();
     }
 
+    /**
+     * 通过反射 创建 插件自定义Application的 对象
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
     private void initCustomObject() throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Object appObj = mApplicationConstructor.newInstance();
         if (appObj instanceof Application) {

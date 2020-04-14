@@ -453,10 +453,11 @@ class Plugin {
     }
 
     /**
-     *
+     *加载插件
      */
     final boolean load(int load, boolean useCache) {
         PluginInfo info = mInfo;
+        //加载插件
         boolean rc = loadLocked(load, useCache);
         // 尝试在此处调用Application.onCreate方法
         // Added by Jiongxuan Zhang
@@ -977,6 +978,9 @@ class Plugin {
         }
     }
 
+    /**
+     * 启动插件Application
+     */
     private void callAppLocked() {
         // 获取并调用Application的几个核心方法
         if (!mDummyPlugin) {
@@ -987,11 +991,14 @@ class Plugin {
                 return;
             }
 
+            //启动并初始化 插件Application
             mApplicationClient = PluginApplicationClient.getOrCreate(
                     mInfo.getName(), mLoader.mClassLoader, mLoader.mComponents, mLoader.mPluginObj.mInfo);
 
             if (mApplicationClient != null) {
+                //调用插件Application的 attach 方法 ,传入的 context是 Loader 中创建的 插件使用的Context
                 mApplicationClient.callAttachBaseContext(mLoader.mPkgContext);
+                //调用插件的 onCreate()
                 mApplicationClient.callOnCreate();
             }
         } else {

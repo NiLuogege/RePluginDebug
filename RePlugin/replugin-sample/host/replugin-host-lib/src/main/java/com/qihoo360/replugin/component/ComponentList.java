@@ -79,7 +79,7 @@ public class ComponentList {
     final HashMap<String, ServiceInfo> mServices = new HashMap<>();
 
     /**
-     * Application对象
+     * 插件的 Application对象
      */
     ApplicationInfo mApplication = null;
 
@@ -315,7 +315,7 @@ public class ComponentList {
     }
 
     /**
-     * 获取Application对象
+     * 获取ApplicationInfo对象
      */
     public ApplicationInfo getApplication() {
         return mApplication;
