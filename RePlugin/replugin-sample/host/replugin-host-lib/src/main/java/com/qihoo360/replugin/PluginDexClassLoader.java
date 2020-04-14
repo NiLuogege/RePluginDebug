@@ -51,33 +51,31 @@ public class PluginDexClassLoader extends DexClassLoader {
 
     private final ClassLoader mHostClassLoader;
 
-    private static Method sLoadClassMethod;
+    private static Method sLoadClassMethod; // 宿主 classLoader 的  loadClass 方法
 
-    private String mPluginName;
+    private String mPluginName;// 插件名称 例如：demo1
 
     /**
      * 初始化插件的DexClassLoader的构造函数。插件化框架会调用此函数。
      *
-     * @param pi                 the plugin's info,refer to {@link PluginInfo}
-     * @param dexPath            the list of jar/apk files containing classes and
-     *                           resources, delimited by {@code File.pathSeparator}, which
-     *                           defaults to {@code ":"} on Android
-     * @param optimizedDirectory directory where optimized dex files
-     *                           should be written; must not be {@code null}
-     * @param librarySearchPath  the list of directories containing native
-     *                           libraries, delimited by {@code File.pathSeparator}; may be
-     *                           {@code null}
-     * @param parent             the parent class loader
+     * @param pi                 插件信息
+     * @param dexPath            插件APK所在路径
+     * @param optimizedDirectory 插件释放odex/oat的路径
+     * @param librarySearchPath  插件SO库所在路径
+     * @param parent             插件ClassLoader的父亲
      */
     public PluginDexClassLoader(PluginInfo pi, String dexPath, String optimizedDirectory, String librarySearchPath, ClassLoader parent) {
         super(dexPath, optimizedDirectory, librarySearchPath, parent);
 
         mPluginName = pi.getName();
 
+        //在 android 5.0以下 加载 额外的dex 文件 【先忽略不看】
         installMultiDexesBeforeLollipop(pi, dexPath, parent);
 
+        //获取 宿主 的 classLoader
         mHostClassLoader = RePluginInternal.getAppClassLoader();
 
+        //获取 宿主 classLoader 的  loadClass 方法
         initMethods(mHostClassLoader);
     }
 
@@ -164,6 +162,8 @@ public class PluginDexClassLoader extends DexClassLoader {
     }
 
     /**
+     *
+     *  在 android 5.0以下 加载 额外的dex 文件 【先忽略不看】
      * install extra dexes
      *
      * @param pi
@@ -179,7 +179,7 @@ public class PluginDexClassLoader extends DexClassLoader {
 
         try {
 
-            // get paths of extra dex
+            // 查找 dexPath 下其它的 dex 文件
             List<File> dexFiles = getExtraDexFiles(pi, dexPath);
 
             if (dexFiles != null && dexFiles.size() > 0) {

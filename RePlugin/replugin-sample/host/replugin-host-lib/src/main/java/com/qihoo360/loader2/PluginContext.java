@@ -74,6 +74,10 @@ public class PluginContext extends ContextThemeWrapper {
 
     private LayoutInflater mInflater;
 
+    /**
+     * 业务层定义的ContextInjector实现对象，允许业务层对PluginContext中的startActivity等接口处进行自定义操作
+     * 默认是 null
+     */
     private ContextInjector mContextInjector;
 
     LayoutInflater.Factory mFactory = new LayoutInflater.Factory() {
@@ -84,6 +88,15 @@ public class PluginContext extends ContextThemeWrapper {
         }
     };
 
+    /**
+     *
+     * @param base 宿主 Application 对象
+     * @param themeres Themes
+     * @param cl 插件的ClassLoader
+     * @param r 插件的 Resources
+     * @param plugin 插件名称 例如：demo1
+     * @param loader Loader 对象
+     */
     public PluginContext(Context base, int themeres, ClassLoader cl, Resources r, String plugin, Loader loader) {
         super(base, themeres);
 

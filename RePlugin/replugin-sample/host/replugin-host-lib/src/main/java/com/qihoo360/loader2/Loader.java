@@ -71,6 +71,7 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  */
 class Loader {
 
+    //宿主的 Application
     private final Context mContext;
 
     private final String mPluginName;//插件名称 例如：demo1
@@ -350,7 +351,12 @@ class Loader {
                     }
                 }
 
+                //创建插件使用的 classLoader对象
                 mClassLoader = RePlugin.getConfig().getCallbacks().createPluginClassLoader(mPluginObj.mInfo, mPath, out, soDir, parent);
+
+                //例如：load /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar
+                // = com.qihoo360.replugin.PluginDexClassLoader[DexPathList[[zip file "/data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar"],
+                // nativeLibraryDirectories=[/data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3_libs/demo1-10-10-104, /system/lib64]]]
                 Log.i("dex", "load " + mPath + " = " + mClassLoader);
 
                 if (mClassLoader == null) {
@@ -372,6 +378,7 @@ class Loader {
                     }
                 }
 
+                // 缓存插件使用的classLoader  插件路径 -> ClassLoader
                 // 缓存表：ClassLoader
                 synchronized (Plugin.FILENAME_2_DEX) {
                     Plugin.FILENAME_2_DEX.put(mPath, new WeakReference<>(mClassLoader));

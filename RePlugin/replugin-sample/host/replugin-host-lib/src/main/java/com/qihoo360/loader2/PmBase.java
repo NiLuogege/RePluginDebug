@@ -81,7 +81,7 @@ class PmBase {
     private static final String CONTAINER_PROVIDER_PART = ".loader.p.Provider";
 
     /**
-     *
+     * 宿主的 Application
      */
     private final Context mContext;
 
