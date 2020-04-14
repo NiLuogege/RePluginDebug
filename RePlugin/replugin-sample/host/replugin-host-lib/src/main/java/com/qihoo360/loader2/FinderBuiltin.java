@@ -49,6 +49,7 @@ public class FinderBuiltin {
         // 读取内部配置
         in = null;
         try {
+            //读取 assets 下的 plugins-builtin.json
             in = context.getAssets().open("plugins-builtin.json");
             // TODO 简化参数 all
             readConfig(in, all);
@@ -72,6 +73,7 @@ public class FinderBuiltin {
             if (jo == null) {
                 continue;
             }
+            //插件名称
             String name = jo.getString("name");
             if (TextUtils.isEmpty(name)) {
                 if (LOG) {
@@ -79,6 +81,7 @@ public class FinderBuiltin {
                 }
                 continue;
             }
+            //由 json 文件中每个插件配置的内容 创建一个 PluginInfo 并标记为 内置插件
             PluginInfo info = PluginInfo.buildFromBuiltInJson(jo);
             if (!info.match()) {
                 if (LOG) {
@@ -89,6 +92,7 @@ public class FinderBuiltin {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "built-in plugins config: item: " + info);
             }
+            //加入到内置插件集合和所有插件集合中
             all.addBuiltin(info);
         }
     }

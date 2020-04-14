@@ -320,7 +320,6 @@ class PmBase {
         //清理之前的任务
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 
-        // 兼容即将废弃的p-n方案 by Jiongxuan Zhang
         mAll = new Builder.PxAll();
         Builder.builder(mContext, mAll);
         refreshPluginMap(mAll.getPlugins());

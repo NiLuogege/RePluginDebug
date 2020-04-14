@@ -105,21 +105,21 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
      * @deprecated 只用于旧的P-n插件，可能会废弃
      */
     public static final int FRAMEWORK_VERSION_UNKNOWN = 0;
-    public static final String PI_PKGNAME = "pkgname"; // √
+    public static final String PI_PKGNAME = "pkgname"; // √ 包名
     public static final String PI_ALI = "ali"; // √
-    public static final String PI_LOW = "low"; // √
-    public static final String PI_HIGH = "high"; // √
-    public static final String PI_VER = "ver"; // √
-    public static final String PI_PATH = "path";
+    public static final String PI_LOW = "low"; // √ 插件最低兼容版本
+    public static final String PI_HIGH = "high"; // √ 插件最高兼容版本
+    public static final String PI_VER = "ver"; // √ 插件版本号
+    public static final String PI_PATH = "path";// 插件文件对于assets 的相对路径
     public static final String PI_TYPE = "type";
-    public static final String PI_NAME = "name"; // √
+    public static final String PI_NAME = "name"; // √ 插件名
     public static final String PI_UPINFO = "upinfo";
     public static final String PI_DELINFO = "delinfo";
     public static final String PI_COVERINFO = "coverinfo";
     public static final String PI_COVER = "cover";
     public static final String PI_VERV = "verv";
     public static final String PI_USED = "used";
-    public static final String PI_FRM_VER = "frm_ver";
+    public static final String PI_FRM_VER = "frm_ver"; //框架版本号
 
     private transient final Map<String, Object> mJson = new ConcurrentHashMap(1 << 4);
 
@@ -1007,9 +1007,17 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         return info;
     }
 
+    /**
+     * 通过json 创建 PluginInfo
+     * @param jo
+     * @return
+     */
     public static final PluginInfo buildFromBuiltInJson(JSONObject jo) {
+        //包名
         String pkgName = jo.optString("pkg");
+        // 插件名称
         String name = jo.optString(PI_NAME);
+        // 插件在 assets 文件夹中的相对路径
         String assetName = jo.optString(PI_PATH);
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pkgName) || TextUtils.isEmpty(assetName)) {
             if (LogDebug.LOG) {
@@ -1017,14 +1025,17 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
             }
             return null;
         }
-        int low = jo.optInt(PI_LOW, Constant.ADAPTER_COMPATIBLE_VERSION);    // Low应指向最低兼容版本
-        int high = jo.optInt(PI_HIGH, Constant.ADAPTER_COMPATIBLE_VERSION);  // High同上
-        int ver = jo.optInt(PI_VER);
+        int low = jo.optInt(PI_LOW, Constant.ADAPTER_COMPATIBLE_VERSION);    // Low应指向最低兼容版本 ，默认是10
+        int high = jo.optInt(PI_HIGH, Constant.ADAPTER_COMPATIBLE_VERSION);  // High同上 ，默认是10
+        int ver = jo.optInt(PI_VER);//插件版本
+
+        //创建一个 PluginInfo 并标记为 内置插件
         PluginInfo info = new PluginInfo(pkgName, name, low, high, ver, assetName, TYPE_BUILTIN);
 
         // 从 json 中读取 frameVersion（可选）
         int frameVer = jo.optInt("frm");
         if (frameVer < 1) {
+            //没有配置 就设置为 默认版本号 4
             frameVer = RePlugin.getConfig().getDefaultFrameworkVersion();
         }
         info.setFrameworkVersion(frameVer);
