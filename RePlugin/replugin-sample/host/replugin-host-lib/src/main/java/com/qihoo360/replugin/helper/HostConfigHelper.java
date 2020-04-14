@@ -168,6 +168,8 @@ public class HostConfigHelper {
         } catch (NoSuchFieldException e) {
             // Ignore, Just use default value
         }
+
+//        LogUtil.e("静态代码块执行完毕");
     }
 
     private static <T> T readField(String name) throws NoSuchFieldException {
@@ -187,5 +189,6 @@ public class HostConfigHelper {
 
     public static void init() {
         // Nothing, Just init on "static" block
+        LogUtil.e("HostConfigHelper.init");
     }
 }

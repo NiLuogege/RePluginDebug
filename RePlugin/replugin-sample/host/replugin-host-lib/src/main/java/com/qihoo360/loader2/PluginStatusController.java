@@ -57,6 +57,7 @@ public class PluginStatusController {
      */
     public static final int STATUS_DISABLE_BY_CLOUD = -2;
 
+    //宿主 Application 对象
     @SuppressLint("StaticFieldLeak")
     private static Application sAppContext;
 
