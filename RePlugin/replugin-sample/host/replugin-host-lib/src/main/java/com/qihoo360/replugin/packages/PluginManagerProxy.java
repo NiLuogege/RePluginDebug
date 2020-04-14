@@ -19,6 +19,7 @@ package com.qihoo360.replugin.packages;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.loader2.IPluginHost;
 import com.qihoo360.loader2.MP;
 import com.qihoo360.replugin.base.IPC;
@@ -47,6 +48,7 @@ public class PluginManagerProxy {
     private static boolean sRunningSynced;
 
     private static PluginRunningList sRunningList = new PluginRunningList();
+
     static {
         sRunningList.setProcessInfo(IPC.getCurrentProcessName(), IPC.getCurrentProcessId());
     }
@@ -106,8 +108,8 @@ public class PluginManagerProxy {
     /**
      * 去常驻进程更新isUsed状态，并发送到所有进程中更新
      *
-     * @param pluginName
-     * @param used 插件是否已被使用
+     * @param pluginName 插件名称 例如：demo1
+     * @param used       插件是否已被使用
      */
     public static void updateUsedIfNeeded(String pluginName, boolean used) throws RemoteException {
         PluginInfo pi = MP.getPlugin(pluginName, false);
@@ -122,6 +124,9 @@ public class PluginManagerProxy {
             }
             return;
         }
+
+        LogUtil.e("isPnPlugin= " + pi.isPnPlugin());
+
         if (pi.isPnPlugin()) {
             // 是常驻进程？老逻辑直接走dex文件存在判断，也无需做处理
             return;
@@ -166,7 +171,7 @@ public class PluginManagerProxy {
      * 首先检查指定进程是否和本地相同，然后再调用常驻进程的Server端去判断
      *
      * @param pluginName 插件名
-     * @param process 指定进程
+     * @param process    指定进程
      * @return 是否运行
      * @throws RemoteException 和常驻进程通讯出现异常
      */

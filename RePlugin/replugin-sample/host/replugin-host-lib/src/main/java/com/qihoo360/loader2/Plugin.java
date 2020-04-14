@@ -119,6 +119,8 @@ class Plugin {
 
     /**
      * 没有IPlugin对象
+     *
+     * 一致是 false
      */
     boolean mDummyPlugin;
 
@@ -857,6 +859,7 @@ class Plugin {
 
             //这里的  mInfo.getPath() 已经是 data/data 下的目录了
             mLoader = new Loader(context, mInfo.getName(), mInfo.getPath(), this);
+            // 加载插件信息、资源、Dex，并运行Entry类(可能只包含其中的一部分 要看 load 的类型)
             if (!mLoader.loadDex(parent, load)) {
                 return false;
             }
@@ -918,7 +921,7 @@ class Plugin {
                 if (!mLoader.invoke(manager)) {
                     return false;
                 }
-            } else if (mLoader.loadEntryMethod3()) {
+            } else if (mLoader.loadEntryMethod3()) {//对于demo1 插件 会走这里
                 if (!mLoader.invoke2(manager)) {
                     return false;
                 }

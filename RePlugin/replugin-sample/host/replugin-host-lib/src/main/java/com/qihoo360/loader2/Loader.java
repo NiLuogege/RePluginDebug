@@ -173,7 +173,7 @@ class Loader {
 
     /**
      * @param parent
-     * @param load   例：Plugin.LOAD_APP
+     * @param load   例：Plugin.LOAD_APP ： {@link com.qihoo360.loader2.Plugin 中有解释}
      * @return
      */
     final boolean loadDex(ClassLoader parent, int load) {
@@ -338,7 +338,7 @@ class Loader {
                 // 获取 存储 库的 文件夹，这里是已经被替换过的
                 // 例如 /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3_libs/demo1-10-10-104
                 String soDir = mPackageInfo.applicationInfo.nativeLibraryDir;
-                LogUtil.e("soDir= "+soDir);
+                LogUtil.e("soDir= " + soDir);
 
                 long begin = 0;
                 boolean isDexExist = false;
@@ -503,11 +503,13 @@ class Loader {
     final boolean loadEntryMethod3() {
         //
         try {
+            //className = com.qihoo360.replugin.Entry
             String className = Factory.REPLUGIN_LIBRARY_ENTRY_PACKAGE_PREFIX + "." + Factory.PLUGIN_ENTRY_CLASS_NAME;
             Class<?> c = mClassLoader.loadClass(className);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "found entry: className=" + className + ", loader=" + c.getClassLoader());
             }
+            //方法名为 create ，参数类型为  Context.class, ClassLoader.class, IBinder.class
             mCreateMethod2 = c.getDeclaredMethod(Factory.PLUGIN_ENTRY_EXPORT_METHOD_NAME, Factory.PLUGIN_ENTRY_EXPORT_METHOD2_PARAMS);
         } catch (Throwable e) {
             if (LOGR) {
@@ -527,7 +529,9 @@ class Loader {
                 }
                 return false;
             }
+            //创建 mBinderPlugin
             mBinderPlugin = new ProxyPlugin(b);
+            //赋值给 mBinderPlugin
             mPlugin = mBinderPlugin;
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "Loader.invoke2(): plugin=" + mPath + ", plugin.binder.cl=" + b.getClass().getClassLoader());
@@ -617,7 +621,7 @@ class Loader {
 
     /**
      * 获取插件AndroidMainfest中配置的静态进程映射表，meta-data："process_map"
-     *
+     * <p>
      * 在这里会将 插件中的进程 映射到 宿主项目的 坑中 并返回 插件中配置进程名和 实际使用坑名 对应关系
      *
      * @param appInfo
@@ -697,9 +701,8 @@ class Loader {
     }
 
     /**
-     *
      * @param processMap 插件中配置进程名和 实际使用坑名 对应关系
-     * @param infos Class类名 -> 四大组件的映射表
+     * @param infos      Class类名 -> 四大组件的映射表
      */
     private void doAdjust(HashMap<String, String> processMap, HashMap<String, ? extends ComponentInfo> infos) {
 
@@ -729,9 +732,8 @@ class Loader {
     /**
      * 调整插件中 Activity 的默认 TaskAffinity
      *
-     * @param plugin 插件名称 例如：demo1
+     * @param plugin  插件名称 例如：demo1
      * @param appInfo 插件的 ApplicationInfo
-     *
      */
     private void adjustPluginTaskAffinity(String plugin, ApplicationInfo appInfo) {
         if (appInfo == null) {
