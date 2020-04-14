@@ -81,7 +81,7 @@ class Loader {
 
     PackageInfo mPackageInfo;
 
-    Resources mPkgResources;
+    Resources mPkgResources;//插件的 Resources
 
     Context mPkgContext;
 
@@ -274,6 +274,7 @@ class Loader {
                 return isPackageInfoLoaded();
             }
 
+            //获取缓存的  Resources
             mPkgResources = Plugin.queryCachedResources(mPath);
             // LOAD_RESOURCES和LOAD_ALL都会获取资源，但LOAD_INFO不可以（只允许获取PackageInfo）
             if (mPkgResources == null) {

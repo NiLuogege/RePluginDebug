@@ -93,7 +93,7 @@ class Plugin {
     static final HashMap<String, WeakReference<ClassLoader>> FILENAME_2_DEX = new HashMap<>();
 
     /**
-     *
+     * 插件路径和 插件 插件 Resources 的对应关系
      */
     static final HashMap<String, WeakReference<Resources>> FILENAME_2_RESOURCES = new HashMap<>();
 
@@ -234,10 +234,16 @@ class Plugin {
         return dex;
     }
 
+    /**
+     *
+     * @param filename 插件路径 data/data/packagename/plugins_v3/demo1-10-10-104.jar 下
+     * @return
+     */
     static final Resources queryCachedResources(String filename) {
         Resources resources = null;
         if (!TextUtils.isEmpty(filename)) {
             synchronized (FILENAME_2_RESOURCES) {
+                //通过插件路径获取 缓存的 Resources
                 WeakReference<Resources> ref = FILENAME_2_RESOURCES.get(filename);
                 if (ref != null) {
                     resources = ref.get();
