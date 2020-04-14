@@ -37,8 +37,10 @@ import com.qihoo360.replugin.model.PluginInfo;
 public class PluginInfoUpdater {
     private static final String TAG = "PluginInfoUpdater";
 
+    //监听PluginInfo变化
     private static final String ACTION_UPDATE_INFO = "com.qihoo360.replugin.pms.ACTION_UPDATE_INFO";
 
+    //插件卸载
     public static final String ACTION_UNINSTALL_PLUGIN = "ACTION_UNINSTALL_PLUGIN";
 
     public static void register(Context context) {
@@ -56,11 +58,13 @@ public class PluginInfoUpdater {
         IPC.sendLocalBroadcast2AllSync(context, intent);
     }
 
+
     private static class UpdateReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (TextUtils.equals(intent.getAction(), ACTION_UPDATE_INFO)) {
+                //更新插件信息
                 PluginInfoUpdater.onReceiveUpdateInfo(intent);
             }
         }

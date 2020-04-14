@@ -1012,10 +1012,12 @@ public class RePlugin {
             //这个之前已经初始化过了，这里在初始化 也没啥问题
             Tasks.init();
 
+            // 常驻进程：获取cookie
+            // 其他进程注册 安装插件和卸载插件的广播
             PMF.callAppCreate();
 
             // 注册监听PluginInfo变化的广播以接受来自常驻进程的更新
-            if (!IPC.isPersistentProcess()) {
+            if (!IPC.isPersistentProcess()) {//不是常驻进程
                 PluginInfoUpdater.register(RePluginInternal.getAppContext());
             }
 
