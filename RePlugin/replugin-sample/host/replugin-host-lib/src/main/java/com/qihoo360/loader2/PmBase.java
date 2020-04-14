@@ -191,11 +191,11 @@ class PmBase {
                 PluginInfo info = intent.getParcelableExtra("obj");
                 if (info != null) {
                     switch (action) {
-                        case ACTION_NEW_PLUGIN:
+                        case ACTION_NEW_PLUGIN://有新的插件
                             // 非常驻进程上下文
                             newPluginFound(info, intent.getBooleanExtra(RePluginConstants.KEY_PERSIST_NEED_RESTART, false));
                             break;
-                        case ACTION_UNINSTALL_PLUGIN:
+                        case ACTION_UNINSTALL_PLUGIN://卸载插件
                             pluginUninstalled(info);
                             break;
                     }
@@ -1212,6 +1212,10 @@ class PmBase {
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
+    /**
+     * 卸载插件
+     * @param info
+     */
     final void pluginUninstalled(PluginInfo info) {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "Clear plugin cache. pn=" + info.getName());

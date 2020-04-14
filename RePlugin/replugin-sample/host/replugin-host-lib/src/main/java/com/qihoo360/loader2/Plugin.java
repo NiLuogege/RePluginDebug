@@ -83,12 +83,12 @@ class Plugin {
     static final HashMap<String, String> PKG_NAME_2_PLUGIN_NAME = new HashMap<>();
 
     /**
-     * 保存插件 pluginName 至 fileName 的映射
+     * 保存 插件名(例如 demo1) -> 插件路径（data/data 下） 的映射
      */
     static final HashMap<String, String> PLUGIN_NAME_2_FILENAME = new HashMap<>();
 
     /**
-     *
+     * 插件路径（data/data 下） -> 插件使用的ClassLoader 的映射关系
      */
     static final HashMap<String, WeakReference<ClassLoader>> FILENAME_2_DEX = new HashMap<>();
 
@@ -206,6 +206,11 @@ class Plugin {
         return pluginName;
     }
 
+    /**
+     * 通过插件名 查询 插件路径
+     * @param name
+     * @return
+     */
     static final String queryCachedFilename(String name) {
         String filename = null;
         synchronized (PLUGIN_NAME_2_FILENAME) {
@@ -311,11 +316,16 @@ class Plugin {
         return cl;
     }
 
+    /**
+     * 移除内存中插件的PackageInfo、Resources、ComponentList和DexClassLoader缓存对象
+     * @param filename 插件路径
+     */
     static final void clearCachedPlugin(String filename) {
         if (TextUtils.isEmpty(filename)) {
             return;
         }
 
+        //移除 DexClassLoader
         ClassLoader dex = null;
         synchronized (FILENAME_2_DEX) {
             WeakReference<ClassLoader> ref = FILENAME_2_DEX.get(filename);
@@ -328,6 +338,7 @@ class Plugin {
             }
         }
 
+        //移除 Resources
         Resources resources = null;
         synchronized (FILENAME_2_RESOURCES) {
             WeakReference<Resources> ref = FILENAME_2_RESOURCES.get(filename);
@@ -340,6 +351,7 @@ class Plugin {
             }
         }
 
+        //移除 PackageInfo
         PackageInfo packageInfo = null;
         synchronized (FILENAME_2_PACKAGE_INFO) {
             WeakReference<PackageInfo> ref = FILENAME_2_PACKAGE_INFO.get(filename);
@@ -352,6 +364,7 @@ class Plugin {
             }
         }
 
+        //移除 ComponentList
         ComponentList cl = null;
         synchronized (FILENAME_2_COMPONENT_LIST) {
             WeakReference<ComponentList> ref = FILENAME_2_COMPONENT_LIST.get(filename);
