@@ -17,6 +17,7 @@
 package com.qihoo360.replugin;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.qihoo360.replugin.helper.LogDebug;
 import com.qihoo360.replugin.helper.LogRelease;
@@ -39,6 +40,7 @@ public final class RePluginConfig {
     private RePluginCallbacks callbacks;//插件框架对外回调接口
     private RePluginEventCallbacks eventCallbacks;// 插件化框架对外事件回调接口
 
+    // data/data/包名/files
     private File pnInstallDir;//"p-n型插件安装的路径
     private boolean verifySign = false;//是否开启插件签名校验
     private boolean persistentEnable = true;
@@ -313,6 +315,7 @@ public final class RePluginConfig {
 
     // 针对RePlugin.App.AttachBaseContext的调用，初始化默认值
     void initDefaults(Context context) {
+        // data/data/包名/files
         if (pnInstallDir == null) {
             pnInstallDir = context.getFilesDir();
         }

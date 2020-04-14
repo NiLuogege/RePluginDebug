@@ -22,6 +22,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.loader.utils.SysUtils;
 import com.qihoo360.loader2.PluginProcessMain;
 import com.qihoo360.replugin.helper.HostConfigHelper;
@@ -50,6 +51,7 @@ public class IPC {
 
     /**
      * [HIDE] 外界请不要调用此方法
+     * context: 宿主Application 对象
      */
     public static void init(Context context) {
         //获取当前进程名
@@ -78,6 +80,8 @@ public class IPC {
         sIsUIProcess = sCurrentProcess.equals(sPackageName);
         //如果当前进程名==常驻进程名 说明当前进程就是常驻进程
         sIsPersistentProcess = sCurrentProcess.equals(sPersistentProcessName);
+
+//        LogUtil.e("常驻进程名= "+sPersistentProcessName);
     }
 
     /**

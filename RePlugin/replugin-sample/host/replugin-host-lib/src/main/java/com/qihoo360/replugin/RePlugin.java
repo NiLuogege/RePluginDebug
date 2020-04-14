@@ -961,7 +961,7 @@ public class RePlugin {
                 return;
             }
 
-            //缓存APP对象
+            //缓存宿主APP对象
             RePluginInternal.init(app);
             sConfig = config;
             //初始化默认值

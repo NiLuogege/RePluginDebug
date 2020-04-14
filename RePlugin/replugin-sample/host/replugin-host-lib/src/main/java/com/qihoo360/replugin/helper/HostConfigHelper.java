@@ -16,6 +16,7 @@
 
 package com.qihoo360.replugin.helper;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.replugin.utils.ReflectUtils;
 
 /**
@@ -30,6 +31,7 @@ public class HostConfigHelper {
     private static final String HOST_CONFIG_FILE_PATH = "com.qihoo360.replugin.gen.";
     private static final String HOST_CONFIG_FILE_NAME = "RePluginHostConfig";
 
+    //replugin-host-gradle中生成的 RePluginHostConfig.java 类
     private static Class<?> HOST_CONFIG_CLASS;
 
     //------------------------------------------------------------
@@ -40,7 +42,7 @@ public class HostConfigHelper {
     // 是否使用“常驻进程”（见PERSISTENT_NAME）作为插件的管理进程
     public static boolean PERSISTENT_ENABLE = true;
 
-    // 常驻进程名
+    // 常驻进程名，会在 使用之前先被静态代码块中 设置
     public static String PERSISTENT_NAME = ":GuardService";
 
     // 背景透明的坑的数量（每种 launchMode 不同）
@@ -90,6 +92,7 @@ public class HostConfigHelper {
 
         try {
             PERSISTENT_NAME = readField("PERSISTENT_NAME");
+//            LogUtil.e("静态代码块中设置 常驻进程名= "+PERSISTENT_NAME);
         } catch (NoSuchFieldException e) {
             // Ignore, Just use default value
         }
