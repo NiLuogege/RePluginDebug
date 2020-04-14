@@ -42,6 +42,7 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
  */
 public class PMF {
 
+    //宿主Application 对象
     private static Context sContext;
 
     static PmBase sPluginMgr;
@@ -61,14 +62,14 @@ public class PMF {
     }
 
     /**
-     * @param application
+     * @param application 宿主 Application
      */
     public static final void init(Application application) {
         //记录Application
         setApplicationContext(application);
 
         //1. 初始化主线程handler
-        //2. 通过当前进程的名字判断应该将插件分配到哪个进程中
+        //2. 通过当前进程的名字 获取 进程对应的 int值
         PluginManager.init(application);
 
         //初始化PmBase

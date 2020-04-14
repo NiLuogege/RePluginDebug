@@ -19,6 +19,7 @@ package com.qihoo360.loader2;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.mobilesafe.api.Tasks;
 import com.qihoo360.replugin.base.IPC;
@@ -90,37 +91,43 @@ public class PluginManager {
         //获取进程 uid
         sUid = android.os.Process.myUid();
 
-        // 通过当前进程的名字判断应该将插件分配到哪个进程中
+        // 通过当前进程的名字 获取 进程对应的 int值
         sPluginProcessIndex = evalPluginProcess(IPC.getCurrentProcessName());
     }
 
     /**
-     *
-     * 通过当前进程的名字判断应该将插件分配到哪个进程中
+     * 通过当前进程的名字 获取 进程对应的 int值
      *
      * @param name 当前进程名
      * @return 进程标识(int 值)
      */
     static final int evalPluginProcess(String name) {
+
+        LogUtil.e("currentProccessName= " + name);
+
         int index = IPluginManager.PROCESS_AUTO;
 
         try {
+            // 包名和进程名相同 说明就是主进程
             if (TextUtils.equals(IPC.getPackageName(), name)) {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "plugin process checker: default, index=" + 0);
                 }
-                //ui 进程标识
+                //ui 进程标识 -1
                 return IPluginManager.PROCESS_UI;
             }
 
             if (!TextUtils.isEmpty(name)) {
+                //PluginProcessHost.PROCESS_PLUGIN_SUFFIX2 = :p
                 if (name.contains(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2)) {
+                    // tail = 例如 :p2
                     String tail = PluginProcessHost.processTail(name);
                     //获取坑位的 进程int值(小于0) 并返回
                     return PluginProcessHost.PROCESS_INT_MAP.get(tail);
                 }
             }
 
+            // 是否符合 ...:loader...
             Matcher m = PROCESS_NAME_PATTERN.matcher(name);
             if (m == null || !m.matches()) {
                 if (LOG) {
@@ -146,6 +153,7 @@ public class PluginManager {
                 return IPluginManager.PROCESS_AUTO;
             }
 
+            //后去 loader 后的 值并返回，这个值是大于0的
             String str = r.group(2);
             index = Integer.parseInt(str);
             if (LOG) {
