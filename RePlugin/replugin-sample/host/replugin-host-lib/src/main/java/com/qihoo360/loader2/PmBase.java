@@ -312,6 +312,7 @@ class PmBase {
             LogDebug.d(PLUGIN_TAG, "search plugins from file system");
         }
 
+        // 初始化 服务端的binder接口
         //继承于IPluginHost.Stub,是一个Binder对象 可以理解为Server端，非常的像AMS的结构和原理
         mHostSvc = new PmHostSvc(mContext, this);
         //缓存自己的 IPluginHost

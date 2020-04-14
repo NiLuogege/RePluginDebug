@@ -120,7 +120,7 @@ public class Constant {
     public static final boolean LOG_V5_FILE_SEARCH = false;
 
     /**
-     *
+     * 常年为 false
      */
     public static final boolean SIMPLE_QUIT_CONTROLLER = false;
 
