@@ -285,6 +285,7 @@ class Loader {
                         Resources r = pm.getResourcesForApplication(mPackageInfo.applicationInfo);
                         mPkgResources = new Resources(r.getAssets(), r.getDisplayMetrics(), r.getConfiguration());
                     } else {
+                        //直接通过api获取 Resources
                         mPkgResources = pm.getResourcesForApplication(mPackageInfo.applicationInfo);
                     }
                 } catch (NameNotFoundException e) {
@@ -303,6 +304,7 @@ class Loader {
                     LogDebug.d(PLUGIN_TAG, "get resources for app, r=" + mPkgResources);
                 }
 
+                // 插件路径 和 Resources的 映射关系
                 // 缓存表: Resources
                 synchronized (Plugin.FILENAME_2_RESOURCES) {
                     Plugin.FILENAME_2_RESOURCES.put(mPath, new WeakReference<>(mPkgResources));
@@ -312,9 +314,11 @@ class Loader {
                 return isResourcesLoaded();
             }
 
+            //获取缓存的 ClassLoader
             mClassLoader = Plugin.queryCachedClassLoader(mPath);
             if (mClassLoader == null) {
-                // ClassLoader
+                // 获取优化有的 dex 文件路径
+                // 已内置插件为例：data/data/packagename/plugins_v3/oat/arm64/
                 String out = mPluginObj.mInfo.getDexParentDir().getPath();
                 //changeDexMode(out);
 
@@ -329,7 +333,11 @@ class Loader {
                     // 线上环境保持不变
                     parent = getClass().getClassLoader().getParent(); // TODO: 这里直接用父类加载器
                 }
+
+                // 获取 存储 库的 文件夹，这里是已经被替换过的
+                // 例如 /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3_libs/demo1-10-10-104
                 String soDir = mPackageInfo.applicationInfo.nativeLibraryDir;
+                LogUtil.e("soDir= "+soDir);
 
                 long begin = 0;
                 boolean isDexExist = false;

@@ -445,6 +445,9 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
     }
 
     /**
+     * 获取优化后的 dex 文件存储目录  已内置插件为例：data/data/packagename/plugins_v3/oat/arm64/
+     *
+     *
      * 获取Dex（优化后）生成时所在的目录 <p>
      *
      * Android O之前：

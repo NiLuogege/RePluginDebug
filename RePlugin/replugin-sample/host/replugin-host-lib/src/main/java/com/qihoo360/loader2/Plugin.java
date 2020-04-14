@@ -215,6 +215,13 @@ class Plugin {
         return filename;
     }
 
+    /**
+     *
+     * 通过插件路径 获取 ClassLoader
+     *
+     * @param filename 插件路径 data/data/packagename/plugins_v3/demo1-10-10-104.jar 下
+     * @return
+     */
     static final ClassLoader queryCachedClassLoader(String filename) {
         ClassLoader dex = null;
         if (!TextUtils.isEmpty(filename)) {
