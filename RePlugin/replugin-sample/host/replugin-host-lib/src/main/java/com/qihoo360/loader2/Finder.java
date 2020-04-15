@@ -37,10 +37,10 @@ public class Finder {
      * 扫描插件
      */
     static final void search(Context context, PxAll all) {
-        // 扫描内置插件
+        // 扫描内置插件并缓存到 PxAll 对象中
         FinderBuiltin.loadPlugins(context, all);
 
-        // 扫描V5插件
+        // 扫描V5插件 例如：app_plugins_v3 并缓存到 PxAll 对象中
         File pluginDir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
         V5Finder.search(context, pluginDir, all);
 

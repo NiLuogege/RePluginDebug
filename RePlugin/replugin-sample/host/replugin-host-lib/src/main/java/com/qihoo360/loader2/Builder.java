@@ -203,25 +203,36 @@ public class Builder {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "delete obsolote plugin=" + p);
             }
+            //删除过时的插件
             boolean rc = p.deleteObsolote(context);
-            if (!rc) {
+            if (!rc) {//如果删除没成功 打印log
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "can't delete obsolote plugin=" + p);
                 }
             }
         }
 
-        // 删除所有和PLUGINs不一致的DEX文件
+        // 删除所有和PLUGINs不一致的DEX文件（不是RePlugin系统内或者多余的文件）
         deleteUnknownDexs(context, all);
 
-        // 删除所有和PLUGINs不一致的SO库目录
+        // 删除所有和PLUGINs不一致的SO库目录（不是RePlugin系统内或者多余的文件）
         // Added by Jiongxuan Zhang
         deleteUnknownLibs(context, all);
 
         // 构建数据
     }
 
+    /**
+     * 获取dex 文件存放目录
+     *
+     * 系统大于7.0：例如：app_plugins_v3/oat/arm64
+     * 系统小于7.0：例如：app_plugins_v3_odex/
+     *
+     * @param context
+     * @return
+     */
     private static File getDexDir(Context context) {
+        //大于7.0
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
             return new File(context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0) + File.separator + "oat" + File.separator + VMRuntimeCompat.getArtOatCpuType());
         } else {
@@ -229,20 +240,28 @@ public class Builder {
         }
     }
 
+    /**
+     * 删除所有和PLUGINs不一致的DEX文件（不是RePlugin系统内或者多余的文件）
+     * @param context
+     * @param all
+     */
     private static void deleteUnknownDexs(Context context, PxAll all) {
         HashSet<String> names = new HashSet<>();
         for (PluginInfo p : all.getPlugins()) {
             names.add(p.getDexFile().getName());
 
             if (LOG) {
+                //例如：dexFile:demo1-10-10-104.odex
                 LogDebug.d(PLUGIN_TAG, "dexFile:" + p.getDexFile().getName());
             }
 
-            // add vdex for Android O
+            // 大于7.0 的时候 不止会有 odex文件 还有 vdex文件...
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+                //获得文件名字，不包含扩展名
                 String fileNameWithoutExt = FileUtils.getFileNameWithoutExt(p.getDexFile().getAbsolutePath());
 
                 if (LOG) {
+                    //例如：vdexFile:demo1-10-10-104.vdex
                     LogDebug.d(PLUGIN_TAG, "vdexFile:" + (fileNameWithoutExt + ".vdex"));
                 }
 
@@ -250,6 +269,7 @@ public class Builder {
             }
         }
 
+        //获取dex 文件存放目录
         File dexDir = getDexDir(context);
 
         if (LOG) {
@@ -259,6 +279,7 @@ public class Builder {
         File files[] = dexDir.listFiles();
         if (files != null) {
             for (File f : files) {
+                //不需要删除
                 if (names.contains(f.getName())) {
                     if (LOG) {
                         LogDebug.d(PLUGIN_TAG, "no need delete " + f.getAbsolutePath());
@@ -283,16 +304,24 @@ public class Builder {
         }
     }
 
+    /**
+     * 删除所有和PLUGINs不一致的SO库目录（不是RePlugin系统内或者多余的文件）
+     * @param context
+     * @param all
+     */
     private static void deleteUnknownLibs(Context context, PxAll all) {
         HashSet<String> names = new HashSet<>();
         for (PluginInfo p : all.getPlugins()) {
+            //p.getNativeLibsDir():获取当前插件在 私有目录下 so库文件对象
             names.add(p.getNativeLibsDir().getName());
         }
 
+        //app_plugins_v3_libs
         File dir = context.getDir(Constant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
         File files[] = dir.listFiles();
         if (files != null) {
             for (File f : files) {
+                //如果包含就 跳过
                 if (names.contains(f.getName())) {
                     continue;
                 }

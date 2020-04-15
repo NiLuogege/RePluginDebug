@@ -36,14 +36,23 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
  */
 public class V5Finder {
 
+    /**
+     * 扫描 data/data/包名/files 下插件 并缓存到 PxAll 对象中
+     *
+     * @param context
+     * @param pluginDir app_plugins_v3
+     * @param all
+     */
     static final void search(Context context, File pluginDir, PxAll all) {
         // 扫描V5下载目录
         ArrayList<V5FileInfo> v5Plugins = new ArrayList<V5FileInfo>();
         {
+            //dir=data/data/包名/files
             File dir = RePlugin.getConfig().getPnInstallDir();
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "search v5 files: dir=" + dir.getAbsolutePath());
             }
+            // //扫描 data/data/包名/files 下插件 ，构建为V5FileInfo 并装入 plugins
             searchV5Plugins(dir, v5Plugins);
         }
 
@@ -74,6 +83,7 @@ public class V5Finder {
         }
     }
 
+    //扫描 data/data/包名/files 下插件 ，构建为V5FileInfo 并装入 plugins
     private static final void searchV5Plugins(File dir, ArrayList<V5FileInfo> plugins) {
         File files[] = dir.listFiles();
         if (files == null) {
@@ -82,7 +92,15 @@ public class V5Finder {
             }
             return;
         }
+        if (LOG) {
+            LogDebug.d(PLUGIN_TAG, "search v5 plugin: size= " + files.length);
+        }
         for (File f : files) {
+            if (LOG) {
+                //例如：search v5 plugin: plugin= /data/user/0/com.qihoo360.replugin.sample.host/files/plugin_v3_demo1-10-10-104.jar.lock
+                //这是哪里来的文件？
+                LogDebug.d(PLUGIN_TAG, "search v5 plugin: plugin= " + f.getAbsolutePath());
+            }
             if (f.isDirectory()) {
                 continue;
             }
@@ -90,11 +108,15 @@ public class V5Finder {
                 continue;
             }
             V5FileInfo p = null;
+            //构建V5FileInfo对象 为普通插件
             p = V5FileInfo.build(f, V5FileInfo.NORMAL_PLUGIN);
             if (p != null) {
+                //添加到 plugins中
                 plugins.add(p);
                 continue;
             }
+            //构建V5FileInfo对象 为增量插件
+            // 这里为啥 给一个插件对象要构建两个 V5FileInfo？
             p = V5FileInfo.build(f, V5FileInfo.INCREMENT_PLUGIN);
             if (p != null) {
                 plugins.add(p);

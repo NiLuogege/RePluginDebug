@@ -102,7 +102,7 @@ public final class RePluginConfig {
     }
 
     /**
-     * 获取"p-n型插件安装的路径"
+     * 获取"p-n型插件安装的路径" data/data/包名/files
      *
      * @return 插件安装的路径
      */

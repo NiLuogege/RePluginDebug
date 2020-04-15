@@ -78,13 +78,14 @@ public final class ProcessLocker {
     /**
      * 允许传递绝对路径
      *
-     * @param context
-     * @param dir
-     * @param filename
+     * @param context 宿主Application 对象
+     * @param dir data/data/包名/files
+     * @param filename 插件名 例如 plugin_v3_demo1_10_10_104_jar.lock
      */
     public ProcessLocker(Context context, String dir, String filename) {
         mContext = context;
         try {
+            //插件对象
             mFile = new File(dir, filename);
             if (!mFile.exists()) {
                 FileUtils.forceMkdirParent(mFile);

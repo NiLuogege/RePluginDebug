@@ -57,7 +57,7 @@ public class V5FileInfo {
     public static final int NONE_PLUGIN = 0;
 
     /**
-     *
+     * 普通插件？
      */
     public static final int NORMAL_PLUGIN = 1;
 
@@ -67,7 +67,7 @@ public class V5FileInfo {
     public static final int SINGLE_PLUGIN = 2;
 
     /**
-     *
+     * 增量插件
      */
     public static final int INCREMENT_PLUGIN = 3;
 
@@ -104,12 +104,16 @@ public class V5FileInfo {
      */
     private static final int V5_FILE_HEADER_SIZE = 16;
 
+    //（通过V5下载的）增量模式的插件
     private static final Pattern INCREMENT_REGEX;
 
+    //（通过V5下载的）非增量模式的single插件
     private static final Pattern INCREMENT_SINGLE_REGEX;
 
+    //（通过V5下载的）非增量模式的插件
     private static final Pattern NORMAL_REGEX;
 
+    //（通过V5下载的）非增量模式的复合插件
     private static final Pattern MULTI_REGEX;
 
     /**
@@ -229,10 +233,29 @@ public class V5FileInfo {
         return mName;
     }
 
+    /**
+     *
+     * @param context
+     * @param dir app_plugins_v3
+     * @param updateNow
+     * @param verifyCert
+     * @return
+     */
     final PluginInfo updateV5FileTo(Context context, File dir, boolean updateNow, boolean verifyCert) {
         return updateV5FileTo(context, dir, true, updateNow, verifyCert);
     }
 
+    /**
+     *
+     * 解析V5插件并映射为  PluginInfo
+     *
+     * @param context
+     * @param dir app_plugins_v3
+     * @param checkOverride
+     * @param updateNow
+     * @param verifyCert
+     * @return
+     */
     final PluginInfo updateV5FileTo(Context context, File dir, boolean checkOverride, boolean updateNow, boolean verifyCert) {
         FileInputStream is = null;
         FileOutputStream os = null;

@@ -514,11 +514,14 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         // 必须使用宿主的Context对象，防止出现“目录定位到插件内”的问题
         Context context = RePluginInternal.getAppContext();
         File dir;
-        if (isPnPlugin()) {
+        if (isPnPlugin()) {//是否是常用插件（内置插件等）
+            //app_plugins_v3_libs
             dir = context.getDir(Constant.LOCAL_PLUGIN_DATA_LIB_DIR, 0);
-        } else if (getIsPendingCover()) {
+        } else if (getIsPendingCover()) {// 是否支持覆盖更新
+            //app_p_c 用于覆盖更新
             dir = context.getDir(Constant.LOCAL_PLUGIN_APK_COVER_DIR, 0);
-        } else {
+        } else {//其他
+            //app_p_n 纯"APK"插件的Native（SO库）存放目录
             dir = context.getDir(Constant.LOCAL_PLUGIN_APK_LIB_DIR, 0);
         }
         return new File(dir, makeInstalledFileName());
@@ -723,13 +726,13 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
     /**
      * 生成用于放入app_plugin_v3（app_p_n）等目录下的插件的文件名，其中：<p>
      * 1、“纯APK”方案：得到混淆后的文件名（规则见代码内容） <p>
-     * 2、“旧p-n”和“内置插件”（暂定）方案：得到类似 shakeoff_10_10_103 这样的比较规范的文件名 <p>
+     * 2、“旧p-n”和“内置插件”（暂定）方案：得到类似 shakeoff_10_10_103 这样的比较规范的文件名 含义为 插件命名格式为 插件名-最小支持宿主API的版本-最高支持宿主API的版本-插件的版本<p>
      * 3、只获取文件名，其目录和扩展名仍需在外面定义
      *
      * @return 文件名（不含扩展名）
      */
     public String makeInstalledFileName() {
-        if (isPnPlugin() || getType() == TYPE_BUILTIN) {
+        if (isPnPlugin() || getType() == TYPE_BUILTIN) {//如果是内置插件
             return formatName();
         } else {
             // 混淆插件名字，做法：
@@ -1077,6 +1080,10 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         put("v5md5", v5md5);
     }
 
+    /**
+     * 插件命名格式为 插件名-最小支持宿主API的版本-最高支持宿主API的版本-插件的版本
+     * @return
+     */
     private String formatName() {
         return format(getName(), getLowInterfaceApi(), getHighInterfaceApi(), getVersion());
     }
@@ -1101,6 +1108,11 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         intent.putExtra("v5md5", getV5MD5());
     }
 
+    /**
+     * 删除过时的插件
+     * @param context
+     * @return
+     */
     public final boolean deleteObsolote(Context context) {
         if (getType() != TYPE_PN_INSTALLED) {
             return true;
@@ -1108,6 +1120,8 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         if (TextUtils.isEmpty(getPath())) {
             return true;
         }
+
+        //删除
         boolean rc = new File(getPath()).delete();
 
         // 同时清除旧的SO库文件
