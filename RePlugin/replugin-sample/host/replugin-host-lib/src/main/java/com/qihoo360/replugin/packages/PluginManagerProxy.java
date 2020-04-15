@@ -43,7 +43,7 @@ public class PluginManagerProxy {
 
     private static final String TAG = "PluginManagerClient";
 
-    //IPluginManagerServer binder对象（sRemote= PluginServiceServer.Stub 对象）
+    //IPluginManagerServer binder对象（sRemote= PluginManagerServer.Stub 对象）
     private static IPluginManagerServer sRemote;
     private static boolean sRunningSynced;
 
@@ -68,7 +68,7 @@ public class PluginManagerProxy {
             return;
         }
 
-        //sRemote= PluginServiceServer.Stub 对象
+        //sRemote= PluginManagerServer.Stub 对象
         sRemote = host.fetchManagerServer();
     }
 
