@@ -362,11 +362,12 @@ class PmBase {
     }
 
     /**
-     * 从HostSvc（插件管理所在进程）获取所有的插件信息
+     * 从PmHostSvc（插件管理所在进程）获取所有的插件信息
      */
     private void refreshPluginsFromHostSvc() {
         List<PluginInfo> plugins = null;
         try {
+            // 获取所有插件
             plugins = PluginProcessMain.getPluginHost().listPlugins();
         } catch (Throwable e) {
             if (LOGR) {

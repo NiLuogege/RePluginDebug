@@ -320,6 +320,8 @@ public class PluginProcessMain {
         PMF.sPluginMgr.attach();
     }
     /**
+     * 可以理解会获取 PmHostSvc 对象（其实都时binder对象）
+     *
      * sPluginHostLocal 常驻进程使用，非常驻进程为null buyuntao
      * sPluginHostRemote 非常驻进程使用，常驻进程为null，用于非常驻进程连接常驻进程  buyuntao
      * @hide 内部框架使用
