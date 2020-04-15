@@ -434,6 +434,7 @@ public class MP {
      * @hide 内部框架使用
      */
     public static final IPluginClient startPluginProcess(String plugin, int process, PluginBinderInfo info) throws RemoteException {
+        //最后调用到 PmHostSvc.startPluginProcess
         return PluginProcessMain.getPluginHost().startPluginProcess(plugin, process, info);
     }
 
