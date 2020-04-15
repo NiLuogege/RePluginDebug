@@ -21,6 +21,8 @@ public class PluginDexClassLoaderPatch {
     /**
      * 当一个类，从插件中找不到时，是否需要再从宿主中找一找
      *
+     * 默认只支持网络库
+     *
      * @param className
      * @return
      */

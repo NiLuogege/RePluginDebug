@@ -49,7 +49,7 @@ public class PluginDexClassLoader extends DexClassLoader {
 
     private static final String TAG = "PluginDexClassLoader";
 
-    private final ClassLoader mHostClassLoader;
+    private final ClassLoader mHostClassLoader; //宿主ClassLoader
 
     private static Method sLoadClassMethod; // 宿主 classLoader 的  loadClass 方法
 
@@ -103,11 +103,11 @@ public class PluginDexClassLoader extends DexClassLoader {
                 }
                 return pc;
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {//没有找到类
             // Do not throw "e" now
             cnfException = e;
 
-            if (PluginDexClassLoaderPatch.need2LoadFromHost(className)) {
+            if (PluginDexClassLoaderPatch.need2LoadFromHost(className)) {//如果网络库没找着，就在宿主中找
                 try {
                     return loadClassFromHost(className, resolve);
                 } catch (ClassNotFoundException e1) {
