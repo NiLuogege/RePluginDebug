@@ -332,7 +332,7 @@ class PmBase {
             //这里调用的load是远程调用的，最终调用了PluginManagerServer的loadLocked方法
             //这里主要是判断之前安装的插件是否需要更新或删除等操作，然后进行响应的操作并返回处理后的集合，
             //返回的集合是一个副本，这样可以保证信息的安全性
-            //加载插件
+            //加载插件 （这里应该是加载外部插件）
             List<PluginInfo> l = PluginManagerProxy.load();
             if (l != null) {
                 // 将"纯APK"插件信息并入总的插件信息表中，方便查询

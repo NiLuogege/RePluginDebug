@@ -108,8 +108,14 @@ public class PluginInfoList implements Iterable<PluginInfo> {
         return false;
     }
 
+    /**
+     * 存储插件信息到 私有目录/app_p_a/p.l
+     * @param context
+     * @return
+     */
     public boolean save(Context context) {
         try {
+            //私有目录/app_p_a/p.l
             final File f = getFile(context);
             final JSONArray jsonArr = new JSONArray();
             for (PluginInfo i : getCopyValues()) jsonArr.put(i.getJSON());

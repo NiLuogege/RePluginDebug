@@ -348,6 +348,9 @@ public class PluginManagerServer {
         }
     }
 
+    /**
+     * 更新插件并保存
+     */
     private void updateAllIfNeeded() {
         // FIXME 务必保证sync方法被调用，否则有可能判断不准确
         int updateNum = 0;
@@ -402,7 +405,7 @@ public class PluginManagerServer {
     }
 
     /**
-     *
+     * 更新插件信息
      * @param curInfo 当前插件信息
      * @param newInfo 新插件信息
      */
@@ -410,6 +413,7 @@ public class PluginManagerServer {
         //是否需要同版本覆盖
         final boolean covered = newInfo.getIsPendingCover();
         if (covered) {
+            //新 PluginInfo 内容 覆盖 现有  PluginInfo 不删除 新PluginInfo
             move(curInfo, newInfo);
         } else {
             // 删除旧版本插件，不管是不是p-n的，且清掉Dex和Native目录
@@ -428,11 +432,17 @@ public class PluginManagerServer {
             //修改isPendingCover属性后必须同时修改json中的path路径
             newInfo.setPath(newInfo.getApkFile().getPath());
         } else {
+            //更新现有插件信息
             curInfo.update(newInfo);
             curInfo.setPendingUpdate(null);
         }
     }
 
+    /**
+     * 新 PluginInfo 内容 覆盖 现有  PluginInfo 不删除 新PluginInfo
+     * @param curPi
+     * @param newPi
+     */
     private void move(@NonNull PluginInfo curPi, @NonNull PluginInfo newPi) {
         if (LogDebug.LOG) {
             LogDebug.i(TAG, "move. curPi=" + curPi.getPath() + "; newPi=" + newPi.getPath());
