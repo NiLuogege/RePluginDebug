@@ -64,9 +64,15 @@ public class PluginInfoList implements Iterable<PluginInfo> {
         return new ArrayList<>(getCopyValues());
     }
 
+    /**
+     * 解析 私有目录/app_p_a/p.l 文件 生成PluginInfo 缓存在 mMap中，有可能文件不存在
+     * @param context
+     * @return
+     */
     public boolean load(Context context) {
         try {
             // 1. 读出字符串
+            // f = 私有目录/app_p_a/p.l
             final File f = getFile(context);
             final String result = FileUtils.readFileToString(f, Charsets.UTF_8);
             if (TextUtils.isEmpty(result)) {
@@ -135,6 +141,11 @@ public class PluginInfoList implements Iterable<PluginInfo> {
         if (!TextUtils.isEmpty(pi.getAlias())) mMap.put(pi.getAlias(), pi);
     }
 
+    /**
+     *
+     * @param context
+     * @return 私有目录/app_p_a/p.l
+     */
     @NonNull
     private File getFile(Context context) {
         final File d = context.getDir(Constant.LOCAL_PLUGIN_APK_SUB_DIR, 0);

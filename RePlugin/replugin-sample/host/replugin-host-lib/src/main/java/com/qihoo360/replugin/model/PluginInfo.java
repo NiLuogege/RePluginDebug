@@ -775,6 +775,11 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         mParentInfo = parent;
     }
 
+    /**
+     * 通过json 生成 PluginInfo
+     * @param jo
+     * @return
+     */
     static PluginInfo createByJO(JSONObject jo) {
         if (jo == null || jo.length() == 0) return null;
         PluginInfo pi = new PluginInfo(jo);

@@ -64,10 +64,11 @@ public class PluginManagerServer {
 
     private Context mContext;
 
-    // 存储所有插件的信息
+    // 只存新插件信息
     // TODO 目前这里只存新插件信息，不做额外的处理。除此之外，在PmHostSvc和PmBase中存放着所有插件信息，将来会优化这里
     private PluginInfoList mList = new PluginInfoList();
 
+    // 进程名 -> 运行插件的 映射
     private Map<String, PluginRunningList> mProcess2PluginsMap = new ConcurrentHashMap<>();
 
     private IPluginManagerServer mStub;
@@ -97,6 +98,7 @@ public class PluginManagerServer {
     }
 
     private List<PluginInfo> loadLocked() {
+        // 私有目录/app_p_a/p.l  文件不存在就直接返回
         if (!mList.load(mContext)) {
             return null;
         }
@@ -365,6 +367,7 @@ public class PluginManagerServer {
 
     // NOTE 调用此方法后，务必最终调用sList.save()，不然会丢失改动
     private boolean updateIfNeeded(PluginInfo curInfo) {
+        //插件是否正在运行
         if (isPluginRunningLocked(curInfo.getName(), null)) {
             // 插件正在被使用，不能贸然升级或者卸载
             if (LogDebug.LOG) {
@@ -386,7 +389,7 @@ public class PluginManagerServer {
             // 需要更新插件？那就直接来
             updateNow(curInfo, curInfo.getPendingUpdate());
             return true;
-        } else if (curInfo.isNeedCover()) {
+        } else if (curInfo.isNeedCover()) {//是否需要同版本覆盖更新
             updateNow(curInfo, curInfo.getPendingCover());
             return true;
         } else {
@@ -398,7 +401,13 @@ public class PluginManagerServer {
         }
     }
 
+    /**
+     *
+     * @param curInfo 当前插件信息
+     * @param newInfo 新插件信息
+     */
     private void updateNow(PluginInfo curInfo, PluginInfo newInfo) {
+        //是否需要同版本覆盖
         final boolean covered = newInfo.getIsPendingCover();
         if (covered) {
             move(curInfo, newInfo);
@@ -525,6 +534,11 @@ public class PluginManagerServer {
         return false;
     }
 
+    /**
+     * 卸载插件
+     * @param info
+     * @return
+     */
     private boolean uninstallNow(PluginInfo info) {
         if (LOG) {
             LogDebug.i(TAG, "Not running. Uninstall now! pn=" + info.getName());
@@ -552,6 +566,12 @@ public class PluginManagerServer {
         return l;
     }
 
+    /**
+     *
+     * @param pluginName 插件名称
+     * @param process 进程名
+     * @return
+     */
     private boolean isPluginRunningLocked(String pluginName, String process) {
         if (TextUtils.isEmpty(process)) {
             // 没有明确目标进程，只要找到了就返回
