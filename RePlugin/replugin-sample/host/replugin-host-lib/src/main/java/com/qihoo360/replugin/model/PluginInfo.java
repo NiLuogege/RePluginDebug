@@ -954,6 +954,7 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
             PI_NAME, PI_LOW, PI_HIGH, PI_VER, PI_TYPE, "v5type", PI_PATH, "v5index", "v5offset", "v5length", "v5md5"
     };
 
+    //插件命名规范校验器
     private static final Pattern REGEX;
 
     static {
@@ -981,7 +982,13 @@ public class PluginInfo implements Serializable, Parcelable, Cloneable {
         return name + "-" + low + "-" + high + "-" + ver;
     }
 
+    /**
+     * 通过文件名构建一个 PluginInfo
+     * @param f
+     * @return
+     */
     public static final PluginInfo build(File f) {
+        //插件命名规范校验
         Matcher m = REGEX.matcher(f.getName());
         if (m == null || !m.matches()) {
             if (LOG) {

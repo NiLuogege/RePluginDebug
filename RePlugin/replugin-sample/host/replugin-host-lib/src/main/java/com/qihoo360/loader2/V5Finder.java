@@ -71,6 +71,7 @@ public class V5Finder {
                 continue;
             }
 
+            //解析V5插件并映射为  PluginInfo
             PluginInfo info = p.updateV5FileTo(context, pluginDir, false, true);
             // 已检查版本
             if (info == null) {

@@ -321,6 +321,7 @@ class PmBase {
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 
         mAll = new Builder.PxAll();
+        //整理插件并缓存到 PxAll中
         Builder.builder(mContext, mAll);
         refreshPluginMap(mAll.getPlugins());
 

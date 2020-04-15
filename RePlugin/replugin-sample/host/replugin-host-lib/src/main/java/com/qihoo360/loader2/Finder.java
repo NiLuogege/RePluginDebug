@@ -34,7 +34,7 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 public class Finder {
 
     /**
-     * 扫描插件
+     * 扫描并处理插件 并缓存到  PxAll 中对应的 集合中
      */
     static final void search(Context context, PxAll all) {
         // 扫描内置插件并缓存到 PxAll 对象中
@@ -42,6 +42,7 @@ public class Finder {
 
         // 扫描V5插件 例如：app_plugins_v3 并缓存到 PxAll 对象中
         File pluginDir = context.getDir(Constant.LOCAL_PLUGIN_SUB_DIR, 0);
+        //处理V5插件 并缓存到 PxAll 对象中
         V5Finder.search(context, pluginDir, all);
 
         // 扫描现有插件，包括刚才从V5插件文件更新过来的文件
@@ -50,6 +51,7 @@ public class Finder {
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "search plugins: dir=" + pluginDir.getAbsolutePath());
             }
+            //遍历 app_plugins_v3 下的文件 构建出  PluginInfo 并缓存到 PxAll的 normals 中
             searchLocalPlugins(pluginDir, all, deleted);
         }
 
@@ -68,6 +70,14 @@ public class Finder {
         deleted.clear();
     }
 
+    /**
+     *
+     * 遍历 app_plugins_v3 下的文件 构建出  PluginInfo 并缓存到 PxAll的 normals 中
+     *
+     * @param dir app_plugins_v3
+     * @param all
+     * @param others
+     */
     private static final void searchLocalPlugins(File dir, PxAll all, HashSet<File> others) {
         File files[] = dir.listFiles();
         if (files == null) {
@@ -84,11 +94,13 @@ public class Finder {
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "search local plugin: zero length, file=" + f.getAbsolutePath());
                 }
+                //文件有问题 加入到 others 中
                 if (others != null) {
                     others.add(f);
                 }
                 continue;
             }
+            //通过文件名构建一个 PluginInfo
             PluginInfo info = PluginInfo.build(f);
             if (info == null) {
                 if (others != null) {

@@ -53,7 +53,7 @@ public class Builder {
         private final ArrayList<PluginInfo> v5 = new ArrayList<PluginInfo>();
 
         /**
-         * 释放出来的普通插件
+         * 释放出来的普通插件 没看到有用啊
          */
         private final ArrayList<PluginInfo> normals = new ArrayList<PluginInfo>();
 
