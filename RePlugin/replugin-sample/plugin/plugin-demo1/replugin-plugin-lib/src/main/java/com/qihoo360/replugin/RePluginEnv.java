@@ -27,16 +27,19 @@ import android.os.IBinder;
  */
 public class RePluginEnv {
 
-    private static Context sPluginContext;
+    private static Context sPluginContext; // 宿主的 context
 
-    private static Context sHostContext;
+    private static Context sHostContext; // 宿主的 context
 
-    private static ClassLoader sHostClassLoader;
+    private static ClassLoader sHostClassLoader; //插件使用的 ClassLoader
 
     private static IBinder sPluginManager;
 
     /**
      * NOTE：如需使用MobileSafeHelper类，请务必先在Entry中调用此方法
+     *
+     * @param cl 插件使用的 ClassLoader
+     * @param context  宿主的 context
      */
     static void init(Context context, ClassLoader cl, IBinder manager) {
         sPluginContext = context;

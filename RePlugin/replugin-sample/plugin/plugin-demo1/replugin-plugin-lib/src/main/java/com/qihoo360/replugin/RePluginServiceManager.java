@@ -38,6 +38,7 @@ public class RePluginServiceManager {
 
     private static RePluginServiceManager sInstance;
 
+    // name -> IBinder 的映射
     private ConcurrentHashMap<String, IBinder> mServices = new ConcurrentHashMap<String, IBinder>();
 
     /**

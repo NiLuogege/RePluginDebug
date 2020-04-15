@@ -29,6 +29,8 @@ import com.qihoo360.loader2.IPlugin;
 public class Entry {
 
     /**
+     * 宿主框架最先调用的类 用于初始化框架和环境
+     *
      * @param context 插件上下文
      * @param cl      HOST程序的类加载器
      * @param manager 插件管理器
@@ -43,6 +45,7 @@ public class Entry {
         return new IPlugin.Stub() {
             @Override
             public IBinder query(String name) throws RemoteException {
+                //通过名称 获取 已注册的IBinder
                 return RePluginServiceManager.getInstance().getService(name);
             }
         };

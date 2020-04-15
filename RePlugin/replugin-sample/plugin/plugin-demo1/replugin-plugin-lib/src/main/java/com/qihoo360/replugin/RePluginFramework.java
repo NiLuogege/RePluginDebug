@@ -66,11 +66,15 @@ public class RePluginFramework {
         }
         mInitialized = true;
 
+        // 下面的操作都是通过 反射获取方法
         try {
-            //
+            //初始化 Factory2，Factory 相关方法
             RePluginInternal.ProxyRePluginInternalVar.initLocked(cl);
+            // 初始化 RePlugin相关方法
             RePlugin.ProxyRePluginVar.initLocked(cl);
+            // 初始化 LocalBroadcastManager 相关方法
             PluginLocalBroadcastManager.ProxyLocalBroadcastManagerVar.initLocked(cl);
+            // 初始化 PluginProviderClient 相关方法
             PluginProviderClient.ProxyRePluginProviderClientVar.initLocked(cl);
             PluginServiceClient.ProxyRePluginServiceClientVar.initLocked(cl);
             IPC.ProxyIPCVar.initLocked(cl);
