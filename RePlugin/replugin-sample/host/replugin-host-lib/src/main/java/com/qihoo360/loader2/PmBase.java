@@ -86,17 +86,17 @@ class PmBase {
     private final Context mContext;
 
     /**
-     *
+     * 缓存预埋的 Activitie的坑
      */
     private final HashSet<String> mContainerActivities = new HashSet<String>();
 
     /**
-     *
+     * 缓存预埋的 Provider的坑
      */
     private final HashSet<String> mContainerProviders = new HashSet<String>();
 
     /**
-     *
+     *缓存预埋的 Service的坑
      */
     private final HashSet<String> mContainerServices = new HashSet<String>();
 
@@ -127,7 +127,7 @@ class PmBase {
     private final HashMap<String, DynamicClass> mDynamicClasses = new HashMap<String, DynamicClass>();
 
     /**
-     *
+     * 默认插件名
      */
     private String mDefaultPluginName;
 
@@ -157,7 +157,7 @@ class PmBase {
     private PmHostSvc mHostSvc;
 
     /**
-     *
+     * 这个 常驻进程和其他进程都会初始化 ，用于通信
      */
     PluginProcessPer mClient;
 
@@ -238,7 +238,7 @@ class PmBase {
         // TODO init
         //init(context, this);
 
-        if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI || PluginManager.isPluginProcess()) {
+        if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI || PluginManager.isPluginProcess()) {//如果是UI进程或者插件检查
             String suffix;
             if (PluginManager.sPluginProcessIndex == IPluginManager.PROCESS_UI) {//UI进程
                 //当前lib Androidmanifest中 配置了后缀为 N1 的 Provider 和 Service 但是现在不知道是干啥的，也没找到具体的类在哪里
@@ -254,7 +254,7 @@ class PmBase {
             mContainerServices.add(IPC.getPackageName() + CONTAINER_SERVICE_PART + suffix);
         }
 
-        //初始化客户端binder对象
+        // 这个是一个binder对象 常驻进程和其他进程都会初始化 ，用于通信
         mClient = new PluginProcessPer(context, this, PluginManager.sPluginProcessIndex, mContainerActivities);
 
         //创建通信桥梁
@@ -475,6 +475,7 @@ class PmBase {
     final void attach() {
         //
         try {
+            //会调用到 pmHostSvc.attachPluginProcess
             mDefaultPluginName = PluginProcessMain.getPluginHost().attachPluginProcess(IPC.getCurrentProcessName(), PluginManager.sPluginProcessIndex, mClient, mDefaultPluginName);
         } catch (Throwable e) {
             if (LOGR) {

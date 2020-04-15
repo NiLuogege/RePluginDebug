@@ -317,11 +317,11 @@ public class StubProcessManager {
     /**
      * attach坑位进程，设置坑位进程为运行状态，并返回正在使用坑位进程的插件名称 buyuntao
      *
-     * @param pid
-     * @param index
-     * @param binder
-     * @param client
-     * @param def
+     * @param pid 调用方进程id
+     * @param index 进程标识
+     * @param binder PluginProcessPer 对象
+     * @param client PluginProcessPer的binder 代理对象
+     * @param def 默认进程名
      * @return
      */
     static final String attachStubProcess(int pid, int index, IBinder binder, IPluginClient client, String def) {

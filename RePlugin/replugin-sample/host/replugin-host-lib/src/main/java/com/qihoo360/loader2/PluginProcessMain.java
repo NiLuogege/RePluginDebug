@@ -62,8 +62,12 @@ public class PluginProcessMain {
     private static IPluginHost sPluginHostLocal;
 
     /**
+     *
+     *
      * 非常驻进程使用，常驻进程为null，用于非常驻进程连接常驻进程  buyuntao
      * 用于非常驻进程 和 常驻进程通信
+     *
+     * 非常驻进程时：com.qihoo360.loader2.IPluginHost.Stub.Proxy 对象 用于和常驻进程通信
      */
     private static IPluginHost sPluginHostRemote;
     /**
@@ -72,6 +76,7 @@ public class PluginProcessMain {
     static HashMap<String, IBinder> sBinders = new HashMap<String, IBinder>();
     /**
      * 当前运行的所有进程的列表（常驻进程除外）
+     * 进程名 -> 进程的记录
      */
     private static final Map<String, ProcessClientRecord> ALL = new HashMap<String, ProcessClientRecord>();
     /**
@@ -98,6 +103,15 @@ public class PluginProcessMain {
         IPluginClient client;
         PluginManagerServer pluginManager; //单个进程的插件管理类
 
+        /**
+         * @param plugin 插件名
+         * @param pid 调用方进程id
+         * @param process 进程名称
+         * @param index 进程标识
+         * @param binder PluginProcessPer 对象
+         * @param client PluginProcessPer的binder 代理对象
+         * @param pms 常驻进程的 PluginManagerServer 对象
+         */
         public ProcessClientRecord(String process, String plugin, int pid, int index, IBinder binder, IPluginClient client, PluginManagerServer pms) {
             this.name = process;
             this.plugin = plugin;
@@ -287,7 +301,8 @@ public class PluginProcessMain {
         // 连接到插件化管理器的服务端
         // Added by Jiongxuan Zhang
         try {
-            // 初始化 插件管理的服务端 也就是 PluginManagerServer.Stub
+            //常驻进程调用： 初始化 插件管理的服务端 也就是 PluginManagerServer.Stub
+            //其他进程调用：初始化 PluginManagerProxy.sRemote 对象用于和常驻进程通信
             PluginManagerProxy.connectToServer(sPluginHostRemote);
 
             // 将当前进程的"正在运行"列表和常驻做同步
@@ -580,17 +595,22 @@ public class PluginProcessMain {
 
     /**
      * 常驻进程调用,添加进程信息到进程管理列表
-     * @param pid
-     * @param process
-     * @param index
-     * @param binder
-     * @param client
+     * @param pid 调用方进程id
+     * @param process 进程名称
+     * @param index 进程标识
+     * @param binder PluginProcessPer 对象
+     * @param client PluginProcessPer的binder 代理对象
+     * @param def 默认进程名
+     * @param pms 常驻进程的 PluginManagerServer 对象
      * @return 进程的默认插件名称（非框架内的进程返回null）
      */
     static final String attachProcess(int pid, String process, int index, IBinder binder, IPluginClient client, String def, PluginManagerServer pms) {
+        //获取默认插件名
         final String plugin = getDefaultPluginName(pid, index, binder, client, def);
+        //创建 进程 客户端 记录
         final ProcessClientRecord pr = new ProcessClientRecord(process, plugin, pid, index, binder, client, pms);
         try {
+            //注册死亡回调
             pr.binder.linkToDeath(pr, 0);
         } catch (Throwable e) {
             if (LOGR) {
@@ -600,6 +620,7 @@ public class PluginProcessMain {
         writeProcessClientLock(new Action<Void>() {
             @Override
             public Void call() {
+                //记录到ALL中
                 ALL.put(pr.name, pr);
                 return null;
             }
@@ -718,22 +739,24 @@ public class PluginProcessMain {
     }
 
     /**
-     * 获取进程的默认插件名
-     * @param pid
-     * @param index
-     * @param binder
-     * @param client
-     * @param def
+     * 获取进程的默认插件名 有些使用进程名代替
+     * @param pid 调用方进程id
+     * @param index 进程标识
+     * @param binder PluginProcessPer 对象
+     * @param client PluginProcessPer的binder 代理对象
+     * @param def 默认进程名
      * @return
      */
     private static final String getDefaultPluginName(int pid, int index, IBinder binder, IPluginClient client, String def) {
-        if (index == IPluginManager.PROCESS_UI) {
+        if (index == IPluginManager.PROCESS_UI) {//如果是UI进程
             return Constant.PLUGIN_NAME_UI;
         }
         /* 是否是用户自定义进程 */
         if (PluginProcessHost.isCustomPluginProcess(index)) {
+            //例如： :p1
             return getProcessStringByIndex(index);
         }
+        //使用坑位进程？
         if (PluginManager.isPluginProcess(index)) {
             return StubProcessManager.attachStubProcess(pid, index, binder, client, def);
         }

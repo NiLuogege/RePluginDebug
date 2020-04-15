@@ -51,6 +51,7 @@ public class PluginManager {
     static int sUid;
 
     /**
+     * 进程标识
      * @deprecated 临时实现
      */
     @Deprecated

@@ -82,7 +82,7 @@ class PmHostSvc extends IPluginHost.Stub {
     PluginServiceServer mServiceMgr;
 
     /**
-     * 新插件管理器
+     * 新插件管理器 只有常驻进程会初始化
      */
     PluginManagerServer mManager;
 
@@ -184,11 +184,22 @@ class PmHostSvc extends IPluginHost.Stub {
         return mPluginMgr.startPluginProcessLocked(plugin, process, info);
     }
 
+    /**
+     *
+     * @param process 进程名
+     * @param index 进程标识
+     * @param binder PluginProcessPer 对象
+     * @param def 默认进程名
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String attachPluginProcess(String process, int index, IBinder binder, String def) throws RemoteException {
+        //获取调用者的 进程id
         int pid = Binder.getCallingPid();
         IPluginClient client = null;
         try {
+            //获取 PluginProcessPer的binder 代理对象
             client = IPluginClient.Stub.asInterface(binder);
         } catch (Throwable e) {
             if (LOGR) {
