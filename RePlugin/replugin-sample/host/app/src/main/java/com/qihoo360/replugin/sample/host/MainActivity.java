@@ -48,7 +48,10 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // 刻意以“包名”来打开
-                RePlugin.startActivity(MainActivity.this, RePlugin.createIntent("com.qihoo360.replugin.sample.demo1", "com.qihoo360.replugin.sample.demo1.MainActivity"));
+                Intent intent = RePlugin.createIntent("com.qihoo360.replugin.sample.demo1", "com.qihoo360.replugin.sample.demo1.MainActivity");
+                //以插件吗来打开
+//                Intent intent = RePlugin.createIntent("demo1", "com.qihoo360.replugin.sample.demo1.MainActivity");
+                RePlugin.startActivity(MainActivity.this,intent );
             }
         });
 
@@ -141,7 +144,7 @@ public class MainActivity extends Activity {
      * 注意：为方便演示，外置插件临时放置到Host的assets/external目录下，具体说明见README</p>
      */
     private void simulateInstallExternalPlugin() {
-        String demo3Apk= "demo3.apk";
+        String demo3Apk = "demo3.apk";
         String demo3apkPath = "external" + File.separator + demo3Apk;
 
         // 文件是否已经存在？直接删除重来
@@ -167,8 +170,9 @@ public class MainActivity extends Activity {
 
     /**
      * 从assets目录中复制某文件内容
-     *  @param  assetFileName assets目录下的Apk源文件路径
-     *  @param  newFileName 复制到/data/data/package_name/files/目录下文件名
+     *
+     * @param assetFileName assets目录下的Apk源文件路径
+     * @param newFileName   复制到/data/data/package_name/files/目录下文件名
      */
     private void copyAssetsFileToAppFiles(String assetFileName, String newFileName) {
         InputStream is = null;
@@ -180,7 +184,7 @@ public class MainActivity extends Activity {
             fos = this.openFileOutput(newFileName, Context.MODE_PRIVATE);
             int byteCount = 0;
             byte[] buffer = new byte[buffsize];
-            while((byteCount = is.read(buffer)) != -1) {
+            while ((byteCount = is.read(buffer)) != -1) {
                 fos.write(buffer, 0, byteCount);
             }
             fos.flush();

@@ -100,13 +100,13 @@ public class PluginClientHelper {
             // 1. （推荐）":GuardService"。这样无论宿主的常驻进程名是什么，都会定向到"常驻进程"
             String pntl = processName.toLowerCase();
             String ppdntl = HostConfigHelper.PERSISTENT_NAME.toLowerCase();
-            if (pntl.contains(ppdntl)) {
+            if (pntl.contains(ppdntl)) {//常驻进程
                 return IPluginManager.PROCESS_PERSIST;
             }
 
             // 2. 和宿主常驻进程名相同，这样也会定向到"常驻进程"，但若移植到其它宿主上则会出现问题
             String ppntl = IPC.getPersistentProcessName().toLowerCase();
-            if (TextUtils.equals(pntl, ppntl)) {
+            if (TextUtils.equals(pntl, ppntl)) {//常驻进程
                 return IPluginManager.PROCESS_PERSIST;
             }
 
@@ -117,7 +117,7 @@ public class PluginClientHelper {
                 return PROCESS_INT_MAP.get(processName);
             }
         }
-        return IPluginManager.PROCESS_UI;
+        return IPluginManager.PROCESS_UI;//默认ui进程
     }
 
     /**

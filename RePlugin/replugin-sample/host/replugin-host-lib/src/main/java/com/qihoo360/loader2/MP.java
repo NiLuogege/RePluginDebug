@@ -200,6 +200,7 @@ public class MP {
     }
 
     /**
+     * 插件下载加载
      * @param path
      * @return
      */
@@ -423,8 +424,10 @@ public class MP {
     /**
      * 注：内部接口
      *
-     * @param plugin
-     * @param process
+     * 启动目标进程
+     *
+     * @param plugin 插件名
+     * @param process 进程标识
      * @param info
      * @return
      * @throws RemoteException

@@ -408,6 +408,7 @@ public class PluginCommImpl {
 
         try {
             // 获取 ActivityInfo(可能是其它插件的 Activity，所以这里使用 pair 将 pluginName 也返回)
+            // 根据 activity名称 获取到 它的 ActivityInfo
             ai = getActivityInfo(plugin, activity, intent);
             if (ai == null) {
                 if (LOG) {

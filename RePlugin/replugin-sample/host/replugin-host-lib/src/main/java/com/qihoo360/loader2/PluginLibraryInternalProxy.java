@@ -202,7 +202,7 @@ public class PluginLibraryInternalProxy {
         // 若插件不可用（不存在或版本不匹配），则直接弹出“下载插件”对话框
         // 因为已经打开UpdateActivity，故在这里返回True，告诉外界已经打开，无需处理
         if (download) {
-            if (PluginTable.getPluginInfo(plugin) == null) {
+            if (PluginTable.getPluginInfo(plugin) == null) {//检查是否有该插件，如果没有就启动下载
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "plugin=" + plugin + " not found, start download ...");
                 }
@@ -211,7 +211,7 @@ public class PluginLibraryInternalProxy {
                 // 因此我们会判断这种情况，如果是，则重新加载一次即可，反之则提示用户下载
                 // 原因：“取消”会触发Task.release方法，最终调用mDownloadTask.destroy，导致“下载服务”的Receiver被注销，即使文件下载了也没有回调回来
                 // NOTE isNeedToDownload方法会调用pluginDownloaded再次尝试加载
-                if (isNeedToDownload(context, plugin)) {
+                if (isNeedToDownload(context, plugin)) {//需要下载插件
                     return RePlugin.getConfig().getCallbacks().onPluginNotExistsForActivity(context, plugin, intent, process);
                 }
             }
@@ -225,7 +225,7 @@ public class PluginLibraryInternalProxy {
                     + Factory2.isDynamicClass(plugin, activity));
         }
 
-        if (Factory2.isDynamicClass(plugin, activity)) {
+        if (Factory2.isDynamicClass(plugin, activity)) {//如果是动态类 直接通过加载？
             intent.putExtra(IPluginManager.KEY_COMPATIBLE, true);
             intent.setComponent(new ComponentName(IPC.getPackageName(), activity));
             context.startActivity(intent);
@@ -234,7 +234,7 @@ public class PluginLibraryInternalProxy {
 
         // 如果插件状态出现问题，则每次弹此插件的Activity都应提示无法使用，或提示升级（如有新版）
         // Added by Jiongxuan Zhang
-        if (PluginStatusController.getStatus(plugin) < PluginStatusController.STATUS_OK) {
+        if (PluginStatusController.getStatus(plugin) < PluginStatusController.STATUS_OK) {//插件有问题了
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "PluginLibraryInternalProxy.startActivity(): Plugin Disabled. pn=" + plugin);
             }
@@ -243,12 +243,13 @@ public class PluginLibraryInternalProxy {
 
         // 若为首次加载插件，且是“大插件”，则应异步加载，同时弹窗提示“加载中”
         // Added by Jiongxuan Zhang
-        if (!RePlugin.isPluginDexExtracted(plugin)) {
+        if (!RePlugin.isPluginDexExtracted(plugin)) {//插件是否加载过（dex文件是否已经被放到目的地）
             PluginDesc pd = PluginDesc.get(plugin);
-            if (pd != null && pd.isLarge()) {
+            if (pd != null && pd.isLarge()) {//大插件
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "PM.startActivity(): Large Plugin! p=" + plugin);
                 }
+                // 大插件的情况下 系统默认不处理 留给用户异步加载
                 return RePlugin.getConfig().getCallbacks().onLoadLargePluginForActivity(context, plugin, intent, process);
             }
         }
@@ -359,6 +360,12 @@ public class PluginLibraryInternalProxy {
         return plugin;
     }
 
+    /**
+     * 是否需要下载插件
+     * @param context
+     * @param plugin
+     * @return
+     */
     private boolean isNeedToDownload(Context context, String plugin) {
         // 以下两种情况需要下载插件：
         // 1、V5文件不存在（常见）；
@@ -376,8 +383,9 @@ public class PluginLibraryInternalProxy {
             LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file exists. Extracting... Plugin = " + plugin);
         }
 
+        //加载插件
         PluginInfo i = MP.pluginDownloaded(f.getAbsolutePath());
-        if (i == null) {
+        if (i == null) {//加载失败
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "isNeedToDownload(): V5 file is invalid. Plugin = " + plugin);
             }

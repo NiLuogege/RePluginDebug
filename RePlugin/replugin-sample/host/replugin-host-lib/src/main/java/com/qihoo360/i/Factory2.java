@@ -197,8 +197,8 @@ public final class Factory2 {
     /**
      * @hide 内部方法，插件框架使用
      * 查询动态映射的类
-     * @param className 壳类名
      * @param plugin 目标插件名
+     * @param className 壳类名
      * @return
      */
     public static final boolean isDynamicClass(String plugin, String className) {

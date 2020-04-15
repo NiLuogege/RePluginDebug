@@ -243,7 +243,9 @@ public class RePlugin {
             // TODO 需要支持Action方案
             return false;
         }
+        //插件名
         String plugin = cn.getPackageName();
+        // 目标全路径
         String cls = cn.getClassName();
         return Factory.startActivityWithNoInjectCN(context, intent, plugin, cls, IPluginManager.PROCESS_AUTO);
     }
@@ -303,7 +305,7 @@ public class RePlugin {
      * in.setComponent(new ComponentName("clean", "com.qihoo360.mobilesafe.clean.CleanActivity"));
      * </code>
      *
-     * @param pluginName 插件名
+     * @param pluginName 插件名 不是包名
      * @param cls        目标全名
      * @return 可以被RePlugin识别的Intent
      * @since 1.0.0
