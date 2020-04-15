@@ -299,6 +299,11 @@ class PmBase {
         // 输出
         if (LOG) {
             for (Plugin p : mPlugins.values()) {
+                //例如：plugin: p=PInfo { <webview:100(4)> [BUILTIN] [DEX_EXTRACTED] processes=[] js={ver=100,
+                // verv=2814792716779620, type=2, path=plugins/webview.jar, high=10, frm_ver=4, low=10,
+                // pkgname=com.qihoo360.replugin.sample.webview, name=webview, ali=webview}
+                // dex=/data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3_odex/webview-10-10-100.dex
+                // nlib=/data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3_libs/webview-10-10-100 }
                 LogDebug.d(PLUGIN_TAG, "plugin: p=" + p.mInfo);
             }
         }
@@ -357,7 +362,7 @@ class PmBase {
         // 1. 先尝试连接
         PluginProcessMain.connectToHostSvc();
 
-        // 2. 然后从常驻进程获取插件列表
+        // 2. 然后从常驻进程获取插件列表 将插件信息全部缓存到 mPlugins 中
         refreshPluginsFromHostSvc();
     }
 
