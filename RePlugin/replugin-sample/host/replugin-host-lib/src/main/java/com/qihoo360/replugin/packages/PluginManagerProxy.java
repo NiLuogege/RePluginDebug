@@ -51,13 +51,19 @@ public class PluginManagerProxy {
     private static PluginRunningList sRunningList = new PluginRunningList();
 
     static {
+        //设置当前进程名和当前进程id
         sRunningList.setProcessInfo(IPC.getCurrentProcessName(), IPC.getCurrentProcessId());
     }
 
     /**
-     * 连接到常驻进程，并缓存IPluginManagerServer对象
      *
-     * @param host IPluginHost对象 具体为  PmHostSvc 对象
+     * 这个方法常驻进程和非常驻进程都会调用
+     *
+     *
+     *
+     * @param host 常驻进程为  PmHostSvc 对象
+     *             非常驻进程为 com.qihoo360.loader2.IPluginHost.Stub.Proxy 对象 用于和常驻进程通信
+     *             这俩是一对binder对象
      * @throws RemoteException 和常驻进程通讯出现异常
      */
     public static void connectToServer(IPluginHost host) throws RemoteException {

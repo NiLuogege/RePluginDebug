@@ -63,6 +63,7 @@ public class PluginProcessMain {
 
     /**
      * 非常驻进程使用，常驻进程为null，用于非常驻进程连接常驻进程  buyuntao
+     * 用于非常驻进程 和 常驻进程通信
      */
     private static IPluginHost sPluginHostRemote;
     /**
@@ -211,7 +212,8 @@ public class PluginProcessMain {
 
     /**
      * 常驻进程调用，缓存自己的 IPluginHost
-     * host : PmHostSvc 对象
+     *
+     * @param host : PmHostSvc 对象
      */
     static final void installHost(IPluginHost host) {
         sPluginHostLocal = host;
@@ -228,11 +230,12 @@ public class PluginProcessMain {
     }
 
     /**
-     * 非常驻进程调用，获取常驻进程的 IPluginHost
+     * 非常驻进程调用，获取常驻进程的 PmHostSvc 对象
      */
     static final void connectToHostSvc() {
+        //宿主 Application 对象
         Context context = PMF.getApplicationContext();
-        //通过内容提供者获取 常驻进程binder
+        //通过内容提供者获取 常驻进程binder 也就是 PmHostSvc 对象
         IBinder binder = PluginProviderStub.proxyFetchHostBinder(context);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "host binder = " + binder);
@@ -274,15 +277,17 @@ public class PluginProcessMain {
             System.exit(1);
         }
 
-        //获取常驻进程Stub的代理对象（Client端）
+        //获取常驻进程Stub的代理对象 也就是 com.qihoo360.loader2.IPluginHost.Stub.Proxy 对象 用于和常驻进程通信
         sPluginHostRemote = IPluginHost.Stub.asInterface(binder);
         if (LOG) {
+            //例如：com.qihoo360.loader2.IPluginHost$Stub$Proxy@2e0e9e0
             LogDebug.d(PLUGIN_TAG, "host binder.i = " + PluginProcessMain.sPluginHostRemote);
         }
 
         // 连接到插件化管理器的服务端
         // Added by Jiongxuan Zhang
         try {
+            // 初始化 插件管理的服务端 也就是 PluginManagerServer.Stub
             PluginManagerProxy.connectToServer(sPluginHostRemote);
 
             // 将当前进程的"正在运行"列表和常驻做同步

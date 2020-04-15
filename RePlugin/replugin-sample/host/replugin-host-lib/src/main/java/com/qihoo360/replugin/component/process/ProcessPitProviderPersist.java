@@ -28,6 +28,16 @@ import com.qihoo360.replugin.base.IPC;
  * @author RePlugin Team
  *
  * 用于对外共享binder的的provider
+ *
+ * 会在  replugin-host-gradle 中自动配置在 manifast中
+ *
+ *
+ *
+ *  <provider
+ *             android:name='com.qihoo360.replugin.component.process.ProcessPitProviderPersist'
+ *             android:authorities='com.qihoo360.replugin.sample.host.loader.p.main'
+ *             android:exported='false'
+ *             android:process=':CangzhuService' />
  */
 public class ProcessPitProviderPersist extends ContentProvider {
 

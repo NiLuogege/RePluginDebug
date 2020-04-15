@@ -72,10 +72,12 @@ public class PluginProviderStub {
     public static final Cursor stubMain(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         //
         if (LOG) {
+            //例如：stubMain projection=[main] selection=main_binder
             LogDebug.d(PLUGIN_TAG, "stubMain projection=" + Arrays.toString(projection) + " selection=" + selection);
         }
 
         if (SELECTION_MAIN_BINDER.equals(selection)) {
+            //PMF.sPluginMgr.getHostBinder() 为 PmHostSvc 对象
             return BinderCursor.queryBinder(PMF.sPluginMgr.getHostBinder());
         }
 
@@ -138,10 +140,11 @@ public class PluginProviderStub {
     }
 
     /**
-     * @param context
+     * @param context 宿主Application 对象
      * @return
      */
     static final IBinder proxyFetchHostBinder(Context context) {
+        //SELECTION_MAIN_BINDER = main_binder
         return proxyFetchHostBinder(context, SELECTION_MAIN_BINDER);
     }
 
