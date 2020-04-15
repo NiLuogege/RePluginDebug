@@ -43,7 +43,7 @@ public class PluginManagerProxy {
 
     private static final String TAG = "PluginManagerClient";
 
-    //IPluginManagerServer binder对象（IPluginManagerServer mStub）
+    //IPluginManagerServer binder对象（sRemote= PluginServiceServer.Stub 对象）
     private static IPluginManagerServer sRemote;
     private static boolean sRunningSynced;
 
@@ -57,7 +57,7 @@ public class PluginManagerProxy {
     /**
      * 连接到常驻进程，并缓存IPluginManagerServer对象
      *
-     * @param host IPluginHost对象
+     * @param host IPluginHost对象 具体为  PmHostSvc 对象
      * @throws RemoteException 和常驻进程通讯出现异常
      */
     public static void connectToServer(IPluginHost host) throws RemoteException {
@@ -68,7 +68,7 @@ public class PluginManagerProxy {
             return;
         }
 
-        //sRemote= IPluginManagerServer mStub 对象
+        //sRemote= PluginServiceServer.Stub 对象
         sRemote = host.fetchManagerServer();
     }
 

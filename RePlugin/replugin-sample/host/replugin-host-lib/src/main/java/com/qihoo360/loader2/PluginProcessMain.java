@@ -211,6 +211,7 @@ public class PluginProcessMain {
 
     /**
      * 常驻进程调用，缓存自己的 IPluginHost
+     * host : PmHostSvc 对象
      */
     static final void installHost(IPluginHost host) {
         sPluginHostLocal = host;

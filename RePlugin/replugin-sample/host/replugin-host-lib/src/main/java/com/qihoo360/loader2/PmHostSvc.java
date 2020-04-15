@@ -609,6 +609,11 @@ class PmHostSvc extends IPluginHost.Stub {
         return infos;
     }
 
+    /**
+     *
+     * @return PluginServiceServer.Stub对象
+     * @throws RemoteException
+     */
     @Override
     public IPluginManagerServer fetchManagerServer() throws RemoteException {
         return mManager.getService();

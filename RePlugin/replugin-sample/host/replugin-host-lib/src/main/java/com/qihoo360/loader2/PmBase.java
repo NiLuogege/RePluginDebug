@@ -323,6 +323,7 @@ class PmBase {
         mAll = new Builder.PxAll();
         //整理插件并缓存到 PxAll中
         Builder.builder(mContext, mAll);
+        //将插件信息全部缓存到 mPlugins 中
         refreshPluginMap(mAll.getPlugins());
 
         // [Newest!] 使用全新的RePlugin APK方案
@@ -421,6 +422,7 @@ class PmBase {
             return;
         }
         for (PluginInfo info : plugins) {
+            //通过  PluginInfo 创建 Plugin
             Plugin plugin = Plugin.build(info);
             putPluginObject(info, plugin);
         }
