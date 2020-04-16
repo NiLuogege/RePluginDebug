@@ -122,8 +122,6 @@ public final class Factory2 {
 
     /**
      *
-     * 插件中 Activity.startActivity 会走到这里
-     *
      *
      * @hide 内部方法，插件框架使用
      * 启动一个插件中的activity
@@ -133,7 +131,6 @@ public final class Factory2 {
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
     public static final boolean startActivity(Activity activity, Intent intent) {
-//        LogUtil.e("plugin Activity.startActivity 是走这里");
         return sPLProxy.startActivity(activity, intent);
     }
 

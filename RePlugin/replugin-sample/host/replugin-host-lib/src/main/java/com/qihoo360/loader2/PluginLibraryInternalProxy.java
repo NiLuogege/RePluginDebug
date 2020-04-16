@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.Factory;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.i.IPluginManager;
@@ -200,6 +201,8 @@ public class PluginLibraryInternalProxy {
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
     public boolean startActivity(Context context, Intent intent, String plugin, String activity, int process, boolean download) {
+        LogUtil.e("PluginCommImpl ->startActivity");
+
         if (LOG) {
             //例如：start activity: intent=Intent { cmp=com.qihoo360.replugin.sample.host/.PluginFragmentActivity }
             // plugin=com.qihoo360.replugin.sample.demo1 activity=com.qihoo360.replugin.sample.host.PluginFragmentActivity

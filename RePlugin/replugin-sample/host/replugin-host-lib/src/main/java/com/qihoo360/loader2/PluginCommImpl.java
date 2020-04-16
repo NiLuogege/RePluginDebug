@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.mobilesafe.svcmanager.QihooServiceManager;
@@ -373,6 +374,8 @@ public class PluginCommImpl {
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
     public boolean startActivity(Context context, Intent intent, String plugin, String activity, int process) {
+        LogUtil.e("PluginLibraryInternalProxy ->startActivity");
+
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "start activity: intent=" + intent + " plugin=" + plugin + " activity=" + activity + " process=" + process);
         }
@@ -414,7 +417,7 @@ public class PluginCommImpl {
             // 获取 ActivityInfo(可能是其它插件的 Activity，所以这里使用 pair 将 pluginName 也返回)
             // 根据 activity名称 获取到 它的 ActivityInfo(插件activity对应的ActivityInfo)
             ai = getActivityInfo(plugin, activity, intent);
-            if (ai == null) {
+            if (ai == null) {//当在插件中打开宿主activity是 ai 就是null
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "PACM: bindActivity: activity not found");
                 }

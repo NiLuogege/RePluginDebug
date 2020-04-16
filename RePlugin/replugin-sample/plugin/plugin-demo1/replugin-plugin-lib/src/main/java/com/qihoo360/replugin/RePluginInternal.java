@@ -133,6 +133,7 @@ public class RePluginInternal {
         }
 
         try {
+            //反射调用 宿主工程中的 com.qihoo360.i.Factory2.startActivity 方法
             Object obj = ProxyRePluginInternalVar.startActivity.call(null, activity, intent);
             if (obj != null) {
                 return (Boolean) obj;
