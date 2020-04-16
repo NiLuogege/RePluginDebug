@@ -140,9 +140,19 @@ class PluginProcessPer extends IPluginClient.Stub {
         return c;
     }
 
+    /**
+     * 分配坑位 这个方法应该运行在 宿主进程，因为只有素组进程有 坑位
+     * @param plugin 插件名称
+     * @param process 进程标识
+     * @param target 插件Activity名称
+     * @param intent 启动插件activity时的intent
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String allocActivityContainer(String plugin, int process, String target, Intent intent) throws RemoteException {
         // 一旦有分配，则进入监控状态（一是避免不退出的情况，二也是最重要的是避免现在就退出的情况）
+        //回掉 onPrepareAllocPitActivity 方法
         RePlugin.getConfig().getEventCallbacks().onPrepareAllocPitActivity(intent);
 
         String loadPlugin = null;
@@ -168,6 +178,8 @@ class PluginProcessPer extends IPluginClient.Stub {
         //
         String container = bindActivity(loadPlugin, process, target, intent);
         if (LOG) {
+            //例如： PACM: eval plugin com.qihoo360.replugin.sample.demo1, target=com.qihoo360.replugin.sample.demo1.MainActivity,
+            // container=com.qihoo360.replugin.sample.host.loader.a.ActivityN1NRNTS2
             LogDebug.d(PLUGIN_TAG, "PACM: eval plugin " + loadPlugin + ", target=" + target + ", container=" + container);
         }
         return container;

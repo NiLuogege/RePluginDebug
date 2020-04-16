@@ -435,7 +435,7 @@ public class PluginCommImpl {
                 return null;
             }
 
-            // 远程分配坑位
+            // 远程分配坑位 会 调用到 PluginProcessPer.allocActivityContainer 方法
             container = client.allocActivityContainer(plugin, process, ai.name, intent);
             if (LOG) {
                 LogDebug.i(PLUGIN_TAG, "alloc success: container=" + container + " plugin=" + plugin + " activity=" + activity);
