@@ -1161,6 +1161,11 @@ class PmBase {
         return p;
     }
 
+    /**
+     * 通过 ClassLoader 来获取  插件
+     * @param loader
+     * @return
+     */
     final Plugin lookupPlugin(ClassLoader loader) {
         for (Plugin p : mPlugins.values()) {
             if (p != null && p.getClassLoader() == loader) {

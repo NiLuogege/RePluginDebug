@@ -471,6 +471,10 @@ public class PluginContext extends ContextThemeWrapper {
     }
 
 
+    /**
+     * 插件中打开 activity
+     * @param intent
+     */
     @Override
     public void startActivity(Intent intent) {
         // HINT 只有插件Application才会走这里

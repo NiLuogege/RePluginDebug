@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.loader2.PluginLibraryInternalProxy;
 
 import org.json.JSONArray;
@@ -111,7 +112,7 @@ public final class Factory2 {
      * @hide 内部方法，插件框架使用
      * 启动一个插件中的activity
      * 通过Extra参数IPluginManager.KEY_COMPATIBLE，IPluginManager.KEY_PLUGIN，IPluginManager.KEY_ACTIVITY，IPluginManager.KEY_PROCESS控制
-     * @param context Context上下文
+     * @param context 插件的 Context （PluginContext）
      * @param intent
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
@@ -120,6 +121,10 @@ public final class Factory2 {
     }
 
     /**
+     *
+     * 插件中 Activity.startActivity 会走到这里
+     *
+     *
      * @hide 内部方法，插件框架使用
      * 启动一个插件中的activity
      * 通过Extra参数IPluginManager.KEY_COMPATIBLE，IPluginManager.KEY_PLUGIN，IPluginManager.KEY_ACTIVITY，IPluginManager.KEY_PROCESS控制
@@ -128,6 +133,7 @@ public final class Factory2 {
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
     public static final boolean startActivity(Activity activity, Intent intent) {
+//        LogUtil.e("plugin Activity.startActivity 是走这里");
         return sPLProxy.startActivity(activity, intent);
     }
 

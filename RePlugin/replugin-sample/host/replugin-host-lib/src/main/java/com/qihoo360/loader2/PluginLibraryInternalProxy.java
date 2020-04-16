@@ -80,6 +80,7 @@ public class PluginLibraryInternalProxy {
 
         // 兼容模式，直接使用标准方式启动
         if (intent.getBooleanExtra(IPluginManager.KEY_COMPATIBLE, false)) {
+            //清除 intent的 额外参数 防止 intent 攻击
             PmBase.cleanIntentPluginParams(intent);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "start context: COMPATIBLE is true, direct start");
@@ -90,6 +91,8 @@ public class PluginLibraryInternalProxy {
         // 获取Activity的名字，有两种途径：
         // 1. 从Intent里取。通常是明确知道要打开的插件的Activity时会用
         // 2. 从Intent的ComponentName中获取
+
+        //从 extra 中获取要打开的activity名称
         String name = intent.getStringExtra(IPluginManager.KEY_ACTIVITY);
         if (TextUtils.isEmpty(name)) {
             ComponentName cn = intent.getComponent();
@@ -126,8 +129,8 @@ public class PluginLibraryInternalProxy {
 	            LogDebug.d("loadClass", "isHookingClass(" + plugin + "," + componentName.getClassName() + ") = "
 	                    + isDynamicClass(plugin, componentName.getClassName()));
 	        }
-	        if (isDynamicClass(plugin, componentName.getClassName())) {
-                intent.putExtra(IPluginManager.KEY_COMPATIBLE, true);
+	        if (isDynamicClass(plugin, componentName.getClassName())) {//如果是动态类
+                intent.putExtra(IPluginManager.KEY_COMPATIBLE, true);//设置为兼容模式
 	            intent.setComponent(new ComponentName(IPC.getPackageName(), componentName.getClassName()));
 	            context.startActivity(intent);
 	            return false;
