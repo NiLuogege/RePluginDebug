@@ -690,6 +690,7 @@ class PmBase {
     }
 
     /**
+     * 加载 动态类 或者 虚拟类
      * @param className
      * @param resolve
      * @return

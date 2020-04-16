@@ -39,6 +39,9 @@ import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
  * 宿主的ClassLoader，插件框架的核心之一
+ *
+ * 这是完全接管了 parent的 工作了？
+ *
  * <p>
  * 注意：为了兼容Android 7.0以上的LoadedApk.updateApplicationInfo中，对addDexPath方法的依赖，
  * 特将继承关系调整到PathClassLoader，以前是ClassLoader
@@ -64,6 +67,11 @@ public class RePluginClassLoader extends PathClassLoader {
 
     private Method getPackageMethod;
 
+    /**
+     *
+     * @param parent orig的父亲 通常为BootClassLoader
+     * @param orig 通常为PathClassLoader
+     */
     public RePluginClassLoader(ClassLoader parent, ClassLoader orig) {
 
         // 由于PathClassLoader在初始化时会做一些Dir的处理，所以这里必须要传一些内容进来
@@ -79,6 +87,10 @@ public class RePluginClassLoader extends PathClassLoader {
         initMethods(orig);
     }
 
+    /**
+     * 通过反射 获取一下方法
+     * @param cl
+     */
     private void initMethods(ClassLoader cl) {
         Class<?> c = cl.getClass();
         findResourceMethod = ReflectUtils.getMethod(c, "findResource", String.class);
@@ -91,12 +103,17 @@ public class RePluginClassLoader extends PathClassLoader {
         getPackageMethod.setAccessible(true);
     }
 
+    /**
+     * 将原来宿主里的关键字段，拷贝到这个对象上，这样骗系统以为用的还是以前的东西（尤其是DexPathList）
+     * 注意，这里用的是“浅拷贝”
+     * @param orig
+     */
     private void copyFromOriginal(ClassLoader orig) {
-        if (LOG && IPC.isPersistentProcess()) {
+        if (LOG && IPC.isPersistentProcess()) {//是常驻进程
             LogDebug.d(TAG, "copyFromOriginal: Fields=" + StringUtils.toStringWithLines(ReflectUtils.getAllFieldsList(orig.getClass())));
         }
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {//小于 Android 2.3.3
             // Android 2.2 - 2.3.7，有一堆字段，需要逐一复制
             // 以下方法在较慢的手机上用时：8ms左右
             copyFieldValue("libPath", orig);
@@ -112,6 +129,11 @@ public class RePluginClassLoader extends PathClassLoader {
         }
     }
 
+    /**
+     * 将 orig 中的 field字段拷贝到 this中来
+     * @param field
+     * @param orig
+     */
     private void copyFieldValue(String field, ClassLoader orig) {
         try {
             Field f = ReflectUtils.getField(orig.getClass(), field);
@@ -150,6 +172,7 @@ public class RePluginClassLoader extends PathClassLoader {
         }
         //
         try {
+            //如果 没找到使用原来的 加载类
             c = mOrig.loadClass(className);
             // 只有开启“详细日志”才会输出，防止“刷屏”现象
             if (LogDebug.LOG && RePlugin.getConfig().isPrintDetailLog()) {

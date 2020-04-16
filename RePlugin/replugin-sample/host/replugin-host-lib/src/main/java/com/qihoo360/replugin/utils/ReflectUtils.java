@@ -143,12 +143,16 @@ public final class ReflectUtils {
         return allFields;
     }
 
+    /**
+     * 删除final修饰符
+     * @param field
+     */
     public static void removeFieldFinalModifier(final Field field) {
         // From Apache: FieldUtils.removeFinalModifier()
         Validate.isTrue(field != null, "The field must not be null");
 
         try {
-            if (Modifier.isFinal(field.getModifiers())) {
+            if (Modifier.isFinal(field.getModifiers())) {//是否是final类型
                 // Do all JREs implement Field with a private ivar called "modifiers"?
                 final Field modifiersField = Field.class.getDeclaredField("modifiers");
                 final boolean doForceAccess = !modifiersField.isAccessible();
