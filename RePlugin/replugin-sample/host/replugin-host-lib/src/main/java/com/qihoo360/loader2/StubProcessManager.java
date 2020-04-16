@@ -358,6 +358,9 @@ public class StubProcessManager {
         }
     }
 
+    /**
+     * 这是在回收无用进程吗？
+     */
     private static final void doPluginProcessLoop() {
         if (Constant.SIMPLE_QUIT_CONTROLLER) {
             if (LOG) {

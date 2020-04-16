@@ -511,6 +511,7 @@ class PmBase {
                 //
                 Plugin p = mPlugins.get(mDefaultPluginName);
                 if (p != null) {
+                    //加载插件
                     boolean rc = p.load(Plugin.LOAD_APP, true);
                     if (!rc) {
                         if (LOG) {
@@ -1108,6 +1109,11 @@ class PmBase {
         return loadPlugin(p, Plugin.LOAD_DEX, true);
     }
 
+    /**
+     *
+     * @param plugin 插件名
+     * @return
+     */
     final Plugin loadAppPlugin(String plugin) {
         return loadPlugin(mPlugins.get(plugin), Plugin.LOAD_APP, true);
     }
@@ -1119,7 +1125,16 @@ class PmBase {
         return loadPlugin(p, loadType, useCache);
     }
 
-    // 底层接口
+    /**
+     * 底层接口
+     *
+     * 加载插件
+     *
+     * @param p
+     * @param loadType
+     * @param useCache
+     * @return
+     */
     final Plugin loadPlugin(Plugin p, int loadType, boolean useCache) {
         if (p == null) {
             return null;
@@ -1243,6 +1258,13 @@ class PmBase {
         Plugin.clearCachedPlugin(Plugin.queryCachedFilename(info.getName()));
     }
 
+    /**
+     *
+     * @param plugin 插件名称
+     * @param process 进程标识
+     * @param info PluginBinderInfo对象
+     * @return
+     */
     final IPluginClient startPluginProcessLocked(String plugin, int process, PluginBinderInfo info) {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "start plugin process: plugin=" + plugin + " info=" + info);
@@ -1250,22 +1272,24 @@ class PmBase {
 
         // 强制使用UI进程
         if (Constant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
-            if (info.request == PluginBinderInfo.ACTIVITY_REQUEST) {
-                if (process == IPluginManager.PROCESS_AUTO) {
+            if (info.request == PluginBinderInfo.ACTIVITY_REQUEST) {//如果要启动activity
+                if (process == IPluginManager.PROCESS_AUTO) {//如果是自动选中进程，则使用 UI进程
                     process = IPluginManager.PROCESS_UI;
                 }
             }
-            if (info.request == PluginBinderInfo.BINDER_REQUEST) {
-                if (process == IPluginManager.PROCESS_AUTO) {
+            if (info.request == PluginBinderInfo.BINDER_REQUEST) {// 启动binder对象？
+                if (process == IPluginManager.PROCESS_AUTO) {//如果是自动选中进程，则使用 UI进程
                     process = IPluginManager.PROCESS_UI;
                 }
             }
         }
 
-        //
+        //回收无用进程？不过 Constant.SIMPLE_QUIT_CONTROLLER 长为false 所以不会被执行 ，这里进程忽略
         StubProcessManager.schedulePluginProcessLoop(StubProcessManager.CHECK_STAGE1_DELAY);
 
-        // 获取
+
+        // 1. 获取对应进程信息 记录在 info中
+        // 2. 获取 PluginProcessPer的binder 代理对象 用于通信
         IPluginClient client = PluginProcessMain.probePluginClient(plugin, process, info);
         if (client != null) {
             if (LOG) {
@@ -1273,6 +1297,8 @@ class PmBase {
             }
             return client;
         }
+
+        //只有 client == null 才会走到下面
 
         // 分配
         int index = IPluginManager.PROCESS_AUTO;

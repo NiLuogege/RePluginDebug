@@ -364,6 +364,8 @@ public class PluginProcessMain {
     }
 
     /**
+     * 查找 process 对应的进程信息并返回   PluginProcessPer的binder 代理对象 用于通信
+     *
      * @param plugin
      * @param process
      * @param info
@@ -373,14 +375,15 @@ public class PluginProcessMain {
         return readProcessClientLock(new Action<IPluginClient>() {
             @Override
             public IPluginClient call() {
+                //遍历当前所有运行的进程
                 for (ProcessClientRecord r : ALL.values()) {
-                    if (process == IPluginManager.PROCESS_UI) {
-                        if (!TextUtils.equals(r.plugin, Constant.PLUGIN_NAME_UI)) {
+                    if (process == IPluginManager.PROCESS_UI) {//如果是要运行在 UI进程
+                        if (!TextUtils.equals(r.plugin, Constant.PLUGIN_NAME_UI)) {//不是UI进程的话 就下一个
                             continue;
                         }
 
                         /* 是否是用户自定义进程 */
-                    } else if (PluginProcessHost.isCustomPluginProcess(process)) {
+                    } else if (PluginProcessHost.isCustomPluginProcess(process)) {//同上
                         if (!TextUtils.equals(r.plugin, getProcessStringByIndex(process))) {
                             continue;
                         }
@@ -389,14 +392,17 @@ public class PluginProcessMain {
                             continue;
                         }
                     }
-                    if (!isBinderAlive(r)) {
+                    if (!isBinderAlive(r)) {//binder对象是否 都正常
                         return null;
                     }
-                    if (!r.binder.pingBinder()) {
+                    if (!r.binder.pingBinder()) {//binder对象是否 都正常
                         return null;
                     }
+
+                    //记录 进程信息
                     info.pid = r.pid;
                     info.index = r.index;
+                    //返回 PluginProcessPer的binder 代理对象
                     return r.client;
                 }
                 return null;
@@ -536,6 +542,11 @@ public class PluginProcessMain {
         });
     }
 
+    /**
+     * 判断binder对象是否 都正常
+     * @param r
+     * @return
+     */
     private static boolean isBinderAlive(ProcessClientRecord r) {
         return r != null && r.binder != null && r.client != null && r.binder.isBinderAlive();
     }
@@ -568,8 +579,8 @@ public class PluginProcessMain {
     }
 
     /**
-     * @param plugin
-     * @param process
+     * @param plugin 插件名
+     * @param process 进程名
      * @return
      * @deprecated 待优化
      * 插件进程调度
@@ -810,6 +821,12 @@ public class PluginProcessMain {
         }
     }
 
+    /**
+     *  action 执行过程 加锁
+     * @param action
+     * @param <T>
+     * @return
+     */
     private static <T> T readProcessClientLock(@NonNull final Action<T> action) {
         final long start = System.currentTimeMillis();
 //        final String stack = OptUtil.stack2Str(Thread.currentThread().getStackTrace()[3]);

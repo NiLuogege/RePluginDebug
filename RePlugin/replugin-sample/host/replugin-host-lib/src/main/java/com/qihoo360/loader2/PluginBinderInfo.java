@@ -29,13 +29,13 @@ public final class PluginBinderInfo implements Parcelable {
 
     public static final int NONE_REQUEST = 0;
 
-    public static final int ACTIVITY_REQUEST = 1;
+    public static final int ACTIVITY_REQUEST = 1;//启动activity
 
-    public static final int SERVICE_REQUEST = 2;
+    public static final int SERVICE_REQUEST = 2;//启动 服务
 
-    public static final int PROVIDER_REQUEST = 3;
+    public static final int PROVIDER_REQUEST = 3;//启动 广播
 
-    public static final int BINDER_REQUEST = 4;
+    public static final int BINDER_REQUEST = 4;// 这是在干啥 还不知道
 
     public int request;
 

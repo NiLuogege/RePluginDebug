@@ -404,11 +404,12 @@ public class PluginCommImpl {
 
         ActivityInfo ai = null;
         String container = null;
+        //创建  PluginBinderInfo
         PluginBinderInfo info = new PluginBinderInfo(PluginBinderInfo.ACTIVITY_REQUEST);
 
         try {
             // 获取 ActivityInfo(可能是其它插件的 Activity，所以这里使用 pair 将 pluginName 也返回)
-            // 根据 activity名称 获取到 它的 ActivityInfo
+            // 根据 activity名称 获取到 它的 ActivityInfo(插件activity对应的ActivityInfo)
             ai = getActivityInfo(plugin, activity, intent);
             if (ai == null) {
                 if (LOG) {
@@ -550,7 +551,7 @@ public class PluginCommImpl {
     }
 
     /**
-     * 根据条件，查找 ActivityInfo 对象
+     * 根据条件，查找 插件中 activity对应的 ActivityInfo 对象（插件 加载时会解析出来备用）
      *
      * @param plugin   插件名称
      * @param activity Activity 名称
@@ -558,7 +559,7 @@ public class PluginCommImpl {
      * @return 插件中 Activity 的 ActivityInfo
      */
     public ActivityInfo getActivityInfo(String plugin, String activity, Intent intent) {
-        // 获取插件对象
+        // 加载（获取）插件对象
         Plugin p = mPluginMgr.loadAppPlugin(plugin);
         if (p == null) {
             if (LOG) {

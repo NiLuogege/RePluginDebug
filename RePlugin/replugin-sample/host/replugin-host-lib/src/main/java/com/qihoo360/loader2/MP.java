@@ -428,7 +428,7 @@ public class MP {
      *
      * @param plugin 插件名
      * @param process 进程标识
-     * @param info
+     * @param info PluginBinderInfo 对象
      * @return
      * @throws RemoteException
      * @hide 内部框架使用

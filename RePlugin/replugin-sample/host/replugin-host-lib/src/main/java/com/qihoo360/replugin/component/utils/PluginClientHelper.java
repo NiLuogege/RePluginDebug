@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.ComponentInfo;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.Factory;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.replugin.RePlugin;
@@ -45,9 +46,9 @@ public class PluginClientHelper {
     /**
      * 根据Context所带的插件信息，来填充Intent的ComponentName对象
      * 若外界将Context.xxxService方法用PluginServiceClient代替（如编译工具所做的），则这里会做如下事情：
-     *      1、将外界传递的Intent为com.qihoo360.mobilesafe的包名，变成一个特定插件的包名
-     *      2、这样交给外界的时候，其ComponentName已变成“插件名-类名”的形式，可以做下一步处理
-     *      3、若其后处理失败，则仍会调用系统的相应方法（但不是该函数的职责）
+     * 1、将外界传递的Intent为com.qihoo360.mobilesafe的包名，变成一个特定插件的包名
+     * 2、这样交给外界的时候，其ComponentName已变成“插件名-类名”的形式，可以做下一步处理
+     * 3、若其后处理失败，则仍会调用系统的相应方法（但不是该函数的职责）
      *
      * @param c    根据Context内容来决定如何填充Intent，此为那个Context对象
      * @param from ComponentName
@@ -92,8 +93,10 @@ public class PluginClientHelper {
      * 根据进程名称获取进程ID
      *
      * @param processName 进程名称
+     * @return 进程标识int值
      */
     public static Integer getProcessInt(String processName) {
+        LogUtil.e("processName= " + processName);
         if (!TextUtils.isEmpty(processName)) {
             // 插件若想将组件定义成在"常驻进程"中运行，则可以在android:process中定义：
 

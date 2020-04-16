@@ -125,7 +125,7 @@ public class Constant {
     public static final boolean SIMPLE_QUIT_CONTROLLER = false;
 
     /**
-     *
+     * 强制使用UI进程标识 我看常年为 true
      */
     public static final boolean ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS = true;
 }
