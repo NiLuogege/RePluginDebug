@@ -207,10 +207,11 @@ public class PluginApplicationClient {
      */
     private PluginApplicationClient(ClassLoader plgCL, ComponentList cl, PluginInfo pi) {
         mPlgClassLoader = plgCL;
+        //获取插件的 ApplicationInfo 对象
         mApplicationInfo = cl.getApplication();
         try {
             // 尝试使用自定义Application（如有）
-            if (mApplicationInfo != null && !TextUtils.isEmpty(mApplicationInfo.className)) {
+            if (mApplicationInfo != null && !TextUtils.isEmpty(mApplicationInfo.className)) {//插件的 manifest中配置了 自定义的Application
                 initCustom();
             }
             // 若自定义有误（或没有)，且框架版本为3及以上的，则可以创建空Application对象，方便插件getApplicationContext到自己
@@ -288,6 +289,11 @@ public class PluginApplicationClient {
         return mApplication;
     }
 
+    /**
+     * 加载插件自定义的 application
+     * 并生成 mApplication 对象
+     * @return
+     */
     private boolean initCustom() {
         try {
             // 获取 自定义的Application 构造方法
@@ -312,6 +318,7 @@ public class PluginApplicationClient {
      * @throws NoSuchMethodException
      */
     private void initCustomConstructor() throws ClassNotFoundException, NoSuchMethodException {
+        //插件的 Application 类路径
         String aic = mApplicationInfo.className;
         //通过插件的 classLoader 加载 插件自定义的Application 对象
         Class<?> psc = mPlgClassLoader.loadClass(aic);

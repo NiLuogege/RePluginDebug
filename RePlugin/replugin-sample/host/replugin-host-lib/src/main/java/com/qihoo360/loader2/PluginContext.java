@@ -52,6 +52,9 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
+ *
+ * 插件中 使用的 context ，重写了 startActivity等方法 ，可以让 插件中更加方便的 打开Activity
+ *
  * @author RePlugin Team
  */
 public class PluginContext extends ContextThemeWrapper {

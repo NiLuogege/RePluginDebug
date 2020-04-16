@@ -84,7 +84,7 @@ class Loader {
 
     Resources mPkgResources;//插件的 Resources
 
-    //插件 使用的 context？
+    //插件 使用的 context（PluginContext）
     Context mPkgContext;
 
     //插件使用的 classLoader(PluginDexClassLoader)
@@ -390,7 +390,7 @@ class Loader {
                 return isDexLoaded();
             }
 
-            // 创建插件 使用的 context？
+            // 创建插件 使用的 context（PluginContext），这个Context具有 在插件中打开 宿主 activity等能力
             mPkgContext = new PluginContext(mContext, android.R.style.Theme, mClassLoader, mPkgResources, mPluginName, this);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "pkg context=" + mPkgContext);
