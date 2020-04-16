@@ -17,6 +17,7 @@ import java.util.List;
 import static com.qihoo360.replugin.helper.LogDebug.LOG;
 import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
+
 /**
  * @author RePlugin Team
  * dec: 坑位进程管理 buyuntao
@@ -45,6 +46,7 @@ public class StubProcessManager {
 
     /**
      * 分配坑位进程 buyuntao(外部调用端已经加锁)
+     *
      * @param plugin
      * @return 进程index值
      */
@@ -52,7 +54,7 @@ public class StubProcessManager {
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "alloc plugin process: plugin=" + plugin);
         }
-        // 取运行列表
+        // 获取宿主进程中 现在运行的 进程列表
         List<ActivityManager.RunningAppProcessInfo> processes = AMSUtils.getRunningAppProcessesNoThrows(RePluginInternal.getAppContext());
         // 取运行列表失败，则直接返回失败
         if (processes == null || processes.isEmpty()) {
@@ -65,7 +67,7 @@ public class StubProcessManager {
         //根据优先级分配坑位进程
         int prevMatchPriority = -1; //临时变量，保存上一个ProcessRecord的进程分配优先级
         ProcessRecord selectRecord = null; //被选中的坑位进程
-        for (ProcessRecord r : STUB_PROCESSES) {
+        for (ProcessRecord r : STUB_PROCESSES) {//找到优先级最大的进程
             synchronized (r) {
                 if (r.calculateMatchPriority(plugin) > prevMatchPriority) {
                     prevMatchPriority = r.calculateMatchPriority(plugin);
@@ -80,13 +82,14 @@ public class StubProcessManager {
         if (selectRecord == null) { //不应该出现
             return IPluginManager.PROCESS_AUTO;
         }
-        synchronized (selectRecord){
+        synchronized (selectRecord) {
             //插件已在分配进程中运行，直接返回
-            if (selectRecord.calculateMatchPriority(plugin) == Integer.MAX_VALUE && (selectRecord.state == StubProcessState.STATE_ALLOCATED || selectRecord.state == StubProcessState.STATE_RUNNING))
-            {
+            if (selectRecord.calculateMatchPriority(plugin) == Integer.MAX_VALUE && (selectRecord.state == StubProcessState.STATE_ALLOCATED || selectRecord.state == StubProcessState.STATE_RUNNING)) {
                 return selectRecord.index;
             }
+            //从新分配
             selectRecord.resetAllocate(plugin, processes);
+            //返回进程标识
             return selectRecord.index;
         }
     }
@@ -155,7 +158,7 @@ public class StubProcessManager {
         }
 
         ProcessRecord r = STUB_PROCESSES[index];
-        synchronized (r){
+        synchronized (r) {
             r.activities++;
             r.mobified = System.currentTimeMillis();
             if (LOG) {
@@ -188,7 +191,7 @@ public class StubProcessManager {
         }
 
         ProcessRecord r = STUB_PROCESSES[index];
-        synchronized (r){
+        synchronized (r) {
             r.activities--;
             r.mobified = System.currentTimeMillis();
             if (LOG) {
@@ -252,7 +255,7 @@ public class StubProcessManager {
         }
 
         ProcessRecord r = STUB_PROCESSES[index];
-        synchronized (r){
+        synchronized (r) {
             r.services--;
             r.mobified = System.currentTimeMillis();
             if (LOG) {
@@ -290,7 +293,7 @@ public class StubProcessManager {
         }
         for (ProcessRecord r : STUB_PROCESSES) {
             if (r.pid == pid) {
-                synchronized (r){
+                synchronized (r) {
                     r.binders--;
                     r.mobified = System.currentTimeMillis();
                     if (LOG) {
@@ -305,7 +308,7 @@ public class StubProcessManager {
     }
 
     static final int sumBinders(int index) {
-        if (index >=0 && index < STUB_PROCESSES.length){
+        if (index >= 0 && index < STUB_PROCESSES.length) {
             ProcessRecord r = STUB_PROCESSES[index];
             synchronized (r) {
                 return STUB_PROCESSES[index].binders;
@@ -317,11 +320,11 @@ public class StubProcessManager {
     /**
      * attach坑位进程，设置坑位进程为运行状态，并返回正在使用坑位进程的插件名称 buyuntao
      *
-     * @param pid 调用方进程id
-     * @param index 进程标识
+     * @param pid    调用方进程id
+     * @param index  进程标识
      * @param binder PluginProcessPer 对象
      * @param client PluginProcessPer的binder 代理对象
-     * @param def 默认进程名
+     * @param def    默认进程名
      * @return
      */
     static final String attachStubProcess(int pid, int index, IBinder binder, IPluginClient client, String def) {
@@ -409,7 +412,7 @@ public class StubProcessManager {
     static final void dump(PrintWriter writer) {
         writer.println("--- STUB_PROCESSES.length = " + STUB_PROCESSES.length + " ---");
         for (ProcessRecord r : STUB_PROCESSES) {
-            synchronized (r){
+            synchronized (r) {
                 writer.println(r);
             }
         }
@@ -515,8 +518,11 @@ public class StubProcessManager {
             return priority;
         }
 
+        //重新分配
         void resetAllocate(String plugin, List<ActivityManager.RunningAppProcessInfo> processes) {
+            //干掉进程
             killProcess(processes);
+            //分配给 processes
             allocate(plugin);
         }
 

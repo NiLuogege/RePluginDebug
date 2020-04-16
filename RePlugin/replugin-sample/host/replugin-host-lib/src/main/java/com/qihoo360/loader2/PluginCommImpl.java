@@ -429,7 +429,7 @@ public class PluginCommImpl {
                 process = PluginClientHelper.getProcessInt(ai.processName);
             }
 
-            // 容器选择（启动目标进程）
+            // 容器选择（启动目标进程 并获取PluginProcessPer的binder 代理对象 用于通信）
             IPluginClient client = MP.startPluginProcess(plugin, process, info);
             if (client == null) {
                 return null;

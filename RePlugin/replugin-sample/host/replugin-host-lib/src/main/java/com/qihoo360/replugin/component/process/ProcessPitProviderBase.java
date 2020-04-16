@@ -39,6 +39,11 @@ public class ProcessPitProviderBase extends ContentProvider {
 
     public static final String AUTHORITY_PREFIX = IPC.getPackageName() + ".loader.p.main";
 
+    /**
+     * 构建 uri
+     * @param index 进程标识
+     * @return
+     */
     public static final Uri buildUri(int index) {
         String str = "";
         if (index < 0) {

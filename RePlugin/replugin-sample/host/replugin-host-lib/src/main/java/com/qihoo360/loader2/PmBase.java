@@ -1260,6 +1260,8 @@ class PmBase {
 
     /**
      *
+     * 找到插件进程 并返回 PluginProcessPer的binder 代理对象 用于通信
+     *
      * @param plugin 插件名称
      * @param process 进程标识
      * @param info PluginBinderInfo对象
@@ -1298,11 +1300,13 @@ class PmBase {
             return client;
         }
 
-        //只有 client == null 才会走到下面
+        //只有 client == null（目标进程挂掉了） 才会走到下面 异常情况
+        //下面就是重启 插件进程再次获取的步骤
 
         // 分配
         int index = IPluginManager.PROCESS_AUTO;
         try {
+            //对插件分配进程并 返回进程标识
             index = PluginProcessMain.allocProcess(plugin, process);
             if (LOG) {
                 LogDebug.d(PLUGIN_TAG, "start plugin process: alloc process ok, plugin=" + plugin + " index=" + index);
@@ -1319,7 +1323,7 @@ class PmBase {
             return null;
         }
 
-        // 启动
+        // 启动插件进程
         boolean rc = PluginProviderStub.proxyStartPluginProcess(mContext, index);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "start plugin process: start process ok, plugin=" + plugin + " index=" + index);
@@ -1328,7 +1332,7 @@ class PmBase {
             return null;
         }
 
-        // 再次获取
+        // 再次获取 PluginProcessPer的binder 代理对象 用于通信
         client = PluginProcessMain.probePluginClient(plugin, process, info);
         if (client == null) {
             if (LOGR) {

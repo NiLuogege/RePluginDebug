@@ -30,6 +30,8 @@ import java.util.List;
 public class AMSUtils {
 
     /**
+     * 获取宿主进程中 现在运行的 进程列表
+     *
      * 无需抛出异常而调用getRunningAppProcesses方法
      * @param context context对象
      * @return RunningAppProcessInfo列表
