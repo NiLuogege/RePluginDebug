@@ -76,10 +76,12 @@ public class PMF {
         sPluginMgr = new PmBase(application);
         sPluginMgr.init();
 
+        //设置  Factory.sPluginManager 为 PluginCommImpl 对象
         Factory.sPluginManager = PMF.getLocal();
+        //设置 Factory2.sPLProxy 为 PluginLibraryInternalProxy对象
         Factory2.sPLProxy = PMF.getInternal();
 
-        //hook classLoader
+        //hook App的classLoader 为 RePluginClassLoader
         PatchClassLoaderUtils.patch(application);
     }
 

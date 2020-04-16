@@ -261,7 +261,7 @@ class PmBase {
         // 这个是一个binder对象 常驻进程和其他进程都会初始化 ，用于通信
         mClient = new PluginProcessPer(context, this, PluginManager.sPluginProcessIndex, mContainerActivities);
 
-        //创建通信桥梁
+        //创建通信桥梁PMF
         mLocal = new PluginCommImpl(context, this);
 
         //

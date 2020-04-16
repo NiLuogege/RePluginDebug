@@ -166,7 +166,7 @@ public class RePluginClassLoader extends PathClassLoader {
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
         //
         Class<?> c = null;
-        //加载或加载 插件 要使用的类
+        //加载 插件 要使用的类
         c = PMF.loadClass(className, resolve);
         if (c != null) {
             return c;
