@@ -472,6 +472,7 @@ public class PluginCommImpl {
 
         //创建pluginIntent
         PluginIntent ii = new PluginIntent(intent);
+        //如下操作 都是给 intent 添加一些参数 如 插件名等
         ii.setPlugin(plugin);
         ii.setActivity(ai.name);
         ii.setProcess(IPluginManager.PROCESS_AUTO);

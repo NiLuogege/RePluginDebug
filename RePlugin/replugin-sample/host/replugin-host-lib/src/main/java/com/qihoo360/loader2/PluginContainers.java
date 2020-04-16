@@ -236,6 +236,11 @@ a 流程完成
         }
 
 
+        /**
+         * 目标Activity
+         * @param plugin
+         * @param activity
+         */
         private final void create(String plugin, Activity activity) {
             if (this.state == STATE_OCCUPIED || this.state == STATE_RESTORED) { // 当处于restored状态时，表明是系统恢复activity（没有经过register，无显式start activity，核心进程有记录）
                 if (!TextUtils.equals(this.plugin, plugin)) {
@@ -742,6 +747,12 @@ a 流程完成
         return null;
     }
 
+    /**
+     * 目标Activity
+     * @param plugin
+     * @param activity
+     * @param container
+     */
     final void handleCreate(String plugin, Activity activity, String container) {
         ComponentName cn = activity.getComponentName();
         if (cn != null) {

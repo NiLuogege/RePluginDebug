@@ -483,7 +483,7 @@ public class PluginLibraryInternalProxy {
     }
 
     /**
-     * @param activity
+     * @param activity 原始activity
      * @param savedInstanceState
      * @hide 内部方法，插件框架使用
      * 插件的Activity的onCreate调用后调用此方法
@@ -501,6 +501,7 @@ public class PluginLibraryInternalProxy {
 //                int process = intent.getIntExtra(PluginManager.EXTRA_PROCESS, PluginManager.PROCESS_AUTO);
 //                String container = intent.getStringExtra(PluginManager.EXTRA_CONTAINER);
 //                int counter = intent.getIntExtra(PluginManager.EXTRA_COUNTER, 0);
+                //这些参数是在 PluginCommlmpl.loadPluginActivity 最后添加的
                 PluginIntent ii = new PluginIntent(intent);
                 String pluginName = ii.getPlugin();
                 String activityName = ii.getActivity();
@@ -511,7 +512,7 @@ public class PluginLibraryInternalProxy {
                     LogDebug.d(PLUGIN_TAG, "activity create: name=" + pluginName + " activity=" + activityName + " process=" + process + " container=" + container + " counter=" + counter);
                 }
                 // activity跑飞
-                if (!TextUtils.equals(activityName, activity.getClass().getName())) {
+                if (!TextUtils.equals(activityName, activity.getClass().getName())) {// 异常情况
                     // activity=, l=
                     if (LOGR) {
                         LogRelease.w(PLUGIN_TAG, "a.c.1: a=" + activityName + " l=" + activity.getClass().getName());
@@ -532,6 +533,7 @@ public class PluginLibraryInternalProxy {
         //
         PluginContainers.ActivityState state = null;
         if (activity.getComponentName() != null) {
+            //获取 原始activity 的 ActivityState
             state = mPluginMgr.mClient.mACM.lookupByContainer(activity.getComponentName().getClassName());
         }
         if (state == null) {
