@@ -20,6 +20,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.replugin.RePlugin;
 import com.qihoo360.replugin.helper.LogRelease;
 import com.qihoo360.replugin.utils.ReflectUtils;
@@ -78,6 +79,8 @@ public class PatchClassLoaderUtils {
 
             // 外界可自定义ClassLoader的实现，但一定要基于RePluginClassLoader类
             ClassLoader cl = RePlugin.getConfig().getCallbacks().createClassLoader(oClassLoader.getParent(), oClassLoader);
+
+            LogUtil.e("hook之前的oClassLoader= "+oClassLoader+" hook后的 ClassLoader= "+cl);
 
             // 将新的ClassLoader写入mPackageInfo.mClassLoader
             ReflectUtils.writeField(oPackageInfo, "mClassLoader", cl);

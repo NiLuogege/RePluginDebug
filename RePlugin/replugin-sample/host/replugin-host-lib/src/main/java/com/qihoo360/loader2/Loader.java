@@ -174,7 +174,7 @@ class Loader {
     }
 
     /**
-     * @param parent
+     * @param parent 这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
      * @param load   例：Plugin.LOAD_APP ： {@link com.qihoo360.loader2.Plugin 中有解释}
      * @return
      */

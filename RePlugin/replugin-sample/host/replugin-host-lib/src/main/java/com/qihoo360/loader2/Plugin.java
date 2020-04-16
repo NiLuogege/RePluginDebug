@@ -130,7 +130,7 @@ class Plugin {
     Context mContext;
 
     /**
-     *
+     *这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
      */
     ClassLoader mParent;
 
@@ -419,7 +419,7 @@ class Plugin {
     /**
      * 插件进行挂载
      * @param context
-     * @param parent 已经被hook的 classLoader了吗？
+     * @param parent 这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
      * @param manager
      */
     final void attach(Context context, ClassLoader parent, PluginCommImpl manager) {
@@ -646,6 +646,7 @@ class Plugin {
         }
 
         Context context = mContext;
+        //这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
         ClassLoader parent = mParent;
         PluginCommImpl manager = mPluginManager;
 
@@ -808,7 +809,7 @@ class Plugin {
      *
      * @param tag
      * @param context
-     * @param parent
+     * @param parent 这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
      * @param manager
      * @param load
      * @return 是否加载成功

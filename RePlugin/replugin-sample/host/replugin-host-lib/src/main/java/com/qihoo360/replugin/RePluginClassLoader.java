@@ -18,6 +18,7 @@ package com.qihoo360.replugin;
 
 import android.os.Build;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.replugin.utils.ReflectUtils;
 import com.qihoo360.loader.utils.StringUtils;
 import com.qihoo360.loader2.PMF;
@@ -183,6 +184,7 @@ public class RePluginClassLoader extends PathClassLoader {
         } catch (Throwable e) {
             //
         }
+        LogUtil.e("走的是super的loadClass className= "+className);
         //最后走 super的 loadClass
         return super.loadClass(className, resolve);
     }

@@ -30,6 +30,7 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.Factory;
 import com.qihoo360.i.IModule;
 import com.qihoo360.i.IPluginManager;
@@ -107,6 +108,7 @@ class PmBase {
 
     /**
      * 宿主的 classLoader
+     * 这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
      */
     private ClassLoader mClassLoader;
 
@@ -501,8 +503,10 @@ class PmBase {
     }
 
     final void callAttach() {
-        //
+        // 这个原始的classLoader（没有被hook的） ,因为 PmBase 是在 hook classLoader 之前加载的
         mClassLoader = PmBase.class.getClassLoader();
+
+        LogUtil.e("mClassLoader= "+mClassLoader);
 
         // 挂载
         for (Plugin p : mPlugins.values()) {
