@@ -38,6 +38,9 @@ import com.qihoo360.replugin.base.IPC;
  *             android:authorities='com.qihoo360.replugin.sample.host.loader.p.main'
  *             android:exported='false'
  *             android:process=':CangzhuService' />
+ *
+ * 该内容提供者是运行在 常驻进程中的， ui进行第一次 调用该 内容提供者时，
+ * 常驻进程肯定还没有 启动，所以 这个内容提供者还是 常驻进程启动的 触发点
  */
 public class ProcessPitProviderPersist extends ContentProvider {
 

@@ -249,7 +249,8 @@ public class PluginProcessMain {
     static final void connectToHostSvc() {
         //宿主 Application 对象
         Context context = PMF.getApplicationContext();
-        //通过内容提供者获取 常驻进程binder 也就是 PmHostSvc 对象
+        //通过 ProcessPitProviderPersist 内容提供者获取 常驻进程binder 也就是 PmHostSvc 对象
+        //如果 常驻进程还没有启动 那么还会触发 常驻进程的 启动
         IBinder binder = PluginProviderStub.proxyFetchHostBinder(context);
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "host binder = " + binder);
