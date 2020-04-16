@@ -111,7 +111,7 @@ class PmBase {
     private ClassLoader mClassLoader;
 
     /**
-     * 所有插件
+     * 所有插件（ui进程和 常驻进程 都会有一份）
      * 插件名称（例如：demo1） 和 Plugin 的映射关系
      */
     private final Map<String, Plugin> mPlugins = new ConcurrentHashMap<>();
