@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.Factory2;
 import com.qihoo360.loader.utils2.FilePermissionUtils;
 import com.qihoo360.replugin.ContextInjector;
@@ -485,6 +486,7 @@ public class PluginContext extends ContextThemeWrapper {
         // 第二次：判断要打开的是“坑位Activity”，则返回False，直接走super，后面的事情你们都懂的
         // 当然，如果在获取坑位信息时遇到任何情况（例如要打开的是宿主的Activity），则直接返回false，走super
         if (!Factory2.startActivity(this, intent)) {
+            LogUtil.e("是走这里了吗");
             if (mContextInjector != null) {
                 mContextInjector.startActivityBefore(intent);
             }

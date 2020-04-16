@@ -117,6 +117,8 @@ public class PluginLibraryInternalProxy {
         // 1. 从Intent里取。通常是明确知道要打开的插件时会用
         // 2. 根据当前Activity的坑位名来“反查”其插件名。通常是插件内开启自己的Activity时用到
         // 3. 通过获得Context的类加载器来判断其插件名
+
+        //例如：com.qihoo360.replugin.sample.demo1
         String plugin = intent.getStringExtra(IPluginManager.KEY_PLUGIN);
 
         /* 检查是否是动态注册的类 */
@@ -126,6 +128,7 @@ public class PluginLibraryInternalProxy {
         if (componentName != null) {
 
 	        if (LogDebug.LOG) {
+	            //例如：loadClass: isHookingClass(null,com.qihoo360.replugin.sample.host.PluginFragmentActivity) = false
 	            LogDebug.d("loadClass", "isHookingClass(" + plugin + "," + componentName.getClassName() + ") = "
 	                    + isDynamicClass(plugin, componentName.getClassName()));
 	        }
@@ -198,6 +201,9 @@ public class PluginLibraryInternalProxy {
      */
     public boolean startActivity(Context context, Intent intent, String plugin, String activity, int process, boolean download) {
         if (LOG) {
+            //例如：start activity: intent=Intent { cmp=com.qihoo360.replugin.sample.host/.PluginFragmentActivity }
+            // plugin=com.qihoo360.replugin.sample.demo1 activity=com.qihoo360.replugin.sample.host.PluginFragmentActivity
+            // process=-2147483648 download=true
             LogDebug.d(PLUGIN_TAG, "start activity: intent=" + intent + " plugin=" + plugin + " activity=" + activity + " process=" + process + " download=" + download);
         }
 
