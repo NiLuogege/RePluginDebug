@@ -91,7 +91,10 @@ class PluginProcessPer extends IPluginClient.Stub {
 
     /**
      * 类加载器根据容器解析到目标的activity
-     * @param container
+     *
+     * 通过插件的classLoader（PluginDexClassLoader） 加载类
+     *
+     * @param container 坑位activity
      * @return
      */
     final Class<?> resolveActivityClass(String container) {
@@ -99,6 +102,7 @@ class PluginProcessPer extends IPluginClient.Stub {
         String activity = null;
 
         // 先找登记的，如果找不到，则用forward activity
+        //获取 state
         PluginContainers.ActivityState state = mACM.lookupByContainer(container);
         if (state == null) {
             // PACM: loadActivityClass, not register, use forward activity, container=
@@ -108,12 +112,14 @@ class PluginProcessPer extends IPluginClient.Stub {
             return ForwardActivity.class;
         }
         plugin = state.plugin;
+        //原本要加载的 插件 activity
         activity = state.activity;
 
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PACM: loadActivityClass in=" + container + " target=" + activity + " plugin=" + plugin);
         }
 
+        //加载或获取插件
         Plugin p = mPluginMgr.loadAppPlugin(plugin);
         if (p == null) {
             // PACM: loadActivityClass, not found plugin
@@ -123,12 +129,14 @@ class PluginProcessPer extends IPluginClient.Stub {
             return null;
         }
 
+        //获取插件 classLoader
         ClassLoader cl = p.getClassLoader();
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PACM: loadActivityClass, plugin activity loader: in=" + container + " activity=" + activity);
         }
         Class<?> c = null;
         try {
+            //加载 原始 插件activity
             c = cl.loadClass(activity);
         } catch (Throwable e) {
             if (LOGR) {

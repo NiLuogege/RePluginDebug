@@ -690,7 +690,9 @@ class PmBase {
     }
 
     /**
-     * 加载 动态类 或者 虚拟类
+     *
+     * 使用 插件classLoader加载
+     *
      * @param className
      * @param resolve
      * @return
@@ -704,8 +706,9 @@ class PmBase {
             return PluginPitService.class;
         }
 
-        //
+        // 如果加载的是 预埋 activity 坑位
         if (mContainerActivities.contains(className)) {
+            //使用插件 classLoader（PluginDexClassLoader） 来加载
             Class<?> c = mClient.resolveActivityClass(className);
             if (c != null) {
                 return c;
@@ -749,7 +752,9 @@ class PmBase {
         // 插件定制表
         DynamicClass dc = mDynamicClasses.get(className);
         if (dc != null) {
+            //宿主注册时的Context对象
             final Context context = RePluginInternal.getAppContext();
+            //获取 PluginDesc
             PluginDesc desc = PluginDesc.get(dc.plugin);
 
             if (LOG) {
@@ -763,7 +768,7 @@ class PmBase {
             // 加载动态类时，如果其对应的插件未下载，则转到代理类
             if (desc != null) {
                 String plugin = desc.getPluginName();
-                if (PluginTable.getPluginInfo(plugin) == null) {
+                if (PluginTable.getPluginInfo(plugin) == null) {//插件没有加载
                     if (LOG) {
                         LogDebug.d("loadClass", "plugin=" + plugin + " not found, return DynamicClassProxyActivity.class");
                     }
@@ -777,7 +782,7 @@ class PmBase {
             if (LOG) {
                 LogDebug.d("loadClass", "needStartLoadingActivity = " + needStartLoadingActivity);
             }
-            if (needStartLoadingActivity) {
+            if (needStartLoadingActivity) {//启动 PluginLoadingActivity
                 Intent intent = new Intent();
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 // fixme 将 PluginLoadingActivity2 移到 replugin 中来，不写死
@@ -785,12 +790,14 @@ class PmBase {
                 context.startActivity(intent);
             }
 
+            //加载或获取插件
             Plugin p = loadAppPlugin(dc.plugin);
             if (LOG) {
                 LogDebug.d("loadClass", "p=" + p);
             }
             if (p != null) {
                 try {
+                    //使用插件 classLoader 加载 虚拟类
                     Class<?> cls = p.getClassLoader().loadClass(dc.className);
                     if (needStartLoadingActivity) {
                         // 发广播给过度 Activity，让其关闭
@@ -837,7 +844,7 @@ class PmBase {
             return dc.defClass;
         }
 
-        //
+        // 加载一般类
         return loadDefaultClass(className);
     }
 
@@ -926,6 +933,7 @@ class PmBase {
     }
 
     /**
+     * 加载一般类
      * @param className
      * @return
      */

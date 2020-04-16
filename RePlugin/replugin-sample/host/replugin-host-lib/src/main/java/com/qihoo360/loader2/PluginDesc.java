@@ -62,6 +62,9 @@ public class PluginDesc {
     private String mDesc;
     private boolean mLarge;
 
+    /**
+     * 插件名 -> PluginDesc 的映射
+     */
     private static volatile HashMap<String, PluginDesc> sMap;
 
     /**

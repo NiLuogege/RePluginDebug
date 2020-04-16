@@ -87,7 +87,7 @@ class Loader {
     //插件 使用的 context？
     Context mPkgContext;
 
-    //插件使用的 classLoader
+    //插件使用的 classLoader(PluginDexClassLoader)
     ClassLoader mClassLoader;
 
     /**

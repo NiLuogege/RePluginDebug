@@ -166,13 +166,14 @@ public class RePluginClassLoader extends PathClassLoader {
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
         //
         Class<?> c = null;
+        //加载或加载 插件 要使用的类
         c = PMF.loadClass(className, resolve);
         if (c != null) {
             return c;
         }
         //
         try {
-            //如果 没找到使用原来的 加载类
+            //如果 插件中没有 没找到使用原来的 加载类 ？？
             c = mOrig.loadClass(className);
             // 只有开启“详细日志”才会输出，防止“刷屏”现象
             if (LogDebug.LOG && RePlugin.getConfig().isPrintDetailLog()) {
@@ -182,7 +183,7 @@ public class RePluginClassLoader extends PathClassLoader {
         } catch (Throwable e) {
             //
         }
-        //
+        //最后走 super的 loadClass
         return super.loadClass(className, resolve);
     }
 

@@ -135,12 +135,14 @@ a 流程完成
 
     static final class ActivityState {
 
+        // 坑位 activity
         final String container;
 
         int state;
 
         String plugin;
 
+        //原本要加载的 插件 activity
         String activity;
 
         long timestamp;
