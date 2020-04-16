@@ -221,6 +221,10 @@ class PmBase {
         String className;
     }
 
+    /**
+     * 清除 intent的 额外参数 防止 intent 攻击
+     * @param intent
+     */
     static final void cleanIntentPluginParams(Intent intent) {
         // 防止 intent 攻击
         try {

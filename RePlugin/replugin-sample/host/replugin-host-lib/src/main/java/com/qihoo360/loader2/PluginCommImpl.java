@@ -394,6 +394,9 @@ public class PluginCommImpl {
 
     /**
      * 加载插件Activity，在startActivity之前调用
+     *
+     * 找到坑位activity 并封装为 ComponentName 再返回
+     *
      * @param intent
      * @param plugin 插件名
      * @param target 目标Service名，如果传null，则取获取到的第一个
@@ -436,8 +439,11 @@ public class PluginCommImpl {
             }
 
             // 远程分配坑位 会 调用到 PluginProcessPer.allocActivityContainer 方法
+            // 返回坑位 activity
             container = client.allocActivityContainer(plugin, process, ai.name, intent);
             if (LOG) {
+                //例如：alloc success: container=com.qihoo360.replugin.sample.host.loader.a.ActivityN1NRNTS2
+                // plugin=com.qihoo360.replugin.sample.demo1 activity=com.qihoo360.replugin.sample.demo1.MainActivity
                 LogDebug.i(PLUGIN_TAG, "alloc success: container=" + container + " plugin=" + plugin + " activity=" + activity);
             }
         } catch (Throwable e) {
@@ -451,6 +457,7 @@ public class PluginCommImpl {
             return null;
         }
 
+        //清除 intent的 额外参数 防止 intent 攻击
         PmBase.cleanIntentPluginParams(intent);
 
         // TODO 是否重复
@@ -460,12 +467,14 @@ public class PluginCommImpl {
 //        intent.putExtra(PluginManager.EXTRA_PROCESS, process);
 //        intent.putExtra(PluginManager.EXTRA_CONTAINER, container);
 
+        //创建pluginIntent
         PluginIntent ii = new PluginIntent(intent);
         ii.setPlugin(plugin);
         ii.setActivity(ai.name);
         ii.setProcess(IPluginManager.PROCESS_AUTO);
         ii.setContainer(container);
         ii.setCounter(0);
+        //返回宿主的 坑位 Activity
         return new ComponentName(IPC.getPackageName(), container);
     }
 

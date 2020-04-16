@@ -123,6 +123,7 @@ a 流程完成
 
     /**
      * 保存进程和进程中坑位状态的 Map
+     * [":p1": state("P1"), ":p2": state("P2")]
      */
     private final Map<String, ProcessStates> mProcessStatesMap = new HashMap<>();
 
@@ -191,6 +192,7 @@ a 流程完成
             return false;
         }
 
+        //缓存对应关系
         private final void occupy(String plugin, String activity) {
             if (TextUtils.isEmpty(plugin) || TextUtils.isEmpty(activity)) {
                 if (LOG) {
@@ -205,7 +207,7 @@ a 流程完成
             cleanRefs();
             this.timestamp = System.currentTimeMillis();
 
-            //
+            //保存映射关系到 sp中
             save2Pref(this.plugin, this.activity, this.container);
         }
 
@@ -461,11 +463,19 @@ a 流程完成
         }
     }
 
+    /**
+     * 保存 插件的 原始activity名称 和 坑位名称的 对应关系到 sp中
+     * @param plugin
+     * @param activity
+     * @param container
+     */
     private static final void save2Pref(String plugin, String activity, String container) {
         String v = plugin + ":" + activity + ":" + System.currentTimeMillis();
         if (LOG) {
             LogDebug.d(PLUGIN_TAG, "PACM: save 2 pref: k=" + container + " v=" + v);
         }
+        //例如：<string name="com.qihoo360.replugin.sample.host.loader.a.ActivityN1NRNTS0">
+        // com.qihoo360.replugin.sample.demo1:com.qihoo360.replugin.sample.demo1.MainActivity:1586917240958</string>
         Pref.ipcSet(container, v);
     }
 
@@ -595,7 +605,7 @@ a 流程完成
 
     /**
      * @param ai
-     * @param map
+     * @param map 坑位集合
      * @param plugin
      * @param activity
      * @param intent
@@ -623,7 +633,7 @@ a 流程完成
 
         // 新分配：找空白的，第一个
         for (ActivityState state : map.values()) {
-            if (state.state == STATE_NONE) {
+            if (state.state == STATE_NONE) {//没有使用的 坑位
                 if (LOG) {
                     LogDebug.d(PLUGIN_TAG, "PACM: alloc empty container=" + state.container);
                 }
@@ -631,6 +641,8 @@ a 流程完成
                 return state;
             }
         }
+
+        //没有找到 空白的 下面会进行重用
 
         ActivityState found;
 
@@ -653,7 +665,7 @@ a 流程完成
             return found;
         }
 
-        // 强挤：最后一招，挤掉：最老的那个
+        // 强挤：最后一招，挤掉：最老的那个（也就是关闭最老的的那个activity 然后打开新的activity）
         found = null;
         for (ActivityState state : map.values()) {
             if (found == null) {
@@ -666,6 +678,7 @@ a 流程完成
             if (LOG) {
                 LogDebug.w(PLUGIN_TAG, "PACM: force alloc container=" + found.container);
             }
+            //关闭activity
             found.finishRefs();
             found.occupy(plugin, activity);
             return found;
@@ -679,12 +692,23 @@ a 流程完成
         return null;
     }
 
+    /**
+     *
+     * @param ai 插件activity对应的 ActivityInfo
+     * @param plugin 插件名称
+     * @param activity 要启动的插件activity
+     * @param process 进程标识
+     * @param intent
+     * @param processTail 进程后缀
+     * @return
+     */
     String alloc2(ActivityInfo ai, String plugin, String activity, int process, Intent intent, String processTail) {
         // 根据进程名称，取得该进程对应的 PluginContainerStates
         ProcessStates states = mProcessStatesMap.get(processTail);
 
         ActivityState state;
 
+        //包名 就是 默认的 TaskAffinity
         String defaultPluginTaskAffinity = ai.applicationInfo.packageName;
         if (LOG) {
             LogDebug.d(TaskAffinityStates.TAG, String.format("插件 %s 默认 TaskAffinity 为 %s", plugin, defaultPluginTaskAffinity));

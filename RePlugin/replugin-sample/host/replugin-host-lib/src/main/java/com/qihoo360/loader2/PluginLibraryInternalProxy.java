@@ -266,6 +266,7 @@ public class PluginLibraryInternalProxy {
             from.setComponent(new ComponentName(plugin, activity));
         }
 
+        //找到坑位activity 并封装为 ComponentName
         ComponentName cn = mPluginMgr.mLocal.loadPluginActivity(intent, plugin, activity, process);
         if (cn == null) {
             if (LOG) {
@@ -274,6 +275,7 @@ public class PluginLibraryInternalProxy {
             return false;
         }
 
+        //这里替换 intent的 Component
         // 将Intent指向到“坑位”。这样：
         // from：插件原Intent
         // to：坑位Intent
@@ -294,6 +296,7 @@ public class PluginLibraryInternalProxy {
 //                e.printStackTrace();
 //            }
 //        } else {
+
 
         context.startActivity(intent);
 

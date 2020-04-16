@@ -49,7 +49,7 @@ public class PluginProcessHost {
     public static final String PROCESS_PLUGIN_SUFFIX = "p";
 
     /**
-     * 插件中，进程名称后缀（带冒号）
+     * 插件中，进程名称后缀（带冒号） :p
      */
     public static final String PROCESS_PLUGIN_SUFFIX2 = ":" + PROCESS_PLUGIN_SUFFIX;
 

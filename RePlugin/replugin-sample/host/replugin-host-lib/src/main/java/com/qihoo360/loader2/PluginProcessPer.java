@@ -24,7 +24,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.i.IPluginManager;
 import com.qihoo360.loader2.alc.ActivityController;
 import com.qihoo360.replugin.RePlugin;
@@ -141,22 +143,28 @@ class PluginProcessPer extends IPluginClient.Stub {
     }
 
     /**
-     * 分配坑位 这个方法应该运行在 宿主进程，因为只有素组进程有 坑位
-     * @param plugin 插件名称
+     * 分配坑位 这个方法应该运行在 宿主进程，因为只有宿主进程有 坑位
+     *
+     * 会返回坑位 activity
+     *
+     * @param plugin 插件名称 例如：com.qihoo360.replugin.sample.demo1
      * @param process 进程标识
      * @param target 插件Activity名称
      * @param intent 启动插件activity时的intent
-     * @return
+     * @return 坑位activity
      * @throws RemoteException
      */
     @Override
     public String allocActivityContainer(String plugin, int process, String target, Intent intent) throws RemoteException {
+        //例如：plugin= com.qihoo360.replugin.sample.demo1 process= -1 target= com.qihoo360.replugin.sample.demo1.MainActivity
+        LogUtil.e("plugin= "+plugin+" process= "+process+" target= "+target);
+
         // 一旦有分配，则进入监控状态（一是避免不退出的情况，二也是最重要的是避免现在就退出的情况）
         //回掉 onPrepareAllocPitActivity 方法
         RePlugin.getConfig().getEventCallbacks().onPrepareAllocPitActivity(intent);
 
         String loadPlugin = null;
-        // 如果UI进程启用，尝试使用传过来的插件，强制用UI进程
+        // 如果UI进程启用，尝试使用传过来的插件，强制用UI进程？？ 为啥？？
         if (Constant.ENABLE_PLUGIN_ACTIVITY_AND_BINDER_RUN_IN_MAIN_UI_PROCESS) {
             if (IPC.isUIProcess()) {
                 loadPlugin = plugin;
@@ -175,7 +183,7 @@ class PluginProcessPer extends IPluginClient.Stub {
             }
             loadPlugin = mDefaultPlugin.mInfo.getName();
         }
-        //
+        // 目标 activity 和 容器activity 建立对应关系，并且返回容器 activity
         String container = bindActivity(loadPlugin, process, target, intent);
         if (LOG) {
             //例如： PACM: eval plugin com.qihoo360.replugin.sample.demo1, target=com.qihoo360.replugin.sample.demo1.MainActivity,
@@ -272,9 +280,12 @@ class PluginProcessPer extends IPluginClient.Stub {
     /**
      * 加载插件；找到目标Activity；搜索匹配容器；加载目标Activity类；建立临时映射；返回容器
      *
-     * @param plugin   插件名称
-     * @param process  进程
-     * @param activity Activity 名称
+     * 这个方法中会 对目标activity 和 容器activity 建立对应关系，并且返回容器activity
+     *
+     *
+     * @param plugin   插件名称 ,例如 com.qihoo360.replugin.sample.demo1
+     * @param process  进程 ,例如 -1
+     * @param activity Activity 名称 ,例如：com.qihoo360.replugin.sample.demo1.MainActivity
      * @param intent   调用者传入的 Intent
      * @return 坑位
      */
@@ -289,7 +300,7 @@ class PluginProcessPer extends IPluginClient.Stub {
             return null;
         }
 
-        /* 获取 ActivityInfo */
+        /* 获取activity 对应的 ActivityInfo */
         ActivityInfo ai = p.mLoader.mComponents.getActivity(activity);
         if (ai == null) {
             if (LOG) {
@@ -298,7 +309,7 @@ class PluginProcessPer extends IPluginClient.Stub {
             return null;
         }
 
-        if (ai.processName == null) {
+        if (ai.processName == null) {//设置进程名
             ai.processName = ai.applicationInfo.processName;
         }
         if (ai.processName == null) {
@@ -309,7 +320,8 @@ class PluginProcessPer extends IPluginClient.Stub {
         String container;
 
         // 自定义进程
-        if (ai.processName.contains(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2)) {
+        if (ai.processName.contains(PluginProcessHost.PROCESS_PLUGIN_SUFFIX2)) {//如果包含 :p 说明是自定以进程
+            // processTail 可能为 1 ，2
             String processTail = PluginProcessHost.processTail(ai.processName);
             container = mACM.alloc2(ai, plugin, activity, process, intent, processTail);
         } else {
