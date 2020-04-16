@@ -53,7 +53,6 @@ import static com.qihoo360.replugin.helper.LogDebug.PLUGIN_TAG;
 import static com.qihoo360.replugin.helper.LogRelease.LOGR;
 
 /**
- *
  * 插件中 使用的 context ，重写了 startActivity等方法 ，可以让 插件中更加方便的 打开Activity
  *
  * @author RePlugin Team
@@ -93,13 +92,12 @@ public class PluginContext extends ContextThemeWrapper {
     };
 
     /**
-     *
-     * @param base 宿主 Application 对象
+     * @param base     宿主 Application 对象
      * @param themeres Themes
-     * @param cl 插件的ClassLoader
-     * @param r 插件的 Resources
-     * @param plugin 插件名称 例如：demo1
-     * @param loader Loader 对象
+     * @param cl       插件的ClassLoader
+     * @param r        插件的 Resources
+     * @param plugin   插件名称 例如：demo1
+     * @param loader   Loader 对象
      */
     public PluginContext(Context base, int themeres, ClassLoader cl, Resources r, String plugin, Loader loader) {
         super(base, themeres);
@@ -473,7 +471,8 @@ public class PluginContext extends ContextThemeWrapper {
 
 
     /**
-     * 插件中打开 activity
+     * 插件中 使用Application 的context 打开 activity
+     *
      * @param intent
      */
     @Override
@@ -486,7 +485,6 @@ public class PluginContext extends ContextThemeWrapper {
         // 第二次：判断要打开的是“坑位Activity”，则返回False，直接走super，后面的事情你们都懂的
         // 当然，如果在获取坑位信息时遇到任何情况（例如要打开的是宿主的Activity），则直接返回false，走super
         if (!Factory2.startActivity(this, intent)) {
-            LogUtil.e("是走这里了吗");
             if (mContextInjector != null) {
                 mContextInjector.startActivityBefore(intent);
             }
