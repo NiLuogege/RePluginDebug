@@ -413,6 +413,7 @@ public class RePlugin {
         }
 
         try {
+            //通过反射类型 获取 插件对应的 PackageInfo
             return (PackageInfo) ProxyRePluginVar.fetchPackageInfo.call(null, pluginName);
         } catch (Exception e) {
             if (LogDebug.LOG) {
@@ -490,7 +491,8 @@ public class RePlugin {
         }
 
         try {
-            return (Context) ProxyRePluginVar.fetchContext.call(null, pluginName);
+            // 通过反射 加载插件，并获取插件自身的Context对象，以获取资源等信息
+             return (Context) ProxyRePluginVar.fetchContext.call(null, pluginName);
         } catch (Exception e) {
             if (LogDebug.LOG) {
                 e.printStackTrace();
@@ -610,6 +612,8 @@ public class RePlugin {
     }
 
     /**
+     * 可用于获取其他插件的layout
+     *
      * 通过Layout名，来获取插件内的View，并自动做“强制类型转换”（也可直接使用View类型） <p>
      * 注意：若使用的是公共库，则务必按照Provided的形式引入，否则会出现“不同ClassLoader”导致的ClassCastException <p>
      * 当然，非公共库不受影响，但请务必使用Android Framework内的View（例如WebView、ViewGroup等），或索性直接使用View

@@ -43,6 +43,8 @@ import static com.qihoo360.replugin.RePlugin.fetchResources;
 class RePluginCompat {
 
     /**
+     * 通过资源 类型/名 获取 资源id
+     *
      * @see RePlugin#fetchResourceIdByName(String, String)
      */
     static int fetchResourceIdByName(String pluginName, String resTypeAndName) {
@@ -55,6 +57,7 @@ class RePluginCompat {
             }
             return 0;
         }
+        //获取插件的 Resources
         Resources res = fetchResources(pluginName);
         if (res == null) {
             // 不太可能出现此问题，同样为插件没有找到
@@ -68,6 +71,9 @@ class RePluginCompat {
         // [包名]:[类型名]/[资源名]。其中[类型名]/[资源名]就是 resTypeAndName 参数
         // 例如：com.qihoo360.replugin.sample.demo2:layout/from_demo1
         String idKey = pi.packageName + ":" + resTypeAndName;
+        //获取到id并返回
+        // 注意 这里的第三个参数 会在编译期 被替换成当前插件的包名 所以最终运行的时候类似下面这样
+        // res.getIdentifier(com.qihoo360.replugin.sample.demo2:layout/from_demo1, null, com.qihoo360.replugin.sample.demo1)
         return res.getIdentifier(idKey, null, null);
     }
 
@@ -75,6 +81,7 @@ class RePluginCompat {
      * @see RePlugin#fetchViewByLayoutName(String, String, ViewGroup)
      */
     public static <T extends View> T fetchViewByLayoutName(String pluginName, String layoutName, ViewGroup root) {
+        //加载插件，并获取插件自身的Context对象，以获取资源等信息
         Context context = fetchContext(pluginName);
         if (context == null) {
             // 插件没有找到
@@ -83,6 +90,7 @@ class RePluginCompat {
             }
         }
 
+        //拼上 type 完整的例如 "layout/from_demo1"
         String resTypeAndName = "layout/" + layoutName;
         int id = fetchResourceIdByName(pluginName, resTypeAndName);
         if (id <= 0) {
