@@ -40,6 +40,8 @@ public class GetIdentifierExprEditor extends ExprEditor {
                 m.replace('{ $3 = \"' + CommonData.appPackage + '\"; ' +
                         '$_ = $proceed($$);' +
                         ' }')
+                //例如： GetIdentifierCall => E:\111work\code\code_me\myGitHub\RePluginDebug\RePlugin\replugin-sample\plugin\plugin-demo1\
+                // replugin-plugin-lib\build\intermediates\bundles\default\classes\com\qihoo360\replugin\RePluginCompat.class getIdentifier():70
                 println " GetIdentifierCall => ${filePath} ${methodName}():${m.lineNumber}"
             }
         }
