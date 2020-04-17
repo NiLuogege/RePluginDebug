@@ -215,7 +215,7 @@ class Loader {
                 // Added by Jiongxuan Zhang
                 PluginInfo pi = mPluginObj.mInfo;
                 File ld = pi.getNativeLibsDir();
-                //设置 nativeLibraryDir 路径
+                //设置 so文件存放 路径
                 mPackageInfo.applicationInfo.nativeLibraryDir = ld.getAbsolutePath();
 
 //                // 若PluginInfo.getFrameworkVersion为FRAMEWORK_VERSION_UNKNOWN（p-n才会有），则这里需要读取并修改
@@ -358,6 +358,7 @@ class Loader {
                 }
 
                 //创建插件使用的 classLoader对象
+                // 这里会传入 dex 优化以后的路径也就是 out ,so文件路径 也就是 soDir
                 mClassLoader = RePlugin.getConfig().getCallbacks().createPluginClassLoader(mPluginObj.mInfo, mPath, out, soDir, parent);
 
                 //例如：load /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar
