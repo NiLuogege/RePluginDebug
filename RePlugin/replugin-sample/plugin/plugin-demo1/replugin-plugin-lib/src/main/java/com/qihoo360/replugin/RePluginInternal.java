@@ -49,7 +49,7 @@ public class RePluginInternal {
      * 插件的Activity创建成功后通过此方法获取其base context
      */
     public static Context createActivityContext(Activity activity, Context newBase) {
-        if (!RePluginFramework.mHostInitialized) {
+        if (!RePluginFramework.mHostInitialized) {//是否运行在 RePlugin环境的宿主中
             return newBase;
         }
 

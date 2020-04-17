@@ -92,7 +92,7 @@ public class PluginContext extends ContextThemeWrapper {
     };
 
     /**
-     * @param base     宿主 Application 对象
+     * @param base     宿主 Application 对象  或者 插件Activity的mBaseActivity
      * @param themeres Themes
      * @param cl       插件的ClassLoader
      * @param r        插件的 Resources
@@ -118,8 +118,13 @@ public class PluginContext extends ContextThemeWrapper {
         return super.getClassLoader();
     }
 
+    /**
+     * 插件获取 Resources 会走到这里，包括 Activity的 setContentView
+     * @return
+     */
     @Override
     public Resources getResources() {
+        LogUtil.e("插件获取 Resources getResources mNewResources= " + mNewResources);
         if (mNewResources != null) {
             return mNewResources;
         }
