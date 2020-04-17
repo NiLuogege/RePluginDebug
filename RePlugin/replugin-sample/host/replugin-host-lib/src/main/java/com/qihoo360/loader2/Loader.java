@@ -76,7 +76,7 @@ class Loader {
 
     private final String mPluginName;//插件名称 例如：demo1
 
-    final String mPath;//插件在data/data 下的路径
+    final String mPath;//插件存储路径 如：/data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar
 
     final Plugin mPluginObj;//传过来的插件对象
 
@@ -184,7 +184,7 @@ class Loader {
             //获取packageInfo
             mPackageInfo = Plugin.queryCachedPackageInfo(mPath);
             if (mPackageInfo == null) {
-                // 获取 PackageInfo
+                // 获取 插件的 PackageInfo
                 mPackageInfo = pm.getPackageArchiveInfo(mPath,
                         PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES | PackageManager.GET_PROVIDERS | PackageManager.GET_RECEIVERS | PackageManager.GET_META_DATA);
                 if (mPackageInfo == null || mPackageInfo.applicationInfo == null) {
@@ -195,9 +195,12 @@ class Loader {
                     return false;
                 }
                 if (LOG) {
-                    LogDebug.d(PLUGIN_TAG, "get package archive info, pi=" + mPackageInfo);
+                    LogDebug.d(PLUGIN_TAG, "get package archive info, pi=" + mPackageInfo
+                            +" 插件原始 applicationInfo.sourceDir= "+mPackageInfo.applicationInfo.sourceDir
+                            +" 插件原始 applicationInfo.publicSourceDir= "+mPackageInfo.applicationInfo.publicSourceDir);
                 }
-                //设置sourceDir
+                //设置sourceDir 这俩路径在 获取插件的Resources对象是 要用到 (mPath 是 插件的存储路径 例如)
+                //这俩路径在设置之前都是空的
                 mPackageInfo.applicationInfo.sourceDir = mPath;
                 mPackageInfo.applicationInfo.publicSourceDir = mPath;
 

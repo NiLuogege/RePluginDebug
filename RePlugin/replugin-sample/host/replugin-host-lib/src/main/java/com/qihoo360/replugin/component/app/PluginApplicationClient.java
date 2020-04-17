@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.qihoo360.LogUtil;
 import com.qihoo360.mobilesafe.core.BuildConfig;
 import com.qihoo360.replugin.utils.basic.ArrayMap;
 import com.qihoo360.replugin.RePluginInternal;
@@ -68,10 +69,10 @@ public class PluginApplicationClient {
      * 若已经存在，则返回之前创建的ApplicationClient对象（此时Application不一定被加载进来）
      * 若不符合条件（如插件加载失败、版本不正确等），则会返回null
      *
-     * @param pn 插件名 例如：demo1
+     * @param pn    插件名 例如：demo1
      * @param plgCL 插件的ClassLoader
-     * @param cl 插件的ComponentList
-     * @param pi 插件的信息
+     * @param cl    插件的ComponentList
+     * @param pi    插件的信息
      */
     public static PluginApplicationClient getOrCreate(String pn, ClassLoader plgCL, ComponentList cl, PluginInfo pi) {
         if (pi.getFrameworkVersion() <= 1) {//低版本插件
@@ -168,6 +169,7 @@ public class PluginApplicationClient {
 
     /**
      * 从缓存中获取 PluginApplicationClient
+     *
      * @param pn
      * @return
      */
@@ -180,7 +182,8 @@ public class PluginApplicationClient {
     }
 
     /**
-     *  反射获取 插件 Application 的 attach() 方法
+     * 反射获取 插件 Application 的 attach() 方法
+     *
      * @throws NoSuchMethodException
      */
     private static void initMethods() throws NoSuchMethodException {
@@ -202,13 +205,22 @@ public class PluginApplicationClient {
 
     /**
      * @param plgCL 插件的ClassLoader
-     * @param cl 插件的ComponentList
-     * @param pi 插件的信息
+     * @param cl    插件的ComponentList
+     * @param pi    插件的信息
      */
     private PluginApplicationClient(ClassLoader plgCL, ComponentList cl, PluginInfo pi) {
         mPlgClassLoader = plgCL;
         //获取插件的 ApplicationInfo 对象
         mApplicationInfo = cl.getApplication();
+
+        //例如：创建的 ApplicationInfo=
+        // sourceDir= /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar
+        // publicSourceDir= /data/user/0/com.qihoo360.replugin.sample.host/app_plugins_v3/demo1-10-10-104.jar
+        // splitSourceDirs= null
+        LogUtil.e("创建的 ApplicationInfo= " + "sourceDir= " + mApplicationInfo.sourceDir +
+                " publicSourceDir= " + mApplicationInfo.publicSourceDir +
+                " splitSourceDirs= " + mApplicationInfo.splitSourceDirs);
+
         try {
             // 尝试使用自定义Application（如有）
             if (mApplicationInfo != null && !TextUtils.isEmpty(mApplicationInfo.className)) {//插件的 manifest中配置了 自定义的Application
@@ -261,6 +273,7 @@ public class PluginApplicationClient {
 
     /**
      * 调用插件的 mApplication.onTrimMemory
+     *
      * @param level
      */
     public void callOnTrimMemory(int level) {
@@ -276,6 +289,7 @@ public class PluginApplicationClient {
 
     /**
      * 调用插件的 mApplication.onConfigurationChanged
+     *
      * @param newConfig
      */
     public void callOnConfigurationChanged(Configuration newConfig) {
@@ -292,6 +306,7 @@ public class PluginApplicationClient {
     /**
      * 加载插件自定义的 application
      * 并生成 mApplication 对象
+     *
      * @return
      */
     private boolean initCustom() {
@@ -314,6 +329,7 @@ public class PluginApplicationClient {
 
     /**
      * 获取 自定义的Application 构造方法
+     *
      * @throws ClassNotFoundException
      * @throws NoSuchMethodException
      */
@@ -328,6 +344,7 @@ public class PluginApplicationClient {
 
     /**
      * 通过反射 创建 插件自定义Application的 对象
+     *
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      * @throws InstantiationException
