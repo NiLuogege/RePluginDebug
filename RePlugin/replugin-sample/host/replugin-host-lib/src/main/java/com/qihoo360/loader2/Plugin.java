@@ -179,6 +179,11 @@ class Plugin {
         }
     }
 
+    /**
+     * 通过 PluginInfo 创建一个 Plugin
+     * @param info
+     * @return
+     */
     static final Plugin build(PluginInfo info) {
         return new Plugin(info);
     }
@@ -187,7 +192,9 @@ class Plugin {
         if (p == null) {
             return null;
         }
+        //通过 PluginInfo 创建一个 Plugin
         p = build(p.mInfo);
+        //缓存 Context ClassLoader 和PluginCommImpl
         p.attach(c, parent, pm);
         return p;
     }

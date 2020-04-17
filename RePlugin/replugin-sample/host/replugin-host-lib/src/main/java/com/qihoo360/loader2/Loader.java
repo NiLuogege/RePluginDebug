@@ -277,6 +277,7 @@ class Loader {
                 return isPackageInfoLoaded();
             }
 
+            // 解析资源
             //获取缓存的  Resources
             mPkgResources = Plugin.queryCachedResources(mPath);
             // LOAD_RESOURCES和LOAD_ALL都会获取资源，但LOAD_INFO不可以（只允许获取PackageInfo）

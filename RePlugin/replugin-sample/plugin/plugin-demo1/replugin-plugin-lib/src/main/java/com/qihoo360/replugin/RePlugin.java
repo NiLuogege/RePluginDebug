@@ -439,6 +439,7 @@ public class RePlugin {
         }
 
         try {
+            //反射调用 RePlugin中的 fetchResources 方法 获取 插件的Resources信息
             return (Resources) ProxyRePluginVar.fetchResources.call(null, pluginName);
         } catch (Exception e) {
             if (LogDebug.LOG) {

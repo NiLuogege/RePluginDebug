@@ -46,6 +46,7 @@ class RePluginCompat {
      * @see RePlugin#fetchResourceIdByName(String, String)
      */
     static int fetchResourceIdByName(String pluginName, String resTypeAndName) {
+        //通过插件名找到插件
         PackageInfo pi = fetchPackageInfo(pluginName);
         if (pi == null) {
             // 插件没有找到

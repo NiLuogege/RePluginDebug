@@ -1116,7 +1116,14 @@ class PmBase {
         return loadPlugin(p, Plugin.LOAD_INFO, true);
     }
 
+    /**
+     * 加载插件（不加载代码，只加载资源）
+     * @param plugin 插件名
+     * @param pm PluginCommImpl
+     * @return
+     */
     final Plugin loadResourcePlugin(String plugin, PluginCommImpl pm) {
+        //相当于 clone一个插件
         Plugin p = Plugin.cloneAndReattach(mContext, mPlugins.get(plugin), mClassLoader, pm);
         return loadPlugin(p, Plugin.LOAD_RESOURCES, true);
     }
