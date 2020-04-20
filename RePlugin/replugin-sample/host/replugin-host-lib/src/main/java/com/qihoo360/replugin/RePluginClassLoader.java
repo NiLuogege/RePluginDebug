@@ -80,6 +80,7 @@ public class RePluginClassLoader extends PathClassLoader {
         super("", "", parent);
         mOrig = orig;
 
+        // 这里必须得 copy 不拷贝的话 pathList 是空的
         // 将原来宿主里的关键字段，拷贝到这个对象上，这样骗系统以为用的还是以前的东西（尤其是DexPathList）
         // 注意，这里用的是“浅拷贝”
         // Added by Jiongxuan Zhang
