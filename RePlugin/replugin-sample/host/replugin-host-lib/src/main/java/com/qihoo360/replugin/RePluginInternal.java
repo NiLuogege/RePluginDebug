@@ -48,7 +48,7 @@ public class RePluginInternal {
     }
 
     /**
-     * 获取宿主注册时的ClassLoader
+     * 获取宿主注册时的ClassLoader 这个ClassLoader 是没有被hook过的
      */
     public static ClassLoader getAppClassLoader() {
         return getAppContext().getClassLoader();
