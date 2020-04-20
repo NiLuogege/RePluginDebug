@@ -293,13 +293,17 @@ public class PluginLibraryInternalProxy {
             return false;
         }
 
-        //这里替换 intent的 Component
+        //****这里替换 intent的 Component 也就是替换了要打开的类（Activity）...
         // 将Intent指向到“坑位”。这样：
         // from：插件原Intent
         // to：坑位Intent
         intent.setComponent(cn);
 
         if (LOG) {
+            //例如：start activity: real intent=Intent
+            // { cat=[process:-2147483648,plugin:com.qihoo360.replugin.sample.demo1,
+            // activity:com.qihoo360.replugin.sample.demo1.MainActivity,container:com.qihoo360.replugin.sample.host.loader.a.ActivityN1NRNTS0,counter:0]
+            // cmp=com.qihoo360.replugin.sample.host/.loader.a.ActivityN1NRNTS0 (has extras) }
             LogDebug.d(PLUGIN_TAG, "start activity: real intent=" + intent);
         }
 
