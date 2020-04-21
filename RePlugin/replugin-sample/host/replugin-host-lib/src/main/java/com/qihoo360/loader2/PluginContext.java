@@ -26,6 +26,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -120,6 +121,7 @@ public class PluginContext extends ContextThemeWrapper {
 
     /**
      * 插件获取 Resources 会走到这里，包括 Activity的 setContentView
+     *
      * @return
      */
     @Override
@@ -482,6 +484,7 @@ public class PluginContext extends ContextThemeWrapper {
      */
     @Override
     public void startActivity(Intent intent) {
+        Log.e("PluginContext", " startActivity =intent:" + intent);
         // HINT 只有插件Application才会走这里
         // 而Activity.startActivity系统最终会走startActivityForResult，不会走这儿
 
@@ -504,6 +507,9 @@ public class PluginContext extends ContextThemeWrapper {
 
     @Override
     public void startActivity(Intent intent, Bundle options) {
+
+        Log.e("PluginContext", " startActivity =intent:" + intent + " options= " + options);
+
         // HINT 保险起见，startActivity写两套相似逻辑
         // 具体见startActivity(intent)的描述（上面）
         if (!Factory2.startActivity(this, intent)) {

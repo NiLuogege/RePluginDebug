@@ -320,6 +320,7 @@ public class PluginLibraryInternalProxy {
 //        } else {
 
 
+        Log.e("Factory2", "context:" + context);
         context.startActivity(intent);
 
         // 通知外界，已准备好要打开Activity了

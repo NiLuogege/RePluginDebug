@@ -21,6 +21,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.qihoo360.LogUtil;
 import com.qihoo360.loader2.PluginLibraryInternalProxy;
@@ -131,6 +132,7 @@ public final class Factory2 {
      * @return 插件机制层是否成功，例如没有插件存在、没有合适的Activity坑
      */
     public static final boolean startActivity(Activity activity, Intent intent) {
+        Log.e("Factory2", "activity:" + activity);
         return sPLProxy.startActivity(activity, intent);
     }
 
@@ -159,6 +161,7 @@ public final class Factory2 {
      * @see #startActivityForResult(Activity, Intent, int, Bundle)
      */
     public static final boolean startActivityForResult(Activity activity, Intent intent, int requestCode, Bundle options) {
+        Log.e("Factory2", "startActivityForResult");
         return sPLProxy.startActivityForResult(activity, intent, requestCode, options);
     }
 
